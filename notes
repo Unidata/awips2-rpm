@@ -1,0 +1,10 @@
+    AWIPS2_build/
+    -- foss
+       |-- lib
+       `-- src
+           `-- patch
+    -- installers
+       |-- msi
+       `-- RPMs
+
+
