@@ -1,10 +1,25 @@
-    AWIPS2_build/
-    -- foss
-       |-- lib
-       `-- src
-           `-- patch
-    -- installers
-       |-- msi
-       `-- RPMs
+AWIPS2_build
+----foss
+-------openfire
+------------lib
+------------src
+------------whatever
+------------packaged
+-------yajsw
+------------lib
+------------src
+------------whatever
+------------packaged
+----Installers
 
+We don't want to check in the tar.gz of the src like openfire
 
+    We want to check in the exploded tar of the src ONLY if we are modifying the src
+        We modify the src for yajsw
+        We do not modify the src for openfire
+        qpid?
+
+Each FOSS directory will need a "packaged" directory (anyone have a better name for it?) that is the compiled/built version of the FOSS
+
+    For example, this would contain the openfire.tar.gz since everything necessary to run openfire is all inside that one file
+    If we modify the src code of the FOSS, the build scripts would output to the packaged directory
