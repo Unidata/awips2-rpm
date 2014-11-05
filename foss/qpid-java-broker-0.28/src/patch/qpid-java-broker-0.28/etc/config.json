@@ -38,7 +38,7 @@
     "port" : "9099",
     "protocols" : [ "JMX_RMI" ]
   }, {
-    "authenticationProvider" : "anonymous",
+    "authenticationProvider" : "passwordFile",
     "bindingAddress" : "*",
     "createdTime" : 1406727202622,
     "id" : "18754a60-d806-4310-9cab-d7ac3790e962",

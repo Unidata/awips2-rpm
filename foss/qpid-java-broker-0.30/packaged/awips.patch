@@ -1,0 +1,59 @@
+diff -crB a/qpid-broker/0.30/bin/qpid-run b/qpid-broker/0.30/bin/qpid-run
+*** a/qpid-broker/0.30/bin/qpid-run	2013-11-13 18:02:20.000000000 -0600
+--- b/qpid-broker/0.30/bin/qpid-run	2014-10-30 15:18:29.730542525 -0500
+***************
+*** 62,69 ****
+  fi
+  
+  if [ -z "$QPID_WORK" ]; then
+!     log $INFO Setting QPID_WORK to $HOME as default
+!     QPID_WORK=$HOME
+  fi
+  
+  if [ -z "$JAVA" ]; then
+--- 62,68 ----
+  fi
+  
+  if [ -z "$QPID_WORK" ]; then
+!     QPID_WORK=$QPID_HOME/etc
+  fi
+  
+  if [ -z "$JAVA" ]; then
+diff -crB a/qpid-broker/0.30/bin/qpid-server b/qpid-broker/0.30/bin/qpid-server
+*** a/qpid-broker/0.30/bin/qpid-server	2014-07-22 05:09:32.000000000 -0500
+--- b/qpid-broker/0.30/bin/qpid-server	2014-10-30 15:19:11.839019841 -0500
+***************
+*** 23,30 ****
+  fi
+  
+  if [ -z "$QPID_WORK" ]; then
+!     echo "Setting QPID_WORK to $HOME as default"
+!     QPID_WORK=$HOME
+  fi
+  
+  # Set to help us get round the manifold problems of ps/pgrep on various
+--- 23,29 ----
+  fi
+  
+  if [ -z "$QPID_WORK" ]; then
+!     QPID_WORK=$QPID_HOME/etc
+  fi
+  
+  # Set to help us get round the manifold problems of ps/pgrep on various
+***************
+*** 37,43 ****
+  QPID_LIBS="$QPID_HOME/lib/*:$QPID_HOME/lib/plugins/*:$QPID_HOME/lib/opt/*"
+  
+  # Set other variables used by the qpid-run script before calling
+! export JAVA=java \
+         JAVA_VM=-server \
+         JAVA_MEM=-Xmx2g \
+         JAVA_GC="-XX:+UseConcMarkSweepGC -XX:+HeapDumpOnOutOfMemoryError" \
+--- 36,42 ----
+  QPID_LIBS="$QPID_HOME/lib/*:$QPID_HOME/lib/plugins/*:$QPID_HOME/lib/opt/*"
+  
+  # Set other variables used by the qpid-run script before calling
+! export JAVA=/awips2/java/bin/java \
+         JAVA_VM=-server \
+         JAVA_MEM=-Xmx2g \
+         JAVA_GC="-XX:+UseConcMarkSweepGC -XX:+HeapDumpOnOutOfMemoryError" \

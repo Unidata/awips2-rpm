@@ -13,6 +13,7 @@ mkdir -p ${AWIPSII_TOP_DIR}/SOURCES
 FOSSDIR=${WORKSPACE}/foss/qpid-java-broker-0.28/
 
 cp -v ${FOSSDIR}/packaged/qpid-java-broker-0.28.tar.gz ${AWIPSII_TOP_DIR}/SOURCES
+cp -v ${FOSSDIR}/packaged/awips.patch ${AWIPSII_TOP_DIR}/SOURCES
 
 
 # build the rpm

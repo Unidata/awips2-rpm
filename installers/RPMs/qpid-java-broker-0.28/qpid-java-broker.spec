@@ -6,6 +6,7 @@ License:        Apache Software License
 Group:          Development/Java
 URL:            http://qpid.apache.org/
 Source:         qpid-java-broker-%{version}.tar.gz
+Patch0:         awips.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 BuildRequires:  ant >= 1.6.5
@@ -18,6 +19,8 @@ Java implementation of Apache Qpid Broker.
 
 %prep
 %setup -n qpid-java-broker-%{version}
+
+%patch0 -p2
 
 %build
 
