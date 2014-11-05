@@ -1,0 +1,44 @@
+{
+  "id" : "c5e5a49f-0e51-4f6e-96bc-bce16961ff31",
+  "name" : "edex",
+  "type" : "DERBY",
+  "modelVersion" : "2.0",
+  "storePath" : "/awips2/qpid/edexMessageStore",
+  "lastUpdatedBy" : "ANONYMOUS",
+  "lastUpdatedTime" : 1415212057775,
+  "createdBy" : "ANONYMOUS",
+  "createdTime" : 1415212057775,
+  "exchanges" : [ {
+    "id" : "e7424cc4-c791-3b19-bcec-328fc4b5bfa3",
+    "name" : "amq.direct",
+    "type" : "direct",
+    "lastUpdatedBy" : "ANONYMOUS",
+    "lastUpdatedTime" : 1415212064203,
+    "createdBy" : "ANONYMOUS",
+    "createdTime" : 1415212064203
+  }, {
+    "id" : "ee8bce52-23b2-373c-9f7b-54061143f37c",
+    "name" : "amq.fanout",
+    "type" : "fanout",
+    "lastUpdatedBy" : "ANONYMOUS",
+    "lastUpdatedTime" : 1415212064209,
+    "createdBy" : "ANONYMOUS",
+    "createdTime" : 1415212064209
+  }, {
+    "id" : "30360860-b345-3b40-a7ca-38b1296b8996",
+    "name" : "amq.match",
+    "type" : "headers",
+    "lastUpdatedBy" : "ANONYMOUS",
+    "lastUpdatedTime" : 1415212064208,
+    "createdBy" : "ANONYMOUS",
+    "createdTime" : 1415212064208
+  }, {
+    "id" : "73c02120-b8c5-3a3e-bedb-36f5dc4dd189",
+    "name" : "amq.topic",
+    "type" : "topic",
+    "lastUpdatedBy" : "ANONYMOUS",
+    "lastUpdatedTime" : 1415212064207,
+    "createdBy" : "ANONYMOUS",
+    "createdTime" : 1415212064207
+  } ]
+}
