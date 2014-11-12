@@ -9,6 +9,7 @@ Source:         qpid-broker-%{version}-bin.tar.gz
 Patch0:         awips.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
+Provides:       awips2-base-component
 
 %description
 Java implementation of Apache Qpid Broker.
