@@ -13,6 +13,8 @@ BuildRequires:  ant >= 1.6.5
 BuildRequires:  ant-nodeps >= 1.6.5
 BuildRequires:  java-devel >= 1.6.0
 BuildRequires:  ant-trax >= 1.6.5
+Provides:       awips2-base-component
+
 
 %description
 Java implementation of Apache Qpid Broker.
