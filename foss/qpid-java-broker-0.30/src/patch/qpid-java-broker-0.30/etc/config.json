@@ -44,6 +44,8 @@
     "authenticationProvider" : "anonymous",
     "bindingAddress" : "*",
     "port" : "5672",
+    "sendBufferSize" : "16384",
+    "receiveBufferSize" : "32768",
     "protocols" : [ "AMQP_0_10", "AMQP_0_8", "AMQP_0_9", "AMQP_0_9_1", "AMQP_1_0" ],
     "transports" : [ "TCP" ],
     "lastUpdatedBy" : "webadmin",
