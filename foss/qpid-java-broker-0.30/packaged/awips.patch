@@ -15,7 +15,7 @@ diff -crB a/qpid-broker/0.30/bin/qpid-run b/qpid-broker/0.30/bin/qpid-run
   fi
   
   if [ -z "$QPID_WORK" ]; then
-!     QPID_WORK=$QPID_HOME/etc
+!     QPID_WORK=$QPID_HOME
   fi
   
   if [ -z "$JAVA" ]; then
@@ -36,7 +36,7 @@ diff -crB a/qpid-broker/0.30/bin/qpid-server b/qpid-broker/0.30/bin/qpid-server
   fi
   
   if [ -z "$QPID_WORK" ]; then
-!     QPID_WORK=$QPID_HOME/etc
+!     QPID_WORK=$QPID_HOME
   fi
   
   # Set to help us get round the manifold problems of ps/pgrep on various
