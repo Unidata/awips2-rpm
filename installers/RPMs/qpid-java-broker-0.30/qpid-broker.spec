@@ -37,6 +37,7 @@ install -pm 755 0.30/lib/*.zip %{buildroot}/awips2/qpid/lib
 install -pm 644 %{_patchdir}/qpid-java-broker-%{version}/etc/* %{buildroot}/awips2/qpid/etc
 
 mkdir -p %{buildroot}/awips2/qpid/edex/config
+install -pm 644 %{_patchdir}/qpid-java-broker-%{version}/base/config.json %{buildroot}/awips2/qpid
 install -pm 644 %{_patchdir}/qpid-java-broker-%{version}/base/edex/config/edex.json %{buildroot}/awips2/qpid/edex/config
 
 # install the wrapper script
