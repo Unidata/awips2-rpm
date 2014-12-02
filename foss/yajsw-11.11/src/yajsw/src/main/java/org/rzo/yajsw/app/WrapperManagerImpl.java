@@ -222,9 +222,16 @@ public class WrapperManagerImpl implements WrapperManager, Constants, WrapperMan
 		 * (InterruptedException e1) { // TODO Auto-generated catch block
 		 * e1.printStackTrace(); }
 		 */
-		System.out.println("YAJSW: "+YajswVersion.YAJSW_VERSION);
-		System.out.println("OS   : "+YajswVersion.OS_VERSION);
-		System.out.println("JVM  : "+YajswVersion.JAVA_VERSION);
+        /*
+         * bkowal
+         * Suppress extraneous output unless debug is enabled.
+         */
+	    if (_debug)
+	    {
+	        System.out.println("YAJSW: "+YajswVersion.YAJSW_VERSION);
+	        System.out.println("OS   : "+YajswVersion.OS_VERSION);
+	        System.out.println("JVM  : "+YajswVersion.JAVA_VERSION);
+	    }
 		// set commons logging for vfs -> avoid using default java logger
 		ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
 		Thread.currentThread().setContextClassLoader(wrapperClassLoader);
@@ -821,7 +828,14 @@ public class WrapperManagerImpl implements WrapperManager, Constants, WrapperMan
 		if (OperatingSystem.instance().isPosix())
 		{
 			String absPath = result.getAbsolutePath();
-			System.out.println("createRWfile " + absPath);
+            /*
+             * bkowal
+             * Suppress extraneous output unless debug is enabled.
+             */
+			if (_debug)
+			{
+			    System.out.println("createRWfile " + absPath);
+			}
 			try
 			{
 				if (!result.exists())
@@ -1244,7 +1258,14 @@ public class WrapperManagerImpl implements WrapperManager, Constants, WrapperMan
 			if (msg.getCode() == Constants.WRAPPER_MSG_STOP)
 				try
 				{
-					System.out.println("wrapper manager received stop command");
+                    /*
+                     * bkowal
+                     * Suppress extraneous output unless debug is enabled.
+                     */
+				    if (_debug)
+				    {
+				        System.out.println("wrapper manager received stop command");
+				    }
 					_stopping = true;
 
 					if (session != null)

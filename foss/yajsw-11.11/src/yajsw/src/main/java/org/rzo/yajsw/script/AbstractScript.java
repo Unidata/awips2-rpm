@@ -16,11 +16,11 @@ import java.util.concurrent.Future;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.jboss.netty.util.HashedWheelTimer;
 import org.jboss.netty.util.Timeout;
 import org.jboss.netty.util.Timer;
-import org.jboss.netty.util.TimerTask;
 import org.rzo.yajsw.util.DaemonThreadFactory;
 import org.rzo.yajsw.wrapper.WrappedProcess;
 
@@ -28,28 +28,26 @@ import org.rzo.yajsw.wrapper.WrappedProcess;
 /**
  * The Class AbstractScript.
  */
-public abstract class AbstractScript implements Script
-{
+public abstract class AbstractScript implements Script {
 
 	/** The _name. */
-	String					_name;
+	String _name;
 
 	/** The _timeout. */
-	int						_timeout	= 30000;
+	int _timeout = 30000;
 
-	WrappedProcess			_process;
+	WrappedProcess _process;
 
-	String					_id;
+	String _id;
 
-	String[]				_args;
-	
+	String[] _args;
+
 	final static Timer TIMER = new HashedWheelTimer();
-	static final ExecutorService	EXECUTOR		= (ThreadPoolExecutor) new ThreadPoolExecutor(0, 50, 120L, TimeUnit.SECONDS,
-			new SynchronousQueue<Runnable>(), new DaemonThreadFactory("scriptExecutorInternal"));
+	static final ExecutorService EXECUTOR = (ThreadPoolExecutor) new ThreadPoolExecutor(
+			0, 50, 120L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(),
+			new DaemonThreadFactory("scriptExecutorInternal"));
 	volatile Future _future;
 	volatile Timeout _timerTimeout;
-
-
 
 	/**
 	 * Instantiates a new abstract script.
@@ -58,8 +56,8 @@ public abstract class AbstractScript implements Script
 	 *            the script
 	 * @param timeout
 	 */
-	public AbstractScript(String script, String id, WrappedProcess process, String[] args, int timeout)
-	{
+	public AbstractScript(String script, String id, WrappedProcess process,
+			String[] args, int timeout) {
 		_name = script;
 		_process = process;
 		_id = id;
@@ -76,41 +74,40 @@ public abstract class AbstractScript implements Script
 	 * java.lang.String, java.lang.Object)
 	 */
 	public abstract Object execute(String line);
+
 	public abstract void interrupt();
+
 	abstract void log(String msg);
 
-	synchronized public void executeWithTimeout(final String line)
-	{
-		Object result = null;
-		_timerTimeout = TIMER.newTimeout(new TimerTask()
-		{
-
-			public void run(Timeout arg0) throws Exception
-			{
-				log("script takes too long -> interrupt");
-				try
-				{
-				interrupt();
-				}
-				catch (Throwable e)
-				{
-					
-				}
+	synchronized public void executeWithTimeout(final String line) {
+		/*
+		 * Changed by rjpeter Aug 07, 2014.
+		 * 
+		 * Ensures that the main shutdown thread of YAJSW will wait for the
+		 * script to run and finish.
+		 */
+		_future = EXECUTOR.submit(new Callable<Object>() {
+			@Override
+			public Object call() {
+				return execute(line);
 			}
-			
+		});
+
+		// wait for script to finish
+		try {
+			_future.get(_timeout, TimeUnit.MILLISECONDS);
+		} catch (TimeoutException e) {
+			log("Script " + _name + " took too long -> interrupt");
+			try {
+				interrupt();
+			} catch (Throwable e1) {
+				log("Interrupt of script " + _name + " has failed: "
+						+ e.getLocalizedMessage() + "!");
+			}
+		} catch (Exception e) {
+			log("Script " + _name + " failed to complete: "
+					+ e.getLocalizedMessage() + "!");
 		}
-		, _timeout, TimeUnit.MILLISECONDS);
-		_future = EXECUTOR.submit(new Callable<Object>()
-				{
-					public Object call()
-					{
-						Object result = execute(line);
-						if (_timerTimeout != null)
-							_timerTimeout.cancel();
-						_timerTimeout = null;
-						return result;
-					}
-				});
 	}
 
 	/*
@@ -118,8 +115,7 @@ public abstract class AbstractScript implements Script
 	 * 
 	 * @see org.rzo.yajsw.script.Script#getScript()
 	 */
-	public String getScript()
-	{
+	public String getScript() {
 		return _name;
 	}
 
@@ -128,8 +124,7 @@ public abstract class AbstractScript implements Script
 	 * 
 	 * @return the timeout
 	 */
-	public int getTimeout()
-	{
+	public int getTimeout() {
 		return _timeout;
 	}
 
@@ -139,13 +134,11 @@ public abstract class AbstractScript implements Script
 	 * @param timeout
 	 *            the new timeout
 	 */
-	public void setTimeout(int timeout)
-	{
+	public void setTimeout(int timeout) {
 		_timeout = timeout;
 	}
-	
-	public String getId()
-	{
+
+	public String getId() {
 		return _id;
 	}
 
