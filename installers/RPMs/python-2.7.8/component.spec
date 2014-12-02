@@ -9,7 +9,7 @@
 Name: awips2-python
 Summary: AWIPS II Python Distribution
 Version: 2.7.8
-Release: 1.el6
+Release: 2.el6
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
@@ -54,6 +54,9 @@ pushd . > /dev/null
 # Untar the source.
 cd %{_python_build_loc}
 tar -xf ${PYTHON_TAR}
+
+#remove bad_coding3.py, as localization perspective will throw an error about encoding
+rm -f Python-2.7.8/Lib/test/bad_coding3.py
 RC=$?
 if [ ${RC} -ne 0 ]; then
    exit 1
