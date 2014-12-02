@@ -1055,7 +1055,14 @@ public abstract class AbstractWrappedProcess implements WrappedProcess, Constant
 			_controller.processStarted();
 			_totalRestartCount++;
 			postStart();
-			getWrapperLogger().info("started process with pid " + _osProcess.getPid());
+            /*
+             * bkowal
+             * Suppress extraneous output unless debug is enabled.
+             */
+			if (_debug)
+			{
+			    getWrapperLogger().info("started process with pid " + _osProcess.getPid());
+			}
 			if (pipeStreams())
 			{
 
@@ -1990,7 +1997,14 @@ public abstract class AbstractWrappedProcess implements WrappedProcess, Constant
 		shutdownWaitTime += _config.getInt("wrapper.jvm_exit.timeout", Constants.DEFAULT_JVM_EXIT_TIMEOUT) * 1000;
 		if (shutdownWaitTime > Integer.MAX_VALUE)
 			shutdownWaitTime = Integer.MAX_VALUE;
-		getWrapperLogger().info("stopping process with pid/timeout " + _osProcess.getPid() + " " + shutdownWaitTime);
+        /*
+         * bkowal
+         * Suppress extraneous output unless debug is enabled.
+         */
+		if (_debug)
+		{
+		    getWrapperLogger().info("stopping process with pid/timeout " + _osProcess.getPid() + " " + shutdownWaitTime);
+		}
 
 		stopController((int) shutdownWaitTime, _stopReason);
 		stopOsProcess((int) shutdownWaitTime);
@@ -2081,7 +2095,14 @@ public abstract class AbstractWrappedProcess implements WrappedProcess, Constant
 		}
 		_osProcess.destroy();
 
-		getWrapperLogger().info("process exit code: " + _osProcess.getExitCode());
+	      /*
+         * bkowal
+         * Suppress extraneous output unless debug is enabled.
+         */
+		if (_debug)
+		{
+		    getWrapperLogger().info("process exit code: " + _osProcess.getExitCode());
+		}
 	}
 
 	private long getRemainStopWaitTime()
@@ -2809,6 +2830,13 @@ public abstract class AbstractWrappedProcess implements WrappedProcess, Constant
 
 					if (_drain)
 						_drainBuffer.write(line);
+					/*
+					 * bkowal
+					 * Allow all lines to be logged by the wrapper.
+					 */
+					_goblerLog.info(line);
+					k++;
+					/*
 					if (k > _minAppLogLines)
 						_goblerLog.finest(line);
 					else
@@ -2816,6 +2844,7 @@ public abstract class AbstractWrappedProcess implements WrappedProcess, Constant
 						_goblerLog.info(line);
 						k++;
 					}
+					*/
 
 					if (_actionTriggers != null)
 						for (int i = 0; i < _actionTriggers.length; i++)

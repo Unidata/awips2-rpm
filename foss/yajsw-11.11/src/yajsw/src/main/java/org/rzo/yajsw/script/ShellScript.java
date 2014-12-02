@@ -18,8 +18,7 @@ import org.rzo.yajsw.wrapper.WrappedProcess;
 /**
  * The Class ShellScript.
  */
-public class ShellScript extends AbstractScript
-{
+public class ShellScript extends AbstractScript {
 	volatile Process p = null;
 
 	/**
@@ -29,8 +28,8 @@ public class ShellScript extends AbstractScript
 	 *            the script
 	 * @param timeout
 	 */
-	public ShellScript(String script, String id, WrappedProcess process, String[] args, int timeout)
-	{
+	public ShellScript(String script, String id, WrappedProcess process,
+			String[] args, int timeout) {
 		super("scripts/" + script, id, process, args, timeout);
 	}
 
@@ -41,61 +40,58 @@ public class ShellScript extends AbstractScript
 	 * java.lang.String, java.lang.String, java.lang.String, java.lang.String,
 	 * java.lang.String, java.lang.Object)
 	 */
-	public Object execute(String line)
-	{
+	public Object execute(String line) {
 		String id = _id;
 		String state = _process.getStringState();
 		String count = "" + _process.getRestartCount();
 		String pid = "" + _process.getAppPid();
 		String exitCode = "" + _process.getExitCode();
-		try
-		{
-			p = OperatingSystem.instance().processManagerInstance().createProcess();
-			p.setCommand(getScript() + " " + id + " " + state + " " + count + " " + pid + " " + exitCode);
+		try {
+			p = OperatingSystem.instance().processManagerInstance()
+					.createProcess();
+			p.setCommand(getScript() + " " + id + " " + state + " " + count
+					+ " " + pid + " " + exitCode);
 			p.setPipeStreams(false, false);
 			p.start();
 			p.waitFor(getTimeout());
 			if (p.isRunning())
 				p.kill(999);
 			if (p.getExitCode() != 0)
-				System.out.println("script " + getScript() + "returned " + p.getExitCode());
+				System.out.println("script " + getScript() + "returned "
+						+ p.getExitCode());
 			p.destroy();
 			p = null;
-		}
-		catch (Exception ex)
-		{
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 		return null;
 	}
 
-	public Object execute()
-	{
+	public Object execute() {
 		return execute("");
 	}
 
-	public void executeWithTimeout()
-	{
-		// TODO Auto-generated method stub
-		
+	public void executeWithTimeout() {
+		/*
+		 * Updated by bkowal 08/27/2014
+		 * 
+		 * Updates to make Shell Script usable.
+		 */
+		this.executeWithTimeout("");
 	}
 
 	@Override
-	public void interrupt()
-	{
-		if (p != null)
-		{
+	public void interrupt() {
+		if (p != null) {
 			p.destroy();
 		}
 	}
-	
-	void log(String msg)
-	{
+
+	void log(String msg) {
 		if (_process != null && _process.getInternalWrapperLogger() != null)
 			_process.getInternalWrapperLogger().info(msg);
 		else
 			System.out.println(msg);
 	}
-
 
 }

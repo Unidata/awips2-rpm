@@ -5,9 +5,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.rzo.yajsw.boot.WrapperLoader;
 import org.rzo.yajsw.io.CyclicBufferFileInputStream;
 import org.rzo.yajsw.io.CyclicBufferFilePrintStream;
@@ -18,43 +20,36 @@ import org.rzo.yajsw.os.posix.PosixProcess;
 import com.sun.jna.FromNativeConverter;
 import com.sun.jna.ptr.IntByReference;
 
-public class BSDProcess extends PosixProcess
-{
-	java.lang.Process	_process;
-	
+public class BSDProcess extends PosixProcess {
+	java.lang.Process _process;
+
+	private static final String ENV_JAVA_HOME = "JAVA_HOME";
+
 	@Override
-	public String getStdInName()
-	{
+	public String getStdInName() {
 		return "__stdinp";
 	}
 
 	@Override
-	public String getStdOutName()
-	{
+	public String getStdOutName() {
 		return "__stdoutp";
 	}
 
 	@Override
-	public String getStdErrName()
-	{
+	public String getStdErrName() {
 		return "__stderrp";
 	}
 
-
-	
-	
-	private String getDOption(String key, String value)
-	{
-		// posix: setting quotes does not work (cmd is str array). windows: quotes are set in Process class.
-		//if (value != null && !value.contains(" "))
-			return "-D"+key+"="+value;
-		//else
-		//	return "-D"+key+"=\""+value+"\"";
+	private String getDOption(String key, String value) {
+		// posix: setting quotes does not work (cmd is str array). windows:
+		// quotes are set in Process class.
+		// if (value != null && !value.contains(" "))
+		return "-D" + key + "=" + value;
+		// else
+		// return "-D"+key+"=\""+value+"\"";
 	}
 
-
-	public boolean start()
-	{
+	public boolean start() {
 		_terminated = false;
 		_exitCode = -1;
 		ArrayList<String> cmdList = new ArrayList();
@@ -62,8 +57,7 @@ public class BSDProcess extends PosixProcess
 		String tmpDir = _tmpPath;
 		if (tmpDir == null)
 			tmpDir = System.getProperty("jna_tmpdir", null);
-		if (tmpDir != null)
-		{
+		if (tmpDir != null) {
 			String opt = getDOption("jna_tmpdir", tmpDir);
 			if (!cmdList.contains(opt))
 				cmdList.add(opt);
@@ -74,15 +68,14 @@ public class BSDProcess extends PosixProcess
 			cmdList.add("-Dwrapperx.pipeStreams=true");
 		if (_user != null)
 			cmdList.add("-Dwrapperx.user=" + _user);
-		//if (_password != null)
-		//	cmdList.add("-Dwrapperx.password=" + _password);
+		// if (_password != null)
+		// cmdList.add("-Dwrapperx.password=" + _password);
 		String[] xenv = getXEnv();
 		cmdList.add(AppStarter.class.getName());
 		for (int i = 0; i < _arrCmd.length; i++)
 			cmdList.add(_arrCmd[i]);
 		String[] cmd = new String[cmdList.size()];
-		for (int i = 0; i < cmd.length; i++)
-		{
+		for (int i = 0; i < cmd.length; i++) {
 			cmd[i] = cmdList.get(i);
 			System.out.print(cmd[i] + " ");
 		}
@@ -91,138 +84,119 @@ public class BSDProcess extends PosixProcess
 
 		final java.lang.Process p;
 
-		try
-		{
+		try {
 			p = Runtime.getRuntime().exec(cmd, xenv, new File(_workingDir));
-		}
-		catch (IOException e)
-		{
+		} catch (IOException e) {
 			e.printStackTrace();
 			_terminated = true;
 			return false;
 		}
-		BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+		BufferedReader in = new BufferedReader(new InputStreamReader(
+				p.getInputStream()));
 		String line;
-		try
-		{
-			do
-			{
+		try {
+			do {
 				line = in.readLine();
-				//System.out.println("line: " +line);
-				if (line != null && line.contains("PID:"))
-				{
+				// System.out.println("line: " +line);
+				if (line != null && line.contains("PID:")) {
 					setPid(Integer.parseInt(line.substring(4)));
 					if (this._teeName == null)
-					   line = null;
+						line = null;
 					// otherwise the stream is closed by the wrapped app
 					// we will continue reading the input stream in the gobbler
-				}
-				else if (line != null)
+				} else if (line != null)
 					System.out.println(line);
-			}
-			while (line != null);
-		}
-		catch (IOException e)
-		{
+			} while (line != null);
+		} catch (IOException e) {
 			e.printStackTrace();
 			_terminated = true;
 			return false;
 		}
 		_process = p;
-		executor.execute(new Runnable()
-		{
+		executor.execute(new Runnable() {
 
-			public void run()
-			{
-				try
-				{
+			public void run() {
+				try {
 					p.waitFor();
-				}
-				catch (InterruptedException e)
-				{
+				} catch (InterruptedException e) {
 					e.printStackTrace();
 					Thread.currentThread().interrupt();
 				}
 				_terminated = true;
 				_exitCode = p.exitValue();
-				System.out.println("exit code bsd process " + _exitCode);
+				/*
+				 * bkowal Suppress extraneous output unless debug is enabled.
+				 */
+				if (_debug) {
+					System.out.println("exit code bsd process " + _exitCode);
+				}
 				BSDProcess.this.setTerminated(true);
 			}
 
 		});
 
-		if (_teeName != null && _tmpPath != null)
-		{
+		if (_teeName != null && _tmpPath != null) {
 			File f = new File(_tmpPath);
-			try
-			{
+			try {
 				if (!f.exists())
 					f.mkdir();
-			}
-			catch (Exception ex)
-			{
+			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
-			try
-			{
+			try {
 				// System.out.println("opening tee streams out");
-				_inputStream = new CyclicBufferFileInputStream(createRWfile(_tmpPath, "out_" + _teeName));
-			}
-			catch (Exception e)
-			{
+				_inputStream = new CyclicBufferFileInputStream(createRWfile(
+						_tmpPath, "out_" + _teeName));
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			try
-			{
+			try {
 				// System.out.println("opening tee streams err");
-				_errorStream = new CyclicBufferFileInputStream(createRWfile(_tmpPath, "err_" + _teeName));
-			}
-			catch (Exception e)
-			{
+				_errorStream = new CyclicBufferFileInputStream(createRWfile(
+						_tmpPath, "err_" + _teeName));
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			try
-			{
+			try {
 				// System.out.println("opening tee streams in");
-				_outputStream = new CyclicBufferFilePrintStream(createRWfile(_tmpPath, "in_" + _teeName));
-			}
-			catch (Exception e)
-			{
+				_outputStream = new CyclicBufferFilePrintStream(createRWfile(
+						_tmpPath, "in_" + _teeName));
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
-		if (_pipeStreams && _teeName == null)
-		{
+		if (_pipeStreams && _teeName == null) {
 
 			_outputStream = _process.getOutputStream();
 			_inputStream = _process.getInputStream();
 			_errorStream = _process.getErrorStream();
 
 		}
-		if (_cpuAffinity != AFFINITY_UNDEFINED)
-		{
+		if (_cpuAffinity != AFFINITY_UNDEFINED) {
 			IntByReference affinity = new IntByReference();
 			affinity.setValue(_cpuAffinity);
 			if (CLibrary.INSTANCE.sched_setaffinity(_pid, 4, affinity) == -1)
 				System.out.println("error setting affinity");
 		}
 
-		System.out.println("started process " + _pid);
+		/*
+		 * bkowal Suppress extraneous output unless debug is enabled.
+		 */
+		if (_debug) {
+			System.out.println("started process " + _pid);
+		}
 
 		return true;
 	}
 
-	private String[] getXEnv()
-	{
+	private String[] getXEnv() {
 		List<String[]> env = getEnvironment();
-		if (env != null && !env.isEmpty())
-		{
-			String [] result = new String[env.size()];
+		if (env != null && !env.isEmpty()) {
+			String[] result = new String[env.size()];
 			int i = 0;
-			for (String[] x : env)
-			{
-				result[i] = x[0]+"="+x[1];
-				System.out.println("bsd env "+result[i]);
+			for (String[] x : env) {
+				result[i] = x[0] + "=" + x[1];
+				System.out.println("bsd env " + result[i]);
 				i++;
 			}
 			return result;
@@ -230,38 +204,48 @@ public class BSDProcess extends PosixProcess
 		return null;
 	}
 
-	private String getStartClasspath()
-	{
+	private String getStartClasspath() {
 		String wrapperJar = WrapperLoader.getWrapperJar();
 		File wrapperHome = new File(wrapperJar).getParentFile();
 		File jnaFile = new File(getJNAJar());
-		try
-		{
+		try {
 			return wrapperJar + ":" + jnaFile.getCanonicalPath();
-		}
-		catch (IOException e)
-		{
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
 
-	private String getCurrentJava()
-	{
-		int myPid = OperatingSystem.instance().processManagerInstance().currentProcessId();
-		Process myProcess = OperatingSystem.instance().processManagerInstance().getProcess(myPid);
-		String cmd = myProcess.getCommand();
-		String jvm = null;
-		if (cmd.startsWith("\""))
-			jvm = cmd.substring(0, cmd.indexOf("\" ") + 1);
-		else
-			jvm = cmd.substring(0, cmd.indexOf(" "));
+	private String getCurrentJava() {
+		/*
+		 * bkowal Updated the method to determine which Java should be used.
+		 */
+		Boolean system_java = BooleanUtils.toBoolean(getEnvironmentAsMap().get(
+				"use.system.java"));
 
-		return jvm;
+		if (system_java || System.getenv(ENV_JAVA_HOME) == null) {
+			int myPid = OperatingSystem.instance().processManagerInstance()
+					.currentProcessId();
+			Process myProcess = OperatingSystem.instance()
+					.processManagerInstance().getProcess(myPid);
+			String cmd = myProcess.getCommand();
+			String jvm = null;
+			if (cmd.startsWith("\""))
+				jvm = cmd.substring(0, cmd.indexOf("\" ") + 1);
+			else
+				jvm = cmd.substring(0, cmd.indexOf(" "));
+
+			return jvm;
+		}
+
+		/*
+		 * Use the location of java relative to JAVA_HOME.
+		 */
+		return Paths.get(System.getenv(ENV_JAVA_HOME)).resolve("bin")
+				.resolve("java").toString();
 	}
 
-	public String getCommandInternal()
-	{
+	public String getCommandInternal() {
 		if (_pid < 0)
 			return null;
 		String cmd = String.format("ps -p %1$s -o command", _pid);
@@ -274,8 +258,7 @@ public class BSDProcess extends PosixProcess
 		return resx[1];
 	}
 
-	public String getUserInternal()
-	{
+	public String getUserInternal() {
 		if (_pid < 0)
 			return null;
 		String cmd = String.format("ps -p %1$s -o user", _pid);
@@ -288,15 +271,13 @@ public class BSDProcess extends PosixProcess
 		return resx[1];
 	}
 
-	public String getWorkingDirInternal()
-	{
+	public String getWorkingDirInternal() {
 		if (_pid < 0)
 			return null;
 		return null;
 	}
 
-	public static Process getProcess(int pid)
-	{
+	public static Process getProcess(int pid) {
 		BSDProcess result = null;
 		result = new BSDProcess();
 		result.setPid(pid);
@@ -308,67 +289,56 @@ public class BSDProcess extends PosixProcess
 		return result;
 	}
 
-	public static void main(String[] args)
-	{
+	public static void main(String[] args) {
 		BSDProcess p = new BSDProcess();
 		System.out.println(p.getCurrentJava());
-		p.setCommand(new String[]
-		{ "ping", "localhost" });
+		p.setCommand(new String[] { "ping", "localhost" });
 		p.setPipeStreams(true, false);
 		p.start();
-		BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+		BufferedReader in = new BufferedReader(new InputStreamReader(
+				p.getInputStream()));
 		String line;
-		try
-		{
-			do
-			{
+		try {
+			do {
 				line = in.readLine();
 				System.out.println(line);
-			}
-			while (line != null);
-		}
-		catch (IOException e)
-		{
+			} while (line != null);
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
 	}
-	
-	private boolean checkPath(String path)
-	{
+
+	private boolean checkPath(String path) {
 		int ix = path.indexOf("!");
-		if (ix == -1)
-		{
-			System.out.println("<yajsw>/lib/core/jna/jna-xxx.jar not found, please check classpath. aborting wrapper !");
-			//Runtime.getRuntime().halt(999);// -> groovy eclipse plugin crashes
+		if (ix == -1) {
+			System.out
+					.println("<yajsw>/lib/core/jna/jna-xxx.jar not found, please check classpath. aborting wrapper !");
+			// Runtime.getRuntime().halt(999);// -> groovy eclipse plugin
+			// crashes
 			return false;
 		}
 		return true;
-		
+
 	}
 
-	private String getJNAJar()
-	{
+	private String getJNAJar() {
 		String cn = FromNativeConverter.class.getCanonicalName();
 		String rn = cn.replace('.', '/') + ".class";
 		String path = ".";
-		try
-		{
-			path = FromNativeConverter.class.getClassLoader().getResource(rn).getPath();
+		try {
+			path = FromNativeConverter.class.getClassLoader().getResource(rn)
+					.getPath();
 			if (!checkPath(path))
 				return null;
 			path = path.substring(0, path.indexOf("!"));
 			path = new URI(path).getPath();
 			path.replaceAll("%20", " ");
 			return path;
-		}
-		catch (Exception e1)
-		{
+		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
 		return null;
 	}
-	
-
 
 }

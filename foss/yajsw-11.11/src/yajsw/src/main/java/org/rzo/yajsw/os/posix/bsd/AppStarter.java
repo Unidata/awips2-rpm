@@ -1,5 +1,7 @@
 package org.rzo.yajsw.os.posix.bsd;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +35,11 @@ public class AppStarter
 		CLibrary.INSTANCE.umask(0);
 		CLibrary.INSTANCE.setsid();
 
-		System.out.println("calling exec");
+        /*
+         * bkowal
+         * Suppress extraneous output.
+         */
+		//System.out.println("calling exec");
 		// close streams ?
 		if (!isPipeStreams())
 		{
