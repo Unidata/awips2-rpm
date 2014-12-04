@@ -1,6 +1,6 @@
 Name:           awips2-qpid-java-broker
 Version:        0.30
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Java implementation of Apache Qpid Broker
 License:        Apache Software License
 Group:          Development/Java
@@ -10,6 +10,7 @@ Patch0:         awips.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 Provides:       awips2-base-component
+Requires:       awips2-yajsw
 
 %description
 Java implementation of Apache Qpid Broker.
@@ -42,9 +43,6 @@ install -pm 644 %{_patchdir}/qpid-java-broker-%{version}/base/edex/config/edex.j
 
 # install the wrapper script
 install -pm 755 %{_patchdir}/qpid-java-broker-%{version}/wrapper/qpid-wrapper %{buildroot}/awips2/qpid/bin
-
-# add the yajsw distribution
-tar -xf %{_patchdir}/qpid-java-broker-%{version}/wrapper/yajsw-distribution.tar -C %{buildroot}/awips2/qpid/bin
 
 # service script
 mkdir -p %{buildroot}/etc/init.d
