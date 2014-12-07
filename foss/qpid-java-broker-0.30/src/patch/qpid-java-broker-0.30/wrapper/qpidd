@@ -28,8 +28,9 @@ QPIDUSER=awips
 TODAY=`/bin/date +%Y%m%d`
 
 QPID_HOME=/awips2/qpid
+YAJSW_HOME=/awips2/yajsw
 wrapper_process="org.rzo.yajsw.app.WrapperJVMMain"
-_wrapper_jar=${QPID_HOME}/bin/yajsw/wrapper.jar
+_wrapper_jar=${YAJSW_HOME}/wrapper.jar
 
 function getQPID_psCount()
 {

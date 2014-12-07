@@ -40,7 +40,8 @@ export JAVA=/awips2/java/bin/java \
        JAVA_VM=-server \
        AMQJ_LOGGING_LEVEL=info \
        QPID_PNAME=" -DPNAME=QPBRKR" \
-       CONSOLE_LOGLEVEL=DEBUG
+       CONSOLE_LOGLEVEL=DEBUG \
+       YAJSW_HOME=/awips2/yajsw
 
 if [ ! -f ${JAVA} ]; then
    echo "ERROR: the specified Java does not exist - ${JAVA}."
