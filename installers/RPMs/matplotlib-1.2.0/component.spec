@@ -9,7 +9,7 @@
 Name: awips2-python-matplotlib
 Summary: AWIPS II Python matplotlib Distribution
 Version: 1.2.0
-Release: 1.el6
+Release: 2.el6
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
@@ -54,6 +54,10 @@ pushd . > /dev/null
 cd %{_python_build_loc}
 tar xf matplotlib-%{version}.tar.gz
 cd matplotlib-%{version}
+
+#create setup.cfg and require pytz build
+cp -v setup.cfg.template setup.cfg
+sed -i 's/#pytz = False/pytz = True/g' setup.cfg
 
 export LD_LIBRARY_PATH=/awips2/python/lib
 /awips2/python/bin/python setup.py build
