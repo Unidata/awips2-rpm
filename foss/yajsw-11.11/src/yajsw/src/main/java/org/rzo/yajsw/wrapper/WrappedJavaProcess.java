@@ -380,7 +380,13 @@ public class WrappedJavaProcess extends AbstractWrappedProcess
 		if (port != -1)
 		{
 			result.add("-Xdebug");
-			result.add("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=" + port);
+			/*
+			 * Updated by bkowal on 12/10/2014. changed suspend=y => suspend=n;
+			 * the wrapper will continue process startup even if there is not a remote debugger
+			 * connected to the client when suspend is disabled.
+			 */
+			result.add("-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address="
+					+ port);
 		}
 		String preMainScript = _config.getString("wrapper.app.pre_main.script", null);
 		if (preMainScript != null && preMainScript.length() > 0)
