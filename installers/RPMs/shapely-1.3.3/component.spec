@@ -10,7 +10,7 @@
 Name: awips2-python-shapely
 Summary: AWIPS II Python shapely Distribution
 Version: 1.3.3
-Release: 1
+Release: %{_component_version}.%{_component_release}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
