@@ -1,0 +1,23 @@
+Advanced Weather Interactive Processing System (AWIPS)
+Software Continuous Technology Refresh (SW CTR)
+
+The following software products were developed by Raytheon:
+CAVE (Common AWIPS Visualization Environment) software
+EDEX (Enterprise Data Exchange) software
+
+This software was developed pursuant to Contract DG133W-05-CQ-1067
+with the US Government.
+
+Contractor Name: Raytheon Company
+Contractor Address:
+2120 South 72nd Street
+Suite 900
+Omaha, NE 68124
+
+U.S. EXPORT CONTROLLED TECHNICAL DATA
+The AWIPS/CAVE software product contains export-restricted data whose
+export/transfer/disclosure is restricted by U.S. law. Dissemination to non-
+U.S. persons whether in the United States or abroad requires an export
+license or other authorization
+
+See Master_Rights_File.pdf for third party license details.
