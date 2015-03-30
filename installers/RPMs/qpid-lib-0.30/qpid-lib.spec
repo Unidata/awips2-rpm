@@ -71,7 +71,7 @@ fi
 
 cd %{_qpid_build_loc}/build
 
-cmake %{_qpid_build_loc}/%{qpid_src_dir} -DCMAKE_INSTALL_PREFIX:PATH=%{_qpid_build_loc}/awips2/qpid -DPYTHON_EXECUTABLE:FILEPATH=/awips2/python/bin/python
+cmake %{_qpid_build_loc}/%{qpid_src_dir} -DCMAKE_INSTALL_PREFIX:PATH=%{_qpid_build_loc}/awips2/qpid -DPYTHON_EXECUTABLE:FILEPATH=/awips2/python/bin/python -DPYTHON_INCLUDE_DIR:PATH=/awips2/python/include/python2.7 -DPYTHON_LIBRARY:FILEPATH=/awips2/python/lib/libpython2.7.so
 if [ $? -ne 0 ]; then
    exit 1
 fi
