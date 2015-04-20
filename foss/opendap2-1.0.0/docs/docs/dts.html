@@ -1,0 +1,295 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+    <title>DAP2 Test Server Configuration</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body>
+<h1><img src="images/opendap-logo.gif"><br/>DTS: DAP2 Test Server<br/></h1>
+<hr /><!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+<h2>Overview</h2>
+
+<p>This document should help you get started configuring the DAP2 Test Server (DTS).</p>
+
+
+<p>Here you will find:</p>
+<ul>
+    <li><a href="#INSTALL">Installation instructions.</a></li>
+    <li><a href="#CONFIG">Configuration documentation.</a></li>
+    <li><a href="#STARTSTOP">Start and stop instructions.</a></li>
+    <li><a href="releasenotes.html">Release Notes</a></li>
+</ul>
+
+<p>The DTS is implemented as a Java Servlet and utilizes the Java Servlet API to allow it to 
+act as a "plug-in" to Java Servlet "containers" such as the Tomcat server.</p>
+
+<p>The DTS is primarily used to test the java implementation of the DAP2 protocol.
+It can also be used to test DAP2 client libraries by having them read from the DTS.
+This servlet will take any DDS it finds in it's DDScache (see below) and populate it with
+invented data per client request. This allows the testing of unusual DDS structures.<br>
+</p>
+
+<p>The DTS was developed, compiled, and tested using the javac 1.4.1 compiler, the 
+1.4.1 Java Virtual Machine, and Jakarta Tomcat 5.5.20 (which also provided the 
+Java Servlet API (javax.servlet) packages).</p>
+
+<hr /><!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+<h2><a name="INSTALL"></a>Installing the DTS</h2>
+
+<ul>
+    <li><strong><a href="http://tomcat.apache.org">Get Tomcat</a></strong></li>
+    <li><strong><a href="http://tomcat.apache.org/tomcat-6.0-doc/setup.html">Install Tomcat</a></strong></li>
+    <li>Set the environment variable <code>CATALINA_HOME</code> to the location of your Tomcat instance.</li>
+    <li><strong>Note:</strong> <em>From here on this document assumes that you are running the DTS
+inside an instance of <a href="http://tomcat.apache.org">Tomcat</a> and that you have
+set the environment variable <code>CATALINA_HOME</code> to point to
+the top level of your Tomcat installation.</em></li>
+    <li>Take the <code>dts.war</code> file from the distribution bundle and place it in <code>$CATALINA_HOME/webapps</code> directory.</li>
+    <li><a href="#STARTSTOP">Start Tomcat.</a></li>
+    <li>Rejoice.</li>
+</ul>
+
+Optional:
+<ul>
+    <li><a href="#CONFIG">Alter configuration.</a></li>
+    <li><a href="#STARTSTOP">Stop Tomcat.</a></li>
+    <li><a href="#STARTSTOP">Start Tomcat.</a></li>
+    <li>Resume rejoice mode.</li>
+</ul>
+
+<br/>
+
+<hr /><!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+<h2><a name="CONFIG"></a>Servlet Configuration</h2>
+
+<p>The DTS gets its configuration from the servlet's web.xml file.
+    The default location of the web.xml file is (at least in Tomcat 4.1)
+    in <em>$CATALINA_HOME/webapps/opendap/WEB-INF/web.xml</em> If the 
+    servlet context changes then things get renamed accordingly. The
+    servlet context is represented by the basename of the directory
+    <em>$CATALINA_HOME/webapps/opendap</em>, thus by default the 
+    servlet context is "<em>opendap</em>"</p>
+
+<em>Servlet classname</em>: <strong>opendap.servers.test.dts</strong><br>
+
+
+<h3>&lt;init-param&gt; Elements</h3>
+
+<p> Inside the web.xml file, the DTS uses a number of <em>&lt;init-param&gt; </em>elements inside of
+    it's <em>&lt;servlet&gt;</em> element to get specific configuration information. </p>
+
+<p><em>&lt;init-param&gt;'s </em> common
+    to all OPeNDAP servlets are: </p>
+<ul>
+    <li><strong>DebugOn</strong> - This controls output to the terminal from which
+        the servlet engine was launched. The value is a list of flags that turn on
+        debugging instrumentation
+        in different parts of the code. Common values are : <em>showRequest, showResponse</em>,
+        <em>showException</em>, and<em> probeRequest</em> Other debugging values that are specific
+        to each servlet should be documented in
+        each servlets javadoc documentation. <br>
+        <em>Example:</em>
+        <pre>&lt;init-param&gt;
+            &lt;param-name&gt;DebugOn&lt;/param-name&gt;
+            &lt;param-value&gt;showRequest showResponse&lt;/param-value&gt;
+            &lt;/init-param&gt;
+        </pre>
+        <em>Default</em>: If this parameter is
+        not set, or the value field is empty then debugging instrumentation is not
+        turned on.<br>
+    </li>
+    <br>
+    <li><strong>DDXcache</strong> - This is should be set to the directory
+        containing the DDX files for the data sets used by the servlet. Some servlets
+        have been developed that
+        do not use DDX's that are cached on the disk, however the default behavior
+        is for the servlet to load DDX images from disk. <br>
+        <em>Example:</em>
+        <pre>&lt;init-param&gt;
+            &lt;param-name&gt;DDXcache&lt;/param-name&gt;
+            &lt;param-value&gt;/usr/OPeNDAP/sdds-testsuite/ddx/&lt;/param-value&gt;
+            &lt;/init-param&gt;
+        </pre>
+        <em>Default</em>: If this parameter is not set (does not appear in as an <em>&lt;init-param&gt;</em>)
+        then it is set to <em>$TOMCATHOME/webapps/opendap/datasets/<strong>servlet-name</strong>/ddx</em> (where
+        <em><strong>servlet-name</strong></em><strong></strong>is the same as the
+        name specified in the <em>&lt;servlet-name&gt;</em> element of the servlet
+        configuration) .<br>
+    </li>
+    <br>
+    <li><strong>DDScache</strong> - This is should
+        be set to the directory containing the DDS files for the data sets used
+        by the
+        servlet. Some servlets have been
+        developed that do not use DDS's that are cached on the disk, however
+        the default behavior is for the servlet to load DDS images from disk. <br>
+        <em>Example:</em>
+        <pre>
+            &lt;init-param&gt;
+            &lt;param-name&gt;DDScache&lt;/param-name&gt;
+            &lt;param-value&gt;/usr/OPeNDAP/sdds-testsuite/dds/&lt;/param-value&gt;
+            &lt;/init-param&gt;
+        </pre>
+        <em>Default</em></em><strong>:</strong> If this parameter is not set (does
+    not appear in as an <em>&lt;init-param&gt;</em>) then it is
+    set to <em>$TOMCATHOME/webapps/opendap/datasets/<strong>servlet-name</strong>/dds</em> (where <em><strong>
+    servlet-name</strong></em> is
+    the same as the name specified in the <em>&lt;servlet-name&gt;</em> element
+    of the servlet configuration)<br>
+</li>
+<br>
+<li><strong>DAScache</strong> - This is should be set to the directory
+    containing the DAS files for the data sets used by the servlet. Some servlets
+    have been developed that
+    do not use DAS's that are cached on the disk, however the default behavior
+    is for the servlet to load DAS images from disk. <strong></strong><br>
+    <em>Example:</em>
+    <pre>
+        &lt;init-param&gt;
+        &lt;param-name&gt;DAScache&lt;/param-name&gt;
+        &lt;param-value&gt;/usr/OPeNDAP/sdds-testsuite/das/&lt;/param-value&gt;
+        &lt;/init-param&gt;
+    </pre>
+    <em>Default</em><strong>:</strong> If this parameter is not set (does not appear
+    in as an <em>&lt;init-param&gt;</em>) then it is
+    set to <em>$TOMCATHOME/webapps/opendap/datasets/<strong>servlet-name</strong>/das</em> (where <em><strong>
+    servlet-name</strong></em> is
+    the same as the name specified in the <em>&lt;servlet-name&gt;</em> element
+    of the servlet configuration) .<br>
+</li>
+<br>
+<li><strong>INFOcache</strong> - This is should
+    be set to the directory containing the files used by the &quot;.info&quot; service
+    for the servlet. This directory should contain any data set specific &quot;over-ride&quot; files
+    (see below), any data set specific additional information files (see below),
+    and any servlet specific information
+    files(see below). <br>
+    <em>Example:</em>
+    <pre>
+        &lt;init-param&gt;
+        &lt;param-name&gt;INFOcache&lt;/param-name&gt;
+        &lt;param-value&gt;/usr/OPeNDAP/sdds-testsuite/info/&lt;/param-value&gt;
+        &lt;/init-param&gt;
+    </pre>
+    <em>Default</em><strong>:</strong> If this parameter is not set (does not appear
+    in as an <em>&lt;init-param&gt;</em>) then it is
+    set to <em>$TOMCATHOME/webapps/opendap/datasets/<strong>servlet-name</strong>/info</em> (where <em><strong>
+    servlet-name</strong></em> is
+    the same as the name specified in the <em>&lt;servlet-name&gt;</em> element of
+    the servlet configuration) <br>
+</li>
+<br>
+<li><strong>SchemaLocation</strong> - The value of this <em>&lt;init-param&gt;</em> should
+    be set to the URL that points to the OPeNDAP XML schema file used by the
+    servlet. In general this should not be set and allowed to be it's default. <br>
+    <em>Example:</em>
+    <pre>
+        &lt;init-param&gt;
+        &lt;param-name&gt;SchemaLocation&lt;/param-name&gt;
+        &lt;param-value&gt; http://dods.coas.oregonstate.edu:8080/opendap/opendap.xsd&lt;/param-value&gt;
+        &lt;/init-param&gt;
+    </pre>
+    <em>Default:</em> If this parameter is not set (does not appear in as an <em>&lt;init-param&gt;</em>) then the
+    SchemaLocation is
+    set to <em>http://<strong>hostname</strong>/opendap/opendap.xsd </em> where <em><strong>hostname</strong></em> is
+    the hostname and socket of the servlet engine. For example, if my hostname
+    is <em>opendap.org</em> and my servlet engine is running on port <em>8080</em> the my default
+    SchemaLocation is: <br>
+    <em>http://opendap.org:8080/opendap/opendap.xsd</em><br>
+        <br/>
+
+    <li><strong>SequenceLength</strong> -
+        This <em>&lt;init-param&gt;</em> sets the number of rows each Sequence
+        returned by the DTS will have. Common values are typically small (5-100)
+        for simple testing.
+        If you are to testing client code against the DTS you may wish to use a large
+        value (&gt;50000) here to check the client's ability to handle large Sequences. <br>
+        <em>Example:</em>
+        <pre>
+            &lt;init-param&gt;
+            &lt;param-name&gt;SequenceLength&lt;/param-name&gt;
+            &lt;param-value&gt;100&lt;/param-value&gt;
+            &lt;/init-param&gt;
+        </pre>
+        <em>Default:</em> Is set to <em>5 </em> if this parameter is not set (As in does not 
+        appear as an <em>&lt;init-param&gt;</em> in the servlet section of the web.xml file).
+        <br/>
+    </li><br/>
+</ul>
+<h2>Example of web.xml content:</h2>
+<p>In this example SequenceLength gets set to 100.</p>
+<pre style="font-size: 12px">
+    &lt;!DOCTYPE web-app
+            PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN"
+            "http://java.sun.com/j2ee/dtds/web-app_2_2.dtd"&gt;
+    &lt;web-app&gt;
+    
+        &lt;servlet&gt;
+
+            &lt;servlet-name&gt;dts&lt;/servlet-name&gt;
+            &lt;servlet-class&gt;opendap.servers.test.dts&lt;/servlet-class&gt;
+    
+            &lt;init-param&gt;
+                &lt;param-name&gt;DebugOn&lt;/param-name&gt;
+                &lt;param-value&gt;showRequest CE CEEvaluator&lt;/param-value&gt;
+            &lt;/init-param&gt;
+            &lt;init-param&gt;
+                &lt;param-name&gt;SequenceLength&lt;/param-name&gt;
+                &lt;param-value&gt;100&lt;/param-value&gt;
+            &lt;/init-param&gt;
+    
+            &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
+        &lt;/servlet&gt;
+    
+    
+        &lt;servlet-mapping&gt;
+            &lt;servlet-name&gt;dts&lt;/servlet-name&gt;
+            &lt;url-pattern&gt;/dts&lt;/url-pattern&gt;
+        &lt;/servlet-mapping&gt;
+        &lt;servlet-mapping&gt;
+            &lt;servlet-name&gt;dts&lt;/servlet-name&gt;
+            &lt;url-pattern&gt;/dts/*&lt;/url-pattern&gt;
+        &lt;/servlet-mapping&gt;
+        &lt;servlet-mapping&gt;
+            &lt;servlet-name&gt;dts&lt;/servlet-name&gt;
+            &lt;url-pattern&gt;*&lt;/url-pattern&gt;
+        &lt;/servlet-mapping&gt;
+    
+    &lt;/web-app&gt;
+    
+</pre>
+
+
+<hr /><!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+
+<h2><a name="STARTSTOP"></a>Starting and Stoping the DTS</h2>
+
+<dl>
+<dt><strong>Start the DTS with this command:</strong></dt>
+<dd><code>$CATALINA_HOME/bin/startup.sh &</code></dd>
+<dt><dd><br/></dd></dt>
+<dt><strong>Stop the DTS with this Command:</strong></dt>
+<dd><code>$CATALINA_HOME/bin/shutdown.sh &</code></dd>
+</dl>
+<br/>
+<br/>
+<hr /><!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+<p>We hope we hope you find this software useful, and we welcome
+    your questions and comments. </p>
+
+<p>To Contact Us:</p>
+
+<p>Technical Support: <a href="mailto:support@opendap.org">support@opendap.org</a></p>
+
+<p>&nbsp;</p>
+<hr /><!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+<br/>
+<br/>
+
+</body>
+</html>
