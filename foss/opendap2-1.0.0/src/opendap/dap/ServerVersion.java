@@ -37,6 +37,19 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /////////////////////////////////////////////////////////////////////////////
 
+/**
+ * Raytheon Updates.
+ * 
+ * <pre>
+ * 
+ * SOFTWARE HISTORY
+ * 
+ * Date         Ticket#    Engineer    Description
+ * ------------ ---------- ----------- --------------------------
+ * Apr 14, 2015 4400       dhladky      Upgraded to DAP2 with backward compatibility.
+ * </pre>
+ */
+
 
 package opendap.dap;
 
@@ -47,7 +60,7 @@ import java.net.URLConnection;
 
 
 /**
- * Aprses and holds the Server Version information returned by a DAP server.
+ * Parses and holds the Server Version information returned by a DAP server.
  * This information is used to determine the version of the DAP protocol used to
  * by the DAP server to encode the data.<br>
  * <br>
@@ -95,7 +108,6 @@ public class ServerVersion implements java.io.Serializable {
     public static final int XDAP         = 1;
 
     public static final String DAP2_PROTOCOL_VERSION = "3.2";
-
 
     /**
      * Major version number.
@@ -186,7 +198,6 @@ public class ServerVersion implements java.io.Serializable {
 
         }
 
-
         // This is important! If neither of these headers (XDAP or
         // XDODS-Server is present then we are not connected to a real
         // OPeNDAP server. Period. Without the information contained
@@ -196,7 +207,6 @@ public class ServerVersion implements java.io.Serializable {
         throw new DAP2Exception("Not a valid OPeNDAP server - " +
                 "Missing MIME Header fields! Either \"XDAP\" " +
                 "or \"XDODS-Server.\" must be present.");
-
 
     }
 
@@ -263,8 +273,6 @@ public class ServerVersion implements java.io.Serializable {
                         "ServerVersion.XDAP or ServerVersion.XDODS_SERVER");
 
         }
-
-
     }
 
 
@@ -304,9 +312,6 @@ public class ServerVersion implements java.io.Serializable {
         } else {
             throw new DAP2Exception(badVersionMsg);
         }
-
-
-
     }
 
 
@@ -323,7 +328,6 @@ public class ServerVersion implements java.io.Serializable {
             else
                 minor = Integer.parseInt(minorString);
         }
-
     }
 
 
@@ -392,8 +396,17 @@ public class ServerVersion implements java.io.Serializable {
         return versionString;
 
     }
+    
+    /**
+     * This is to preserve the ability to send DDS
+     * serialized within Shared Subscriptions
+     *
+     * @return the current AWIPS Standard version.
+     */
+    public static String getAWIPSStandardVersion() {
+      return "DODS/2.18";
+    }
 
 
 }
-
 

@@ -37,6 +37,18 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /////////////////////////////////////////////////////////////////////////////
 
+/**
+ * Raytheon Updates.
+ * 
+ * <pre>
+ * 
+ * SOFTWARE HISTORY
+ * 
+ * Date         Ticket#    Engineer    Description
+ * ------------ ---------- ----------- --------------------------
+ * Apr 14, 2015 4400       dhladky      Upgraded to DAP2 with backward compatibility.
+ * </pre>
+ */
 
 package opendap.dap;
 
@@ -199,8 +211,14 @@ public class DataDDS extends DDS {
         if (headers) {
             PrintWriter pw = new PrintWriter(new OutputStreamWriter(os));
             pw.println("HTTP/1.0 200 OK");
-            pw.println("XDAP: " + ServerVersion.DAP2_PROTOCOL_VERSION);
-            pw.println("XDODS-Server: DODS/" + ServerVersion.DAP2_PROTOCOL_VERSION);
+            /**
+             * TODO We Did a Hack here to keep the version at 2.18 as far as the
+             * header checking software is concerned. Otherwise downstream
+             * Shared Subscriptions would fail to serialize in DD. This will
+             * continue to work because the DAP protocol information (Byte Array
+             * Stream Data) is identical between versions.
+             */
+            pw.println("Server: " + ServerVersion.getAWIPSStandardVersion());
             pw.println("Content-type: application/octet-stream");
             pw.println("Content-Description: dods-data");
             if (compress) {
@@ -253,5 +271,4 @@ public class DataDDS extends DDS {
     }
 
 }
-
 

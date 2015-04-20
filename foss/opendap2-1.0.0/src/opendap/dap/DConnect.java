@@ -37,17 +37,27 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /////////////////////////////////////////////////////////////////////////////
 
-
 package opendap.dap;
 
-import opendap.dap.parser.ParseException;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.zip.InflaterInputStream;
+
+import opendap.dap.parser.ParseException;
+
+import com.raytheon.opendap.HttpConnectStrategy;
 
 /**
  * This class provides support for common OPeNDAP client-side operations such as
@@ -61,7 +71,36 @@ import java.util.zip.InflaterInputStream;
  * @author jehamby
  * @version $Revision: 25753 $
  */
+/**
+ * An Raytheon specific implementation using the Apache HTTP Client.
+ * 
+ * <pre>
+ * 
+ * SOFTWARE HISTORY
+ * 
+ * Date         Ticket#    Engineer    Description
+ * ------------ ---------- ----------- --------------------------
+ * Apr 14, 2015            dhladky     upgrading dods/opendap.
+ * 
+ * </pre>
+ * 
+ * @author djohnson
+ * @version 1.0
+ */
+
 public class DConnect {
+    
+    @SuppressWarnings("unused")
+    private final HttpConnectStrategy httpStrategy;
+    
+    static final String DODS_SOCKET_TIMEOUT_MILLISECONDS = "dods.socket.timeout.milliseconds";
+
+    static final String DODS_CONNECTION_TIMEOUT_MILLISECONDS = "dods.connection.timeout.milliseconds";
+
+    private static final String HTTP_CONNECT_STRATEGY = System
+            .getProperty("opendap.http.connect.strategy");
+    
+    
     private boolean dumpStream = false, dumpDAS = false;
 
     /**
@@ -125,6 +164,111 @@ public class DConnect {
     public DConnect(String urlString) throws FileNotFoundException {
         this(urlString, true);
     }
+    
+    /**
+     * Creates an instance bound to url which accepts compressed documents.
+     * 
+     * @param urlString
+     *            connect to this URL.
+     * @param proxyHost
+     *            the proxy host
+     * @param proxyPort
+     *            the proxy port
+     * @exception FileNotFoundException
+     *                thrown if <code>urlString</code> is not a valid URL, or a
+     *                filename which exists on the system.
+     * @see DConnect#DConnect(String, boolean)
+     */
+    public DConnect(String urlString, String proxyHost, String proxyPort)
+            throws FileNotFoundException {
+        this(urlString, proxyHost, proxyPort, true);
+    }
+
+    /**
+     * Creates an instance bound to url. If <code>acceptDeflate</code> is true
+     * then HTTP Request headers will indicate to servers that this client can
+     * accept compressed documents.
+     * 
+     * @param urlString
+     *            Connect to this URL. If urlString is not a valid URL, it is
+     *            assumed to be a filename, which is opened.
+     * @param proxyHost
+     *            the proxy host
+     * @param proxyPort
+     *            the proxy port
+     * @param acceptDeflate
+     *            true if this client can accept responses encoded with deflate.
+     * @exception FileNotFoundException
+     *                thrown if <code>urlString</code> is not a valid URL, or a
+     *                filename which exists on the system.
+     */
+    public DConnect(String urlString, String proxyHost, String proxyPort,
+            boolean acceptDeflate) throws FileNotFoundException {
+        this(urlString, proxyHost, proxyPort, acceptDeflate,
+                newInstanceOfAssignableType(HttpConnectStrategy.class,
+                        HTTP_CONNECT_STRATEGY));
+    }
+
+    /**
+     * Package-private version of the constructor which allows the httpStrategy
+     * to be injected.
+     * 
+     * @param urlString
+     *            Connect to this URL. If urlString is not a valid URL, it is
+     *            assumed to be a filename, which is opened.
+     * @param proxyHost
+     *            the proxy host
+     * @param proxyPort
+     *            the proxy port
+     * @param acceptDeflate
+     *            true if this client can accept responses encoded with deflate.
+     * @param httpStrategy
+     *            the http strategy to use
+     * @exception FileNotFoundException
+     *                thrown if <code>urlString</code> is not a valid URL, or a
+     *                filename which exists on the system.
+     */
+    DConnect(String urlString, String proxyHost, String proxyPort,
+            boolean acceptDeflate, HttpConnectStrategy httpStrategy)
+            throws FileNotFoundException {
+
+        this.httpStrategy = httpStrategy;
+        // Prevent connections from having unlimited time (unless using default
+        // values)
+        httpStrategy.setConnectionTimeout(Integer.getInteger(
+                DODS_CONNECTION_TIMEOUT_MILLISECONDS, 0));
+        httpStrategy.setSocketTimeout(Integer.getInteger(
+                DODS_SOCKET_TIMEOUT_MILLISECONDS, 0));
+
+        if (proxyHost != null && proxyPort != null) {
+            httpStrategy.setProxy(proxyHost, Integer.parseInt(proxyPort));
+        }
+
+        int ceIndex = urlString.indexOf('?');
+        if (ceIndex != -1) {
+            this.urlString = urlString.substring(0, ceIndex);
+            String expr = urlString.substring(ceIndex);
+            int selIndex = expr.indexOf('&');
+            if (selIndex != -1) {
+                this.projString = expr.substring(0, selIndex);
+                this.selString = expr.substring(selIndex);
+            } else {
+                this.projString = expr;
+                this.selString = "";
+            }
+        } else {
+            this.urlString = urlString;
+            this.projString = this.selString = "";
+        }
+        // Test if the URL is really a filename, and if so, open the file
+        try {
+            new URL(urlString);
+        } catch (MalformedURLException e) {
+            fileStream = new FileInputStream(urlString);
+        }
+        
+    }
+
 
     /**
      * Creates an instance bound to url. If <code>acceptDeflate</code> is true
@@ -139,6 +283,8 @@ public class DConnect {
      *                               a valid URL, or a filename which exists on the system.
      */
     public DConnect(String urlString, boolean acceptDeflate) throws FileNotFoundException {
+        
+        this.httpStrategy = null;
         int ceIndex = urlString.indexOf('?');
         if (ceIndex != -1) {
             this.urlString = urlString.substring(0, ceIndex);
@@ -172,6 +318,7 @@ public class DConnect {
      */
     public DConnect(InputStream is) {
         this.fileStream = is;
+        this.httpStrategy = null;
     }
 
     /**
@@ -1257,6 +1404,8 @@ public class DConnect {
                 ver = new ServerVersion(value,ServerVersion.XDAP);
             }else if (header.equals("XDODS-Server:") && ver != null ) {
                 ver = new ServerVersion(value,ServerVersion.XDODS_SERVER);
+            } else if (header.equals("Server:")) {
+                ver = new ServerVersion(value,ServerVersion.XDODS_SERVER);
             } else if (header.equals("Content-Description:")) {
                 description = value;
             } else if (header.equals("Content-Encoding:")) {
@@ -1305,6 +1454,19 @@ public class DConnect {
             return is;
         }
     }
-}
 
+    private static <T> T newInstanceOfAssignableType(Class<T> assignableClass,
+            String name) {
+        try {
+            @SuppressWarnings("unchecked")
+            final Class<? extends T> forName = (Class<? extends T>) Class
+                    .forName(name);
+            return assignableClass.cast(forName.newInstance());
+        } catch (Exception e) {
+            throw new IllegalArgumentException(String.format(
+                    "%s is not assignable to a field of type %s", name,
+                    assignableClass.getName()), e);
+        }
+    }
+}
 
