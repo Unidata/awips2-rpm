@@ -3,7 +3,7 @@
   "name" : "edex",
   "type" : "DERBY",
   "modelVersion" : "2.0",
-  "storePath" : "/awips2/qpid/edexMessageStore",
+  "storePath" : "${qpid.home_dir}${file.separator}edexMessageStore",
   "lastUpdatedBy" : "ANONYMOUS",
   "lastUpdatedTime" : 1415212057775,
   "createdBy" : "ANONYMOUS",
