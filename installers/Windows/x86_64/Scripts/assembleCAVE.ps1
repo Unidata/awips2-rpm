@@ -6,6 +6,7 @@
 # Date          Ticket#  Engineer    Description
 # ------------- -------- ----------- ------------------------------------------------------
 # Mar 11, 2015  4221     dlovely     Migration from AWIPS2_baseline plus added INNO Support
+# Apr 23, 2015  4382     dlovely     Changed directory listing and removed path count
 #
 
 function installCAVERepository([string]$feature_group, [string]$repo)
@@ -28,8 +29,7 @@ function installCAVERepository([string]$feature_group, [string]$repo)
     
     pushd .
     cd plugins
-    dir -rec | where { if (($_.fullname.split("\")).count -eq 7 -and `
-        $_.name.equals("localization")){$_}} | ForEach-Object -process `
+    Get-ChildItem -Path ('.\*\localization') | ForEach-Object -process `
         { $localizationDirectory = $_.fullname; `
         echo $localizationDirectory; `
         Copy-Item -force -recurse -path "${localizationDirectory}\*" -destination ${A2_PREPARE_CAVE_DIR}\cave\etc; `

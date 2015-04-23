@@ -113,8 +113,8 @@ var
 begin
     LoadStringFromFile(FileName, FileData);
     RegQueryStringValue(HKLM64, 'Software\Raytheon\Runtime Environment\AWIPS II Java', 'JavaJreDirectory', V)
-    StringChange(FileData, 'SET JavaJreDirectory="C:\Program Files\Raytheon\AWIPS II\Java\jre7"', 'SET JavaJreDirectory="' + V + '"');
+    StringChange(FileData, 'SET JavaJreDirectory=C:\Program Files\Raytheon\AWIPS II\Java\jre7', 'SET JavaJreDirectory=' + V + '');
     RegQueryStringValue(HKLM64, 'Software\Raytheon\Runtime Environment\AWIPS II Python', 'PythonInstallDirectory', V)
-    StringChange(FileData, 'SET PythonInstallDirectory="C:\Program Files\Raytheon\AWIPS II\Python"', 'SET PythonInstallDirectory="' + V + '"');
+    StringChange(FileData, 'SET PythonInstallDirectory=C:\Program Files\Raytheon\AWIPS II\Python', 'SET PythonInstallDirectory=' + V + '');
     SaveStringToFile(FileName, FileData, False);
 end;
