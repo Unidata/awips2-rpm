@@ -12,6 +12,10 @@
 //                        104 Ocean. Admin. Bldg.
 //                        Corvallis, OR 97331-5503
 //
+//
+// Modifications made by Raytheon for integration of dods/OpenDAP 
+// into AWIPS2
+//
 /////////////////////////////////////////////////////////////////////////////
 
 /* $Id: sqlCEEval.java,v 1.10.2.2 2004/07/23 21:41:15 ndp Exp $

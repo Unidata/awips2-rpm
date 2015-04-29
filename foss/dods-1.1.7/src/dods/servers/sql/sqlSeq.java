@@ -12,6 +12,10 @@
 //                        104 Ocean. Admin. Bldg.
 //                        Corvallis, OR 97331-5503
 //
+//
+// Modifications made by Raytheon for integration of dods/OpenDAP 
+// into AWIPS2
+//
 /////////////////////////////////////////////////////////////////////////////
 
 package dods.servers.sql;

@@ -7,6 +7,10 @@
 //
 // Author: Jake Hamby, NASA/Jet Propulsion Laboratory
 //         Jake.Hamby@jpl.nasa.gov
+//
+// Modifications made by Raytheon for integration of dods/OpenDAP 
+// into AWIPS2
+//
 /////////////////////////////////////////////////////////////////////////////
 
 package dods.dap;
