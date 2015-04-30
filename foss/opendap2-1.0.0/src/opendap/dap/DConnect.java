@@ -35,6 +35,10 @@
 // LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
+// Modifications made by Raytheon for integration of dods/OpenDAP 
+// into AWIPS2
+//
 /////////////////////////////////////////////////////////////////////////////
 
 package opendap.dap;
