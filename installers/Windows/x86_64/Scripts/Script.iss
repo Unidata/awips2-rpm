@@ -2,17 +2,18 @@
 ; Build script for 64 Bit CAVE. This script uses the following parameters passed in 
 ; from the command line. Noted by the {#*} notation in this script.
 ;
-; DVERSION=${AWIPS2_VERSION}
-; DOUTPUT_DIR=${A2_WORKSPACE_DIR}
-; DSOURCE_DIR=${A2_PREPARE_CAVE_DIR}
-; DLICENSE_DIR=${INNO_LIC_DIR}
-; DBUILD_FILE=${JENKINS_BUILD_FILE}
+; VERSION=${AWIPS2_VERSION}
+; OUTPUT_DIR=${A2_WORKSPACE_DIR}
+; SOURCE_DIR=${A2_PREPARE_CAVE_DIR}
+; LICENSE_DIR=${INNO_LIC_DIR}
+; BUILD_FILE=${JENKINS_BUILD_FILE}
 ;
 ; SCRIPT HISTORY
 ;
 ; Date          Ticket#  Engineer    Description
 ; ------------- -------- ----------- -----------------------------
 ; Mar 11, 2015  4221     dlovely     Initial creation
+; Apr 13, 2015  4382     dlovely     Updates bat file with Java/Python Locations
 ;
 
 [Setup]
@@ -65,9 +66,11 @@ Name: desktopicon; Description: {cm:CreateDesktopIcon}; GroupDescription: {cm:Ad
 
 [Files]
 ; Location for CAVE Application files
-Source: CAVE\*; DestDir: {app}\CAVE; Components: cave; Flags: ignoreversion recursesubdirs 64bit
+Source: CAVE\*; DestDir: {app}\CAVE; Components: cave; Flags: ignoreversion recursesubdirs 64bit; Excludes: "cave.bat"
+Source: CAVE\cave.bat; DestDir: {app}\CAVE; Components: cave; Flags: ignoreversion 64bit; AfterInstall: ChangeBatPaths(ExpandConstant('{app}\Cave\cave.bat'))
 ; Location for AlertViz Application files
-Source: AlertViz\*; DestDir: {app}\AlertViz; Components: alertviz; Flags: ignoreversion recursesubdirs 64bit
+Source: AlertViz\*; DestDir: {app}\AlertViz; Components: alertviz; Flags: ignoreversion recursesubdirs 64bit; Excludes: "alertviz.bat"
+Source: AlertViz\alertviz.bat; DestDir: {app}\AlertViz; Components: alertviz; Flags: ignoreversion 64bit; AfterInstall: ChangeBatPaths(ExpandConstant('{app}\AlertViz\alertviz.bat'))
   
 [Icons]
 ; Icons for CAVE
@@ -83,19 +86,15 @@ Name: {group}\{cm:UninstallProgram,AWIPS II CAVE}; Filename: {uninstallexe}
 ; Change only the etc directory to allow modifications
 Name: "{app}\Cave\etc"; Permissions: everyone-modify
 
-[Run]
-; Give all Authenticated Users permission to run reg.exe so the startup scripts can access the registry keys.
-Filename: "C:\Windows\System32\icacls.exe"; Parameters: "C:\Windows\System32\reg.exe /grant Users:RX"; WorkingDir: "{tmp}"; Description: "Changing Registry Executable Permissions"; StatusMsg: "Changing Registry Executable Permissions"
-
 [UninstallDelete]
 Type: filesandordirs; Name: {app}\CAVE\*; Components: cave
 Type: filesandordirs; Name: {app}\AlertViz\*; Components: alertviz 
 ; Only delete the Application directory if empty since A2RE would still be installed.
 Type: dirifempty; Name: {app}
 
-; Function to check to see if the A2RE was installed. Checks the registry key
-; HKLM:Software\Raytheon\Runtime Environment. This is run during install time.
 [Code]
+// Function to check to see if the A2RE was installed. Checks the registry key
+// HKLM:Software\Raytheon\Runtime Environment. This is run during install time.
 function InitializeSetup: Boolean;
 begin
   Result := True;
@@ -104,4 +103,18 @@ begin
     Result := False;
     MsgBox('The AWIPS II Runtime Environment (x64) must be installed before AWIPS II CAVE can be installed.', mbError, MB_OK);
   end;
+end;
+
+// Checkes the registry for the Java and Python paths and updates the bat file with the locations. 
+procedure ChangeBatPaths (FileName: String);
+var
+    FileData: String;
+    V: string;
+begin
+    LoadStringFromFile(FileName, FileData);
+    RegQueryStringValue(HKLM64, 'Software\Raytheon\Runtime Environment\AWIPS II Java', 'JavaJreDirectory', V)
+    StringChange(FileData, 'SET JavaJreDirectory=C:\Program Files\Raytheon\AWIPS II\Java\jre7', 'SET JavaJreDirectory=' + V + '');
+    RegQueryStringValue(HKLM64, 'Software\Raytheon\Runtime Environment\AWIPS II Python', 'PythonInstallDirectory', V)
+    StringChange(FileData, 'SET PythonInstallDirectory=C:\Program Files\Raytheon\AWIPS II\Python', 'SET PythonInstallDirectory=' + V + '');
+    SaveStringToFile(FileName, FileData, False);
 end;
