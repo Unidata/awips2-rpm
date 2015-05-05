@@ -9,7 +9,7 @@
 Name: awips2-python-numpy
 Summary: AWIPS II Python numpy Distribution
 Version: 1.7.2
-Release: 1.el6
+Release: %{_component_version}.%{_component_release}%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
