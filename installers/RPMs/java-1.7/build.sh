@@ -21,6 +21,8 @@ function buildRPM()
       --define "_topdir ${AWIPSII_TOP_DIR}" \
       --define "_build_root ${AWIPSII_BUILD_ROOT}" \
       --define "_baseline_workspace ${WORKSPACE}" \
+      --define '_component_version %(echo ${AWIPSII_VERSION})' \
+      --define '_component_release %(echo ${AWIPSII_RELEASE})' \
       --buildroot ${AWIPSII_BUILD_ROOT} \
       ${SPECS}
    if [ $? -ne 0 ]; then
@@ -29,7 +31,7 @@ function buildRPM()
 }
 
 # build java 1.7
-SPECS=component.spec
+SPECS=1.7/component.spec
 buildRPM ${SPECS}
 if [ $? -ne 0 ]; then
    exit 1
