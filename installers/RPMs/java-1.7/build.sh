@@ -31,7 +31,7 @@ function buildRPM()
 }
 
 # build java 1.7
-SPECS=1.7/component.spec
+SPECS=component.spec
 buildRPM ${SPECS}
 if [ $? -ne 0 ]; then
    exit 1
