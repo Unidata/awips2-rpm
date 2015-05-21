@@ -14,6 +14,7 @@
 ; ------------- -------- ----------- -----------------------------
 ; Mar 11, 2015  4221     dlovely     Initial creation
 ; Apr 13, 2015  4382     dlovely     Updates bat file with Java/Python Locations
+; May 21, 2015  4295     dlovely     Removed permission change on etc directory
 ;
 
 [Setup]
@@ -81,10 +82,6 @@ Name: {commondesktop}\AWIPS II AlertViz; Filename: {app}\AlertViz\alertviz.bat; 
 Name: {group}\AWIPS II AlertViz; Filename: {app}\AlertViz\alertviz.bat; Parameters: "-component thinalertviz"; WorkingDir: {app}\AlertViz; Comment: "AWIPS II AlertViz"; Components: alertviz; IconFilename: {app}\AlertViz\alertviz.exe
 ; Uninstaller Icon - Start Menu Only. 
 Name: {group}\{cm:UninstallProgram,AWIPS II CAVE}; Filename: {uninstallexe}
-
-[Dirs]
-; Change only the etc directory to allow modifications
-Name: "{app}\Cave\etc"; Permissions: everyone-modify
 
 [UninstallDelete]
 Type: filesandordirs; Name: {app}\CAVE\*; Components: cave
