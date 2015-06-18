@@ -9,7 +9,7 @@
 Name: awips2-python-jep
 Summary: AWIPS II Python Jep Distribution
 Version: 3.3.0
-Release: 1.el0
+Release: 1.el6
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
