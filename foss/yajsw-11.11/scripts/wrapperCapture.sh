@@ -27,7 +27,7 @@
 # Date          Ticket#  Engineer    Description
 # ------------- -------- ----------- --------------------------
 # Aug 07, 2014  3470     rjpeter     Initial creation
-#
+# Jun 15, 2015  4418     rjpeter     Always force jstack/jmap
 #####################################################################
 # NOTE: Script must be located at /awips2/qpid/bin/yajsw/scripts for it to work
 
@@ -73,13 +73,13 @@ runTop() {
    echo "$curTime: top captured"
 }
 
-# runs jstack 10 times, if it fails will run again with -F
+# runs jstack 10 times
 runJstack() {
    local curTime=`date +%Y%m%d_%H%M%S`
    echo "$curTime: Capturing jstacks"
    local pid="$1"
    local count=1
-   local cmd="/awips2/java/bin/jstack"
+   local cmd="/awips2/java/bin/jstack -F"
    local prePath="${dataPath}/pid_${pid}_"
    local log=""
 
@@ -91,11 +91,6 @@ runJstack() {
       echo "Running for $curTime" >> $log
       ${cmd} ${pid} >> ${log} 2>&1
 
-      if [[ "$?" != "0" && $FORCE != "y" ]]; then
-         curTime=`date "+%Y%m%d_%H:%M:%S"`
-         echo "${curTime}: jstack for $pid failed to connect, rerunning with -F" >> $processFile
-         ${cmd} -F ${pid} >> ${log} 2>&1
-      fi
       let "count+=1"
    done
 
@@ -115,12 +110,6 @@ runJmapHeap() {
    echo "${curTime}: Running command: $cmd $pid >> $log 2>&1" >> $processFile
    $cmd $pid >> $log 2>&1
 
-   if [[ "$?" != "0" && $FORCE != "y" ]]; then
-      curTime=`date "+%Y%m%d_%H:%M:%S"`
-      echo "${curTime}: jmap for $pid failed to connect, rerunning with -F" >> $processFile
-      $cmd -F $pid >> $log 2>&1
-   fi
-
    curTime=`date +%Y%m%d_%H%M%S`
    echo "$curTime: jmap -heap captured"
 }
@@ -134,15 +123,9 @@ runJmap() {
 
    local log="${prePath}.log"
    local dumpPath="${prePath}.hprof"
-   local cmd="/awips2/java/bin/jmap -dump:format=b,file=${dumpPath}"
+   local cmd="/awips2/java/bin/jmap -F -dump:format=b,file=${dumpPath}"
    echo "${curTime}: Running command: $cmd $pid >> $log 2>&1" >> $processFile
    $cmd $pid >> $log 2>&1
-
-   if [[ "$?" != "0" && $FORCE != "y" ]]; then
-      curTime=`date "+%Y%m%d_%H:%M:%S"`
-      echo "${curTime}: jmap for $pid failed to connect, rerunning with -F" >> $processFile
-      $cmd -F $pid >> $log 2>&1
-   fi
 
    curTime=`date +%Y%m%d_%H%M%S`
    echo "$curTime: jmap -dump captured"
@@ -163,9 +146,9 @@ if [[ "$pid" != "-1" ]]; then
    ps -ef | grep $pid >> $processFile
    runTop &
    runJstack $pid &
-   runJmapHeap $pid &
    # TODO: Double check if jvm already dumped one
    runJmap $pid &
+   runJmapHeap $pid &
    wait
 
    curTime=`date +%Y%m%d_%H%M%S`
