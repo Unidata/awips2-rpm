@@ -12,7 +12,8 @@ mkdir -p ${AWIPSII_TOP_DIR}/SOURCES
 
 FOSSDIR=${WORKSPACE}/foss/qpid-java-broker-0.30/
 
-cp -v ${FOSSDIR}/packaged/qpid-broker-0.30-bin.tar.gz ${AWIPSII_TOP_DIR}/SOURCES
+cp -v ${FOSSDIR}/packaged/qpid-java-0.30.tar.gz ${AWIPSII_TOP_DIR}/SOURCES
+cp -v ${FOSSDIR}/packaged/mavenRepo.tar.gz ${AWIPSII_TOP_DIR}/SOURCES
 cp -v ${FOSSDIR}/packaged/awips.patch ${AWIPSII_TOP_DIR}/SOURCES
 
 
