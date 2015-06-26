@@ -29,7 +29,7 @@ Java implementation of Apache Qpid Broker.
 #Flag '-o' is for Offline mode. While enabled Maven will not use any external sources, and
 # will fail if the repository is blank. When offline you need to specify a repository that
 # was built with the 'dependency:go-offline' command using '-Dmaven.repo.local='
-mvn -o -DskipTests -Dmaven.repo.local=%{_topdir}BUILD/qpid-java-%{version}/.m2/repository clean install
+/awips2/maven/bin/mvn -o -DskipTests -Dmaven.repo.local=%{_topdir}BUILD/qpid-java-%{version}/.m2/repository clean install
 
 tar -xzvf broker/target/qpid-broker-0.30-bin.tar.gz
 
