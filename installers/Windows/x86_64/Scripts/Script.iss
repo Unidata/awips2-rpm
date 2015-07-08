@@ -17,6 +17,7 @@
 ; May 21, 2015  4295     dlovely     Removed permission change on etc directory
 ; Jun 25, 2015  4295     dlovely     Removed Alertviz from installer
 ; Jun 30, 2015  4295     dlovely     Removed Cave.bat, Added env vars to registry
+; Jul 08, 2015  4295     dlovely     Added function to clear Windows icon cache
 ;
 
 [Setup]
@@ -70,7 +71,8 @@ Name: desktopicon; Description: {cm:CreateDesktopIcon}; GroupDescription: {cm:Ad
 
 [Files]
 ; Location for CAVE Application files
-Source: CAVE\*; DestDir: {app}\CAVE; Components: cave; Flags: ignoreversion recursesubdirs 64bit
+Source: CAVE\*; DestDir: {app}\CAVE; Components: cave; Flags: ignoreversion recursesubdirs 64bit; Excludes: "cave.exe"
+Source: CAVE\cave.exe; DestDir: {app}\CAVE; Components: cave; Flags: ignoreversion 64bit; AfterInstall: RefreshIcons
 
 [Icons]
 ; Icons for CAVE
@@ -149,3 +151,12 @@ begin
       Result := Pos(';' + UpperCase(AddingPath) + ';', ';' + UpperCase(Path) + ';') = 0;
     end;
 end;
+
+// Clear the Windows Icon cache due to an icon change in Cave.exe
+procedure RefreshIcons;
+var
+    ResultCode: Integer;
+begin
+    Exec('ie4uinit.exe', '-ClearIconCache', '', SW_HIDE, ewWaitUntilTerminated, ResultCode)
+end;
+
