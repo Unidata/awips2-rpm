@@ -67,7 +67,7 @@ fi
 
 %post
 cd /awips2/yajsw/lib/core/jna
-unzip -qf jna-3.4.1.jar com/sun/jna/linux-amd64/libjnidispatch.so
+unzip -qu jna-3.4.1.jar com/sun/jna/linux-amd64/libjnidispatch.so
 
 %preun
 rm -fr /awips2/yajsw/lib/core/jna/com/
