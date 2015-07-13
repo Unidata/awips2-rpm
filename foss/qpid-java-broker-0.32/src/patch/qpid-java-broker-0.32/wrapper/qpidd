@@ -62,7 +62,7 @@ start() {
    DAEMON="/bin/bash ${QPID_HOME}/bin/${prog}"
    
    QPIDSTARTLOG=${QPID_HOME}/log/start-qpid-$TODAY.log
-   su $QPIDUSER -c "$DAEMON" >> $QPIDSTARTLOG 2>&1 &
+   su - $QPIDUSER -c "$DAEMON" >> $QPIDSTARTLOG 2>&1 &
    sleep 5
    checkStatus
 }
