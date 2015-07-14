@@ -70,7 +70,12 @@ cd /awips2/yajsw/lib/core/jna
 unzip -qu jna-3.4.1.jar com/sun/jna/linux-amd64/libjnidispatch.so
 
 %preun
-rm -fr /awips2/yajsw/lib/core/jna/com/
+
+#do not erase on an upgrade
+if [ "${1}" = "0" ]; then
+    rm -fr /awips2/yajsw/lib/core/jna/com/
+fi
+
 
 %clean
 rm -rf ${RPM_BUILD_ROOT}
