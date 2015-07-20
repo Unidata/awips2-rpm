@@ -8,7 +8,7 @@
 #
 Name: awips2-python-numpy
 Summary: AWIPS II Python numpy Distribution
-Version: 1.7.2
+Version: 1.9.2
 Release: %{_component_version}.%{_component_release}%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
@@ -17,7 +17,6 @@ URL: N/A
 License: N/A
 Distribution: N/A
 Vendor: Raytheon
-Packager: Bryan Kowal
 
 AutoReq: no
 requires: compat-libf2c-34(x86-64) >= 3.4.6-19.el6
@@ -47,7 +46,7 @@ mkdir -p %{_python_build_loc}
 
 %build
 NUMPY_SRC_DIR="%{_baseline_workspace}/foss/numpy-%{version}/packaged"
-NUMPY_TAR="numpy-1.7.2.tar.gz"
+NUMPY_TAR="numpy-%{version}.tar.gz"
 cp -v ${NUMPY_SRC_DIR}/${NUMPY_TAR} \
    %{_python_build_loc}
 RC=$?
@@ -63,8 +62,8 @@ if [ ${RC} -ne 0 ]; then
    exit 1
 fi
 rm -fv ${NUMPY_TAR}
-if [ ! -d numpy-1.7.2 ]; then
-   file numpy-1.7.2
+if [ ! -d numpy-%{version} ]; then
+   file numpy-%{version}
    exit 1
 fi
 source /etc/profile.d/awips2Python.sh
@@ -72,7 +71,7 @@ RC=$?
 if [ ${RC} -ne 0 ]; then
    exit 1
 fi
-cd numpy-1.7.2
+cd numpy-%{version}
 /awips2/python/bin/python setup.py clean
 RC=$?
 if [ ${RC} -ne 0 ]; then
@@ -89,7 +88,7 @@ popd > /dev/null
 NUMPY_SRC_DIR="%{_python_pkgs_dir}/numpy"
 
 pushd . > /dev/null
-cd %{_python_build_loc}/numpy-1.7.2
+cd %{_python_build_loc}/numpy-{%version}
 export LD_LIBRARY_PATH=/awips2/python/lib
 /awips2/python/bin/python setup.py install \
    --root=%{_build_root} \
