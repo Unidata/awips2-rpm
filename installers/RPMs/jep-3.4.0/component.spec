@@ -8,7 +8,7 @@
 #
 Name: awips2-python-jep
 Summary: AWIPS II Python Jep Distribution
-Version: 3.3.5
+Version: 3.4.0
 Release: 1.el6
 Group: AWIPSII
 BuildRoot: %{_build_root}
@@ -113,10 +113,10 @@ rm -rf %{_python_build_loc}
 %defattr(644,awips,fxalpha,755)
 %dir /awips2/python/lib/python2.7/site-packages
 /awips2/python/lib/python2.7/site-packages/*
-%dir /awips2/python/lib/jep/
-/awips2/python/lib/jep/jep-%{version}.jar
-/awips2/python/lib/jep.so
-/awips2/python/lib/libjep.so
+%dir /awips2/python/lib/python2.7/site-packages/jep
+/awips2/python/lib/python2.7/site-packages/jep/jep-%{version}.jar
+/awips2/python/lib/python2.7/site-packages/jep/jep.so
+/awips2/python/lib/python2.7/site-packages/jep/libjep.so
 %defattr(755,awips,fxalpha,755)
 %dir /awips2/python/bin
 /awips2/python/bin/*
