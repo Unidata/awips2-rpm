@@ -88,7 +88,7 @@ popd > /dev/null
 NUMPY_SRC_DIR="%{_python_pkgs_dir}/numpy"
 
 pushd . > /dev/null
-cd %{_python_build_loc}/numpy-{%version}
+cd %{_python_build_loc}/numpy-%{version}
 export LD_LIBRARY_PATH=/awips2/python/lib
 /awips2/python/bin/python setup.py install \
    --root=%{_build_root} \
