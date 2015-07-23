@@ -54,17 +54,6 @@ if [ -d %{_python_build_loc} ]; then
 fi
 mkdir -p %{_python_build_loc}
 
-PYTHON_RPM_DIR="%{_baseline_workspace}/rpms/python.site-packages"
-INSTALL_SETUPTOOLS_SH="${PYTHON_RPM_DIR}/deploy.builder/install-setuptools.sh"
-# install setuptools
-/bin/bash ${INSTALL_SETUPTOOLS_SH} %{_baseline_workspace} \
-   %{_python_pkgs_dir} %{_build_root}/build-python
-if [ $? -ne 0 ]; then
-   exit 1
-fi
-
-rm -rf %{_build_root}/build-python
-
 %build
 
 %install
