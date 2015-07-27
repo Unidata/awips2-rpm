@@ -14,6 +14,10 @@
 ; ------------- -------- ----------- -----------------------------
 ; Mar 11, 2015  4221     dlovely     Initial creation
 ; Apr 13, 2015  4382     dlovely     Updates bat file with Java/Python Locations
+; May 21, 2015  4295     dlovely     Removed permission change on etc directory
+; Jun 25, 2015  4295     dlovely     Removed Alertviz from installer
+; Jun 30, 2015  4295     dlovely     Removed Cave.bat, Added env vars to registry
+; Jul 08, 2015  4295     dlovely     Added function to clear Windows icon cache
 ;
 
 [Setup]
@@ -51,14 +55,15 @@ ArchitecturesInstallIn64BitMode=x64
 SourceDir={#SOURCE_DIR}
 LicenseFile={#LICENSE_DIR}\License.txt
 
+; Reload the environment
+ChangesEnvironment=yes
+
 [Languages]
 Name: english; MessagesFile: compiler:Default.isl
 
 [Components]
 ; Option to install CAVE - Requires check for A2RE to be installed
 Name: cave; Description: "AWIPS II CAVE Files"; Types: full custom; Check: InitializeSetup
-; Option to install AlertViz - Requires check for A2RE to be installed
-Name: alertviz; Description: "AWIPS II AlertViz Files"; Types: full custom; Check: InitializeSetup 
 
 [Tasks]
 ; Create the desktop icons
@@ -66,32 +71,38 @@ Name: desktopicon; Description: {cm:CreateDesktopIcon}; GroupDescription: {cm:Ad
 
 [Files]
 ; Location for CAVE Application files
-Source: CAVE\*; DestDir: {app}\CAVE; Components: cave; Flags: ignoreversion recursesubdirs 64bit; Excludes: "cave.bat"
-Source: CAVE\cave.bat; DestDir: {app}\CAVE; Components: cave; Flags: ignoreversion 64bit; AfterInstall: ChangeBatPaths(ExpandConstant('{app}\Cave\cave.bat'))
-; Location for AlertViz Application files
-Source: AlertViz\*; DestDir: {app}\AlertViz; Components: alertviz; Flags: ignoreversion recursesubdirs 64bit; Excludes: "alertviz.bat"
-Source: AlertViz\alertviz.bat; DestDir: {app}\AlertViz; Components: alertviz; Flags: ignoreversion 64bit; AfterInstall: ChangeBatPaths(ExpandConstant('{app}\AlertViz\alertviz.bat'))
-  
+Source: CAVE\*; DestDir: {app}\CAVE; Components: cave; Flags: ignoreversion recursesubdirs 64bit; Excludes: "cave.exe"
+Source: CAVE\cave.exe; DestDir: {app}\CAVE; Components: cave; Flags: ignoreversion 64bit; AfterInstall: RefreshIcons
+
 [Icons]
 ; Icons for CAVE
-Name: {commondesktop}\AWIPS II CAVE; Filename: {app}\Cave\cave.bat; Parameters: "-component thinclient"; Tasks: desktopicon; WorkingDir: {app}\Cave; Comment: "AWIPS II CAVE"; Components: cave; IconFilename: {app}\CAVE\cave.exe
-Name: {group}\AWIPS II CAVE; Filename: {app}\Cave\cave.bat; Parameters: "-component thinclient"; WorkingDir: {app}\Cave; Comment: "AWIPS II CAVE"; Components: cave; IconFilename: {app}\CAVE\cave.exe
-; Icons for AlertViz
-Name: {commondesktop}\AWIPS II AlertViz; Filename: {app}\AlertViz\alertviz.bat; Parameters: "-component thinalertviz"; Tasks: desktopicon; WorkingDir: {app}\AlertViz; Comment: "AWIPS II AlertViz"; Components: alertviz; IconFilename: {app}\AlertViz\alertviz.exe
-Name: {group}\AWIPS II AlertViz; Filename: {app}\AlertViz\alertviz.bat; Parameters: "-component thinalertviz"; WorkingDir: {app}\AlertViz; Comment: "AWIPS II AlertViz"; Components: alertviz; IconFilename: {app}\AlertViz\alertviz.exe
+Name: {commondesktop}\AWIPS II CAVE; Filename: {app}\Cave\cave.exe; Parameters: "-component thinclient"; Tasks: desktopicon; WorkingDir: {app}\Cave; Comment: "AWIPS II CAVE"; Components: cave; IconFilename: {app}\CAVE\cave.exe
+Name: {group}\AWIPS II CAVE; Filename: {app}\Cave\cave.exe; Parameters: "-component thinclient"; WorkingDir: {app}\Cave; Comment: "AWIPS II CAVE"; Components: cave; IconFilename: {app}\CAVE\cave.exe
 ; Uninstaller Icon - Start Menu Only. 
 Name: {group}\{cm:UninstallProgram,AWIPS II CAVE}; Filename: {uninstallexe}
 
-[Dirs]
-; Change only the etc directory to allow modifications
-Name: "{app}\Cave\etc"; Permissions: everyone-modify
-
 [UninstallDelete]
 Type: filesandordirs; Name: {app}\CAVE\*; Components: cave
-Type: filesandordirs; Name: {app}\AlertViz\*; Components: alertviz 
 ; Only delete the Application directory if empty since A2RE would still be installed.
 Type: dirifempty; Name: {app}
 
+[Registry]
+; Add the LOGDIR env variable. 
+Root: HKLM64; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "LOGDIR"; ValueData: "%USERPROFILE%\caveData\logs"; Flags: uninsdeletevalue
+
+; Modify the sytem path, this will check each addition to see if it is already in the path before adding.
+Root: HKLM64; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{code:GetPythonDir};{olddata}"; Check: AddToPath(ExpandConstant('{code:GetPythonDir}'))
+Root: HKLM64; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{code:GetPythonDir}\DLLs;{olddata}"; Check: AddToPath(ExpandConstant('{code:GetPythonDir}\DLLs'))
+Root: HKLM64; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{code:GetJavaDir}\bin;{olddata}"; Check: AddToPath(ExpandConstant('{code:GetJavaDir}\bin'))
+Root: HKLM64; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{app}\Cave\lib;{olddata}"; Check: AddToPath(ExpandConstant('{app}\Cave\lib'))
+
+; Add the PythonPath env variable. 
+Root: HKLM64; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: string; ValueName: "PythonPath"; ValueData: "{app}\Cave\lib"; Flags: uninsdeletevalue
+Root: HKLM64; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: string; ValueName: "PythonPath"; ValueData: "{code:GetPythonDir}\Lib\lib-tk;{olddata}"; Flags: uninsdeletevalue
+Root: HKLM64; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: string; ValueName: "PythonPath"; ValueData: "{code:GetPythonDir}\DLLs;{olddata}"; Flags: uninsdeletevalue
+Root: HKLM64; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: string; ValueName: "PythonPath"; ValueData: "{code:GetPythonDir}\Lib;{olddata}"; Flags: uninsdeletevalue
+Root: HKLM64; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: string; ValueName: "PythonPath"; ValueData: "{code:GetPythonDir};{olddata}"; Flags: uninsdeletevalue
+    
 [Code]
 // Function to check to see if the A2RE was installed. Checks the registry key
 // HKLM:Software\Raytheon\Runtime Environment. This is run during install time.
@@ -105,16 +116,47 @@ begin
   end;
 end;
 
-// Checkes the registry for the Java and Python paths and updates the bat file with the locations. 
-procedure ChangeBatPaths (FileName: String);
+// Function to return the current A2RE Java JRE Directory key.
+function GetJavaDir(Param: String): String;
 var
-    FileData: String;
-    V: string;
+    JavaDir : String;
 begin
-    LoadStringFromFile(FileName, FileData);
-    RegQueryStringValue(HKLM64, 'Software\Raytheon\Runtime Environment\AWIPS II Java', 'JavaJreDirectory', V)
-    StringChange(FileData, 'SET JavaJreDirectory=C:\Program Files\Raytheon\AWIPS II\Java\jre7', 'SET JavaJreDirectory=' + V + '');
-    RegQueryStringValue(HKLM64, 'Software\Raytheon\Runtime Environment\AWIPS II Python', 'PythonInstallDirectory', V)
-    StringChange(FileData, 'SET PythonInstallDirectory=C:\Program Files\Raytheon\AWIPS II\Python', 'SET PythonInstallDirectory=' + V + '');
-    SaveStringToFile(FileName, FileData, False);
+    Result := 'C:\Program Files\Raytheon\AWIPS II\Java\jre';
+    if RegQueryStringValue(HKLM64, 'Software\Raytheon\Runtime Environment\AWIPS II Java', 'JavaJreDirectory', JavaDir) then
+    begin
+        Result := JavaDir;
+    end;
 end;
+
+// Function to return the current A2RE Python Directory key.
+function GetPythonDir(Param: String): String;
+var
+    PythonDir : String;
+begin
+    Result := 'C:\Program Files\Raytheon\AWIPS II\Python';
+    if RegQueryStringValue(HKLM64, 'Software\Raytheon\Runtime Environment\AWIPS II Python', 'PythonInstallDirectory', PythonDir) then
+    begin
+        Result := PythonDir;
+    end;
+end;
+
+// Function to check if a string is currently in the system PATH.
+function AddToPath(AddingPath: String): Boolean;
+var
+    Path: String;
+begin
+    Result := True;
+    if RegQueryStringValue(HKLM64,'SYSTEM\CurrentControlSet\Control\Session Manager\Environment', 'Path', Path) then
+    begin
+      Result := Pos(';' + UpperCase(AddingPath) + ';', ';' + UpperCase(Path) + ';') = 0;
+    end;
+end;
+
+// Clear the Windows Icon cache due to an icon change in Cave.exe
+procedure RefreshIcons;
+var
+    ResultCode: Integer;
+begin
+    Exec('ie4uinit.exe', '-ClearIconCache', '', SW_HIDE, ewWaitUntilTerminated, ResultCode)
+end;
+
