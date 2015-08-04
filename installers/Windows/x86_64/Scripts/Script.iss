@@ -18,6 +18,7 @@
 ; Jun 25, 2015  4295     dlovely     Removed Alertviz from installer
 ; Jun 30, 2015  4295     dlovely     Removed Cave.bat, Added env vars to registry
 ; Jul 08, 2015  4295     dlovely     Added function to clear Windows icon cache
+; Aug 03, 2015  4694     dlovely     Logback will now add user.home to LOGDIR
 ;
 
 [Setup]
@@ -88,7 +89,7 @@ Type: dirifempty; Name: {app}
 
 [Registry]
 ; Add the LOGDIR env variable. 
-Root: HKLM64; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "LOGDIR"; ValueData: "%USERPROFILE%\caveData\logs"; Flags: uninsdeletevalue
+Root: HKLM64; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "LOGDIR"; ValueData: "caveData\logs"; Flags: uninsdeletevalue
 
 ; Modify the sytem path, this will check each addition to see if it is already in the path before adding.
 Root: HKLM64; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{code:GetPythonDir};{olddata}"; Check: AddToPath(ExpandConstant('{code:GetPythonDir}'))
