@@ -35,18 +35,18 @@ mkdir -p %{buildroot}/awips2/qpid/lib
 install -pm 755 0.32/lib/*.jar %{buildroot}/awips2/qpid/lib
 install -pm 755 0.32/lib/*.zip %{buildroot}/awips2/qpid/lib
 
-install -pm 644 %{_patchdir}/qpid-java-broker-%{version}/etc/* %{buildroot}/awips2/qpid/etc
+install -pm 644 %{_patchdir}/qpid-java-broker/etc/* %{buildroot}/awips2/qpid/etc
 
 mkdir -p %{buildroot}/awips2/qpid/edex/config
-install -pm 644 %{_patchdir}/qpid-java-broker-%{version}/base/config.json %{buildroot}/awips2/qpid
-install -pm 644 %{_patchdir}/qpid-java-broker-%{version}/base/edex/config/edex.json %{buildroot}/awips2/qpid/edex/config
+install -pm 644 %{_patchdir}/qpid-java-broker/base/config.json %{buildroot}/awips2/qpid
+install -pm 644 %{_patchdir}/qpid-java-broker/base/edex/config/edex.json %{buildroot}/awips2/qpid/edex/config
 
 # install the wrapper script
-install -pm 755 %{_patchdir}/qpid-java-broker-%{version}/wrapper/qpid-wrapper %{buildroot}/awips2/qpid/bin
+install -pm 755 %{_patchdir}/qpid-java-broker/wrapper/qpid-wrapper %{buildroot}/awips2/qpid/bin
 
 # service script
 mkdir -p %{buildroot}/etc/init.d
-install -pm 755 %{_patchdir}/qpid-java-broker-%{version}/wrapper/qpidd %{buildroot}/etc/init.d
+install -pm 755 %{_patchdir}/qpid-java-broker/wrapper/qpidd %{buildroot}/etc/init.d
 
 # logs directory
 mkdir -p %{buildroot}/awips2/qpid/log

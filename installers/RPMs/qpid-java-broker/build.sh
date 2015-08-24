@@ -10,7 +10,7 @@ mkdir -p ${AWIPSII_TOP_DIR}/SRPMS
 mkdir -p ${AWIPSII_TOP_DIR}/BUILD
 mkdir -p ${AWIPSII_TOP_DIR}/SOURCES
 
-FOSSDIR=${WORKSPACE}/foss/qpid-java-broker-${VERSION}/
+FOSSDIR=${WORKSPACE}/foss/qpid-java-broker/
 
 cp -v ${FOSSDIR}/packaged/qpid-broker-${VERSION}-bin.tar.gz ${AWIPSII_TOP_DIR}/SOURCES
 cp -v ${FOSSDIR}/packaged/awips.patch ${AWIPSII_TOP_DIR}/SOURCES
