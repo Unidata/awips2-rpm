@@ -3,7 +3,7 @@
 # qpidd  This shell script takes care of starting and stopping
 #                the AWIPS qpid instance.
 #
-# chkconfig: - 99 10
+# chkconfig: 35 98 10
 # description: Qpid messaging broker used by the AWIPS 2 instance
 # processname: qpid-server
 # config: /awips2/qpid/etc/config.json
