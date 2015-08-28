@@ -1,6 +1,6 @@
 Name:           awips2-qpid-java-broker
 Version:        0.32
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Java implementation of Apache Qpid Broker
 License:        Apache Software License
 Group:          Development/Java
