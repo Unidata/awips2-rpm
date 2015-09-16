@@ -1,6 +1,6 @@
 Name:           awips2-alr-qpid-config
-Version:        %{_component_version}
-Release:        %{_component_release}
+Version:        0.32
+Release:        2%{?dist}
 Summary:        Java implementation of Apache Qpid Broker
 License:        Apache Software License
 Group:          Development/Java
