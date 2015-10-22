@@ -74,6 +74,7 @@ jai_imageio_bin="jai_imageio-1_1-lib-linux-${build_arch}-jdk.bin"
 jai_bin_patch="jai.patch1"
 jai_imageio_bin_patch="jai_imageio.patch1"
 pydev_cert="pydev_certificate.cer"
+dod_cert="dod.pem"
 
 # locate the java src.
 CORE_PROJECT_DIR="%{_baseline_workspace}/foss"
@@ -156,16 +157,31 @@ cp -v ${JAVA_COMMON_DIR}/src/${pydev_cert} \
 if [ $? -ne 0 ]; then
    exit 1
 fi
+
+# Install the signed DoD certificate needed for Thin Client
+cp -v ${JAVA_COMMON_DIR}/src/${dod_cert} \
+   %{_build_root}/awips2/java/jre/lib/security
+if [ $? -ne 0 ]; then
+   exit 1
+fi
+
 touch changeit.txt
 echo "changeit" > changeit.txt
 chmod 666 %{_build_root}/awips2/java/jre/lib/security/cacerts
 if [ $? -ne 0 ]; then
    exit 1
 fi
+
 %{_build_root}/awips2/java/bin/keytool -import \
-   -file %{_build_root}/awips2/java/jre/lib/security/pydev_certificate.cer \
+   -file %{_build_root}/awips2/java/jre/lib/security/${pydev_cert} \
    -keystore %{_build_root}/awips2/java/jre/lib/security/cacerts \
    -noprompt < changeit.txt
+
+%{_build_root}/awips2/java/bin/keytool -import \
+   -file %{_build_root}/awips2/java/jre/lib/security/${dod_cert} \
+   -keystore %{_build_root}/awips2/java/jre/lib/security/cacerts \
+   -alias dod -noprompt < changeit.txt
+
 rm -fv changeit.txt
 if [ $? -ne 0 ]; then
    exit 1
