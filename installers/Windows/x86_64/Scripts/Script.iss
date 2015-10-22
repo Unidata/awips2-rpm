@@ -94,6 +94,7 @@ Root: HKLM64; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environm
 ; Modify the sytem path, this will check each addition to see if it is already in the path before adding.
 Root: HKLM64; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{code:GetPythonDir};{olddata}"; Check: AddToPath(ExpandConstant('{code:GetPythonDir}'))
 Root: HKLM64; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{code:GetPythonDir}\DLLs;{olddata}"; Check: AddToPath(ExpandConstant('{code:GetPythonDir}\DLLs'))
+Root: HKLM64; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{code:GetPythonDir}\Lib\site-packages\jep;{olddata}"; Check: AddToPath(ExpandConstant('{code:GetPythonDir}\Lib\site-packages\jep'))
 Root: HKLM64; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{code:GetJavaDir}\bin;{olddata}"; Check: AddToPath(ExpandConstant('{code:GetJavaDir}\bin'))
 Root: HKLM64; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{app}\Cave\lib;{olddata}"; Check: AddToPath(ExpandConstant('{app}\Cave\lib'))
 
