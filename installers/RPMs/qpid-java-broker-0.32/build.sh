@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -v
 VERSION=0.32
 path_to_script=`readlink -f $0`
 dir=$(dirname $path_to_script)

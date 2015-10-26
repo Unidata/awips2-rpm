@@ -1,6 +1,6 @@
 diff -crB a/qpid-broker/0.32/bin/qpid-run b/qpid-broker/0.32/bin/qpid-run
 *** a/qpid-broker/0.32/bin/qpid-run	2013-11-13 18:02:20.000000000 -0600
---- b/qpid-broker/0.32/bin/qpid-run	2014-10.32 15:18:29.730542525 -0500
+--- b/qpid-broker/0.32/bin/qpid-run	2014-10.30 15:18:29.730542525 -0500
 ***************
 *** 62,69 ****
   fi
@@ -21,7 +21,7 @@ diff -crB a/qpid-broker/0.32/bin/qpid-run b/qpid-broker/0.32/bin/qpid-run
   if [ -z "$JAVA" ]; then
 diff -crB a/qpid-broker/0.32/bin/qpid-server b/qpid-broker/0.32/bin/qpid-server
 *** a/qpid-broker/0.32/bin/qpid-server	2014-07-22 05:09:32.000000000 -0500
---- b/qpid-broker/0.32/bin/qpid-server	2014-10.32 15:19:11.839019841 -0500
+--- b/qpid-broker/0.32/bin/qpid-server	2014-10.30 15:19:11.839019841 -0500
 ***************
 *** 23,30 ****
   fi
