@@ -74,6 +74,8 @@ if [ $? -ne 0 ]; then
    exit 1
 fi
 
+export CPPFLAGS="-I/usr/local/include"
+export LD_LIBRARY_PATH=/usr/local/lib
 ./configure --prefix=/awips2/python \
    --enable-shared --enable-unicode=ucs2
 RC=$?
