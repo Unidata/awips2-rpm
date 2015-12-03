@@ -18,6 +18,7 @@ BuildArch: noarch
 License:        Apache Software License
 Group:          Development/Java
 URL:            http://qpid.apache.org/
+Packager: %{_build_site}
 
 AutoReq: no
 requires: awips2-python = %{_installed_python}

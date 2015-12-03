@@ -16,6 +16,7 @@ BuildArch: %{_build_arch}
 License:        Apache Software License
 Group:          Development/Java
 URL:            http://qpid.apache.org/
+Packager: %{_build_site}
 
 AutoReq: no
 Provides: awips2-qpid-lib = %{_qpid_version}

@@ -18,6 +18,7 @@ URL: N/A
 License: N/A
 Distribution: N/A
 Vendor: Raytheon
+Packager: %{_build_site}
 
 AutoReq: no
 Requires: compat-libf2c-34(x86-64) >= 3.4.6-19.el6

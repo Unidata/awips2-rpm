@@ -11,6 +11,7 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 Provides:       awips2-alr-qpid-config
 Requires:       awips2-qpid-java-broker
+Packager: %{_build_site}
 
 %description
 ALR special qpid config for SJU hydro processing

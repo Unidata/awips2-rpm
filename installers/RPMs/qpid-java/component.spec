@@ -7,6 +7,7 @@ Summary:        Java implementation of Apache Qpid
 License:        Apache Software License
 Group:          Development/Java
 URL:            http://qpid.apache.org/
+Packager: %{_build_site}
 
 BuildRoot:      %{_build_root}
 BuildArch:      noarch

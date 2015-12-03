@@ -10,6 +10,7 @@ BuildArch:      noarch
 Provides:       awips2-base-component
 Requires:       awips2-yajsw
 Requires:       awips2-java
+Packager: %{_build_site}
 
 %description
 Java implementation of Apache Qpid Broker.
