@@ -1,3 +1,5 @@
+%define _qpid_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+
 Name:           awips2-qpid-java-broker
 Version:        0.32
 Release:        2%{?dist}
