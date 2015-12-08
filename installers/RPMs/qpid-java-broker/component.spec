@@ -100,10 +100,14 @@ rm -rf %{buildroot}
 
 %files
 %defattr(644,awips,fxalpha,644)
-%dir /awips2/qpid
 /awips2/qpid/config.json
 /awips2/qpid/edex/config/edex.json
 %defattr(755,awips,fxalpha,755)
+%dir /awips2/qpid
+%dir /awips2/qpid/log
+%dir /awips2/qpid/lib
+%dir /awips2/qpid/edex
+%dir /awips2/qpid/edex/config
 /awips2/qpid/bin
 /awips2/qpid/etc
 /awips2/qpid/lib/*.jar
