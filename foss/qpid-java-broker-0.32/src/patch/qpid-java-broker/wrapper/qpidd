@@ -85,11 +85,11 @@ stop() {
       
       # stop the wrapper
       kill ${pid_wrapper}
-      pkill -f qpid
+      kill ${pid_qpid}
    else
       # stop qpid
       kill ${pid_qpid}
-      pkill -f qpid
+      kill ${pid_wrapper}
    fi
    
    # wait for and verify that qpid has stopped running
