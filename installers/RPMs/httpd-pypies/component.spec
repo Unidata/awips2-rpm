@@ -724,9 +724,6 @@ rm -rf $RPM_BUILD_ROOT
 /awips2/httpd_pypies%{_libdir}/httpd/build/*.sh
 
 %changelog
-* Mon Aug 24 2015 Johnny Hughes <johnny@centos.org> - 2.2.15-47
-- Roll in CentOS Branding
-
 * Tue Aug 18 2015 Jan Kaluza <jkaluza@redhat.com> - 2.2.15-47
 - fix regressions caused by fix for CVE-2015-3183
 
