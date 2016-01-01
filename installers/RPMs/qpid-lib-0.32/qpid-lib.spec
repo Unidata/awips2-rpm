@@ -9,7 +9,7 @@
 Name: awips2-qpid-lib
 Summary: AWIPS II QPID Native Library Distribution
 Version: %{_qpid_version}
-Release: 0.32
+Release: 1
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
