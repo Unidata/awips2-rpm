@@ -74,6 +74,9 @@ if [ $? -ne 0 ]; then
    exit 1
 fi
 
+export CPPFLAGS="-I/usr/local/include"
+export LD_LIBRARY_PATH=/usr/local/lib
+
 ./configure --prefix=/awips2/python \
    --enable-shared --enable-unicode=ucs2
 RC=$?
@@ -122,17 +125,9 @@ if [ ${RC} -ne 0 ]; then
    exit 1
 fi
 
-# Our profile.d scripts.
-mkdir -p %{_build_root}/etc/profile.d
 PYTHON_PROJECT_DIR="%{_baseline_workspace}/installers/RPMs/python-2.7.9"
 PYTHON_PROJECT_SRC_DIR="${PYTHON_PROJECT_DIR}/src"
 PYTHON_SCRIPTS_DIR="${PYTHON_PROJECT_DIR}/scripts"
-PYTHON_PROFILED_DIR="${PYTHON_SCRIPTS_DIR}/profile.d"
-cp -v ${PYTHON_PROFILED_DIR}/* %{_build_root}/etc/profile.d
-RC=$?
-if [ ${RC} -ne 0 ]; then
-   exit 1
-fi
 
 # The external libraries (hdf5, netcdf, ...) and headers
 # we include with python.
@@ -281,8 +276,6 @@ rm -rf %{_python_build_loc}
 
 %files
 %defattr(644,awips,fxalpha,755)
-%attr(755,root,root) /etc/profile.d/awips2Python.csh
-%attr(755,root,root) /etc/profile.d/awips2Python.sh
 %dir /awips2/python
 %dir /awips2/python/lib
 /awips2/python/lib/*
