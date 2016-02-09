@@ -19,6 +19,7 @@
 ; Jun 30, 2015  4295     dlovely     Removed Cave.bat, Added env vars to registry
 ; Jul 08, 2015  4295     dlovely     Added function to clear Windows icon cache
 ; Aug 03, 2015  4694     dlovely     Logback will now add user.home to LOGDIR
+; Feb 09, 2016  5196     dlovely     Exposed the JDK reg key as a system var
 ;
 
 [Setup]
@@ -91,11 +92,14 @@ Type: dirifempty; Name: {app}
 ; Add the LOGDIR env variable. 
 Root: HKLM64; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "LOGDIR"; ValueData: "caveData\logs"; Flags: uninsdeletevalue
 
+; Add the JAVA_JDK env variable. 
+Root: HKLM64; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "JAVA_JDK"; ValueData: "{code:GetJavaJDKDir}"; Flags: uninsdeletevalue
+
 ; Modify the sytem path, this will check each addition to see if it is already in the path before adding.
 Root: HKLM64; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{code:GetPythonDir};{olddata}"; Check: AddToPath(ExpandConstant('{code:GetPythonDir}'))
 Root: HKLM64; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{code:GetPythonDir}\DLLs;{olddata}"; Check: AddToPath(ExpandConstant('{code:GetPythonDir}\DLLs'))
 Root: HKLM64; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{code:GetPythonDir}\Lib\site-packages\jep;{olddata}"; Check: AddToPath(ExpandConstant('{code:GetPythonDir}\Lib\site-packages\jep'))
-Root: HKLM64; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{code:GetJavaDir}\bin;{olddata}"; Check: AddToPath(ExpandConstant('{code:GetJavaDir}\bin'))
+Root: HKLM64; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{code:GetJavaJREDir}\bin;{olddata}"; Check: AddToPath(ExpandConstant('{code:GetJavaJREDir}\bin'))
 Root: HKLM64; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{app}\Cave\lib;{olddata}"; Check: AddToPath(ExpandConstant('{app}\Cave\lib'))
 
 ; Add the PythonPath env variable. 
@@ -119,12 +123,24 @@ begin
 end;
 
 // Function to return the current A2RE Java JRE Directory key.
-function GetJavaDir(Param: String): String;
+function GetJavaJREDir(Param: String): String;
 var
     JavaDir : String;
 begin
     Result := 'C:\Program Files\Raytheon\AWIPS II\Java\jre';
     if RegQueryStringValue(HKLM64, 'Software\Raytheon\Runtime Environment\AWIPS II Java', 'JavaJreDirectory', JavaDir) then
+    begin
+        Result := JavaDir;
+    end;
+end;
+
+// Function to return the current A2RE Java JDK Directory key.
+function GetJavaJDKDir(Param: String): String;
+var
+    JavaDir : String;
+begin
+    Result := 'C:\Program Files\Raytheon\AWIPS II\Java';
+    if RegQueryStringValue(HKLM64, 'Software\Raytheon\Runtime Environment\AWIPS II Java', 'JavaJdkDirectory', JavaDir) then
     begin
         Result := JavaDir;
     end;
