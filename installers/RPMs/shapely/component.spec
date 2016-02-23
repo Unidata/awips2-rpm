@@ -62,7 +62,7 @@ mkdir -p %{_python_build_loc}
 %install
 _python_staging=%{_python_build_loc}/awips2/python
 
-mkdir -p %{_python_staging}
+mkdir -p ${_python_staging}
 # build geos
 __GEOS_TAR=geos-3.4.2.tar.bz2
 __GEOS_UNTARRED=geos-3.4.2
