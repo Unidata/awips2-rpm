@@ -16,7 +16,7 @@ Vendor: Raytheon
 Packager: %{_build_site}
 
 AutoReq: no
-provides: awips2-maven
+provides: awips2-maven = %{version}
 
 %description
 AWIPS II Maven Distribution - Contains Maven V%{version}
