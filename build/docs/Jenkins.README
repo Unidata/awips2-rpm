@@ -10,31 +10,31 @@ Description: AWIPSII build release number, such as 23.1.  Leave blank for a date
 
 Name: AWIPSII_VERSION
 Default Value: <Current_Version>
-Description: Revision number of the AWIPS2 baseline to build. Muste be set.
+Description: Revision number of the AWIPS2 baseline to build. Must be set.
 
 Name: AWIPSII_BRANCH
 Default Value: <Branch Version>
-Description: AWIPS2_baseline branch version for this build. Muste be set.
+Description: AWIPS2_baseline branch version for this build. Must be set.
 
 Name: UFCORE_BRANCH
 Default Value: <Branch Version>
-Description: ufcore branch version for this build. Muste be set.
+Description: ufcore branch version for this build. Must be set.
 
 Name: UFCORE_FOSS_BRANCH
 Default Value: <Branch Version>
-Description: ufcore_foss branch version for this build. Muste be set.
+Description: ufcore_foss branch version for this build. Must be set.
 
 Name: FOSS_BRANCH
 Default Value: <Branch Version>
-Description: AWIPS2_foss branch version for this build. Muste be set.
+Description: AWIPS2_foss branch version for this build. Must be set.
 
 Name: BUILD_BRANCH
 Default Value: <Branch Version>
-Description: AWIPS2_build branch version for this build. Muste be set.
+Description: AWIPS2_build branch version for this build. Must be set.
 
 Name: STATIC_BRANCH
 Default Value: <Branch Version>
-Description: AWIPS2_static branch version for this build. Muste be set.
+Description: AWIPS2_static branch version for this build. Must be set.
 
 Name: NCEP_BRANCH
 Default Value: <Branch Version>
