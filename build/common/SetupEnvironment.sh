@@ -66,6 +66,11 @@ else
    export LIB_ENV_BUILD_FOLDER=python
    export LIB_ENV_BUILD_VERSION=${PYTHON_VERSION}
 fi
+# Check if the version decoder is already installed, if not install it.
+if [ ! -f /build/python/python_cached_versions.sh ]; then
+   sudo cp ${WORKSPACE}/git/AWIPS2_build/build/common/python_cached_versions.sh /build/python/
+   sudo a+x /build/python/python_cached_versions.sh
+fi
 
 ##################################
 # ANT
