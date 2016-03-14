@@ -51,6 +51,9 @@ if [ $? -ne 0 ]; then
    exit 1
 fi
 
+# Show the current HEAD for this repo.
+git log --pretty=format:'%ci [%h] <%an> %s' --date-order  -1
+
 if [ ! -d "$baseline" ]; then
    mkdir -p $baseline
 fi

@@ -16,7 +16,11 @@
 ####################################################################
 # Select Build Style (Continuous or Nightly Build)
 # Nightly RPMS=
-# Continuous RPMS=("buildRPM awips2-common-base" "buildRPM awips2" "buildCAVE" "buildEDEX" "buildRPM awips2-alertviz")
+# Continuous RPMS=buildRPM awips2-common-base
+#                 buildRPM awips2
+#                 buildCAVE
+#                 buildEDEX
+#                 buildRPM awips2-alertviz
 #
 # Select Git Repositories to use:
 # Enable  (GIT_REPO)_BRANCH=VERSION

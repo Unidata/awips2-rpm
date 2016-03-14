@@ -96,13 +96,14 @@ Name: SYNC_DEST
 Default Value:
 Description: Setting this will rsync the artifacts to a secondary location. Leave unset to let them in the Jenkins workspace.
 
-Name: RPMS
-Default Value:
-Description: Setting this will build just the specified RPM. Leave unset for a full build.
-
 Name: WINDOWS_STAGING
 Default Value:
 Description: Setting this will move the Windows CAVE zip to a staging area for the Windows Installer build to use. Leave unset to leave it in the Jenkins Workspace.
+
+Add the following Text Parameter:
+Name: RPMS
+Default Value:
+Description: Setting this will build just the specified RPM. Leave unset for a full build.
 
 Set up the Git repositories using the template below for all the above defined repositories:
 
@@ -122,6 +123,9 @@ if [ $? -ne 0 ]; then
 fi
 
 /bin/bash $BUILD_FILE
+if [ $? -ne 0 ]; then
+   exit 1
+fi
 
 ## Windows Thinclient Build
 BUILD_FILE=$WORKSPACE/git/AWIPS2_build/build/windows/build.sh
@@ -132,6 +136,9 @@ if [ $? -ne 0 ]; then
 fi
 
 /bin/bash $BUILD_FILE
+if [ $? -ne 0 ]; then
+   exit 1
+fi
 
 Add a "Trigger/call builds on other projects" build step under Build.
 Build Triggers:
