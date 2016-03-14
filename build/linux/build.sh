@@ -72,7 +72,7 @@ fi
 ##################################
 repo=$repo_dir/AWIPS2_baseline
 parts_to_sync=( 'build/*' 'RadarServer/*' 'edexOsgi/*' 'cave/*' 'localization/*' \
-   'javaUtilities/*' 'rpms' 'pythonPackages' 'nativeLib/*' 'ost/*' 'crh/*')
+   'javaUtilities/*' 'rpms' 'pythonPackages' 'nativeLib/*' )
 $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $AWIPSII_BRANCH $baseline ${parts_to_sync[*]}
 if [ $? -ne 0 ]; then
    exit 1
