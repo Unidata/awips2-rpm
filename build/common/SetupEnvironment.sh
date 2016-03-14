@@ -126,7 +126,7 @@ fi
 # Eclipse
 ##################################
 ECLIPSE_VERSION=$(getFOSSVersion eclipse)
-sudo rm -f /awip2/eclipse
+sudo rm -f /awips2/eclipse
 if [ $? -ne 0 ]; then
    sudo rm -rf /awips2/eclipse
 fi
