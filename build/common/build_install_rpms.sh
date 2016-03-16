@@ -34,11 +34,13 @@ cd $TARGET_DIR
 if [ -h latest ]; then
    sudo rm -fv latest
 fi
-sudo ln -sf v$AWIPSII_RELEASE latest
 
 time sudo /usr/bin/createrepo -c cachedir -g ${WORKSPACE}/git/AWIPS2_build/installers/Linux/comps.xml --workers=20 .
 if [ $? -ne 0 ]; then
    exit 1
 fi
+
+sudo ln -sf v$AWIPSII_RELEASE latest
+
 popd > /dev/null
 
