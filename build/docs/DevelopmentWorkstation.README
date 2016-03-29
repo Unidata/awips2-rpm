@@ -1,0 +1,50 @@
+The following packages, identified in the %packages section of a kickstart script, provide the base for a RHEL/CentOS development machine.
+Additional libraries and packages are defined in the requires section of AWIPS-II rpms.
+
+
+@ additional-devel
+@ base
+@ core
+@ basic-desktop
+@ desktop-platform
+@ development
+@ general-desktop
+@ internet-applications
+@ internet-browser
+@ network-file-system-client
+@ network-tools
+@ server-platform
+@ server-platform-devel
+@ system-admin-tools
+@ x11
+-gvfs-afc
+-mesa-dri-drivers.i686
+-mesa-libGL.i686
+-mesa-libGLU.i686
+-postgresql
+-postgresql-devel
+-netpbm-devel
+-mailman
+-httpd-tools
+
+AWIPS-II Visualize additional downloads:
+
+libXp
+openmotif
+
+AWIPS-II Message Broker additional downloads:
+
+java-1.5.0-gcj
+java_cup
+log4j
+sinjdoc
+xml-commons-apis
+
+AWIPS-II Database Server additional downloads:
+
+compat-libf2c-34
+glibc
+netcdf
+netcdf-devel
+nss-softokn-freebl
+zlib
