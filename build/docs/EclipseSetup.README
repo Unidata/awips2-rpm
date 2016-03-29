@@ -1,0 +1,131 @@
+Instructions for Workstation Dev Setup of EDEX and CAVE
+
+* Prerequisites
+* EDEX and Development Environment Setup
+* Eclipse Setup
+* Service startup
+
+Prerequisites:
+
+1. Installation requires RedHat 6u5 with kernel 2.6.32-573.3.1.el6.x86_64
+
+EDEX and Development Environment Setup:
+
+1. Create a yum repo file under /etc/yum.repos.d that references the AWIPS2 repo:
+
+   [A2]
+   name=A2
+   baseurl=file:///tmp/RPM/
+   enabled=1
+   protect=0
+   gpgcheck=0
+   proxy=_none_
+
+2. Create user IDs
+
+   sudo useradd awips
+   sudo groupadd fxalpha
+   sudo usermod -G -a fxalpha awips
+
+3. Install base RPMs:
+ 
+   sudo yum groupinstall 'AWIPS II Database Server' 'AWIPS II Message Broker Server' 'AWIPS II Processing Server'
+   sudo yum install awips2-ant awips2-localization-OAX
+   sudo ln -sf /awips2/python/lib/libpython2.7.so.1.0 /awips2/python/lib/libpython.so
+
+4. Change ownership and permission to developer's id:
+ 
+   sudo usermod -G -a fxalpha developer
+   sudo chown -R developer.fxalpha /awips2
+   sudo chmod -R 775 /awips2
+   sudo chmod 700 /awips2/data
+
+5. Change user to developer in the following files:
+
+   /etc/init.d/edex_camel, EDEXUSER variable
+   /etc/init.d/edex_postgres, PGUSER variable
+   /etc/init.d/edex_rcm, EDEXUSER variable
+   /etc/init.d/httpd-pypies, line 80
+   /etc/init.d/qpidd, QPIDUSER variable
+   /awips2/httpd_pypies/etc/httpd/conf/httpd.conf, User and Group variables 
+
+Eclipse Setup:
+
+1. Disable Build Automatically from the Project menu.
+
+2. For all Git directories: Import the plugins by going to File > Import.
+
+   Select Existing Projects into Workspace under General.
+   Select the target source directory
+   Leave 'Copy projects into workspace' unchecked and hit Finish.
+   Select OK and select Finish 
+
+3. Under Window->Preferences->PyDev->Interpreters - Python Interpeter, Click New...
+
+   Interpreter Name: Python
+   Interpreter Executable: /awips2/python/bin/python
+   Check all locations in /awips2/* and hit OK.
+   Click OK.
+
+4. Navigate to the Plug-in Development > API Baselines preference page.
+
+   Click 'Add Baseline...'
+   Name: Eclipse 3.8
+   Leave the location as is and click Reset then Finish.
+   Close the preference page by clicking OK.
+
+5. Navidate to the Java > Code Style > Code Templates perference page.
+
+   Click 'Import...'
+   Select file AWIPS2_baseline/edexOsgi/build.edex/opt/eclipse/codetemplates.xml
+   Click 'Ok"
+   Close the preference page by clicking OK.
+
+6. Navidate to the Java > Code Style > Formatter perference page.
+
+   Click 'Import...'
+   Select file AWIPS2_baseline/edexOsgi/build.edex/opt/eclipse/formatter.xml
+   Click 'Ok"
+   Close the preference page by clicking OK.
+
+Complete a full workspace build. If not prompted, go to Project -> Build All. You may also enable Build Automatically at this time.
+In the plugin build.edex, find deploy-install.xml and right click select Run As then Ant Build. This will start the build process in the Console window.
+
+Service startup:
+
+1. Start up EDEX services
+   
+   sudo service qpidd start
+   sudo service edex_postgres start
+   sudo service httpd-pypies start
+   sudo service edex_camel start
+
+2. Verify services have started successfully
+  
+   Logs are located at /awips2/edex/logs
+   The service list is located at /etc/init.d/edexServiceList
+   Verify components of SERVICES contain a successful operational status
+   Service logs are created as edex-<service>-YYYYMMDD.log
+   ingest, ingestDat, ingestGrib and request logs should contain the following string: "EDEX ESB is now operational" 
+
+3. Run CAVE in debug mode
+
+   Right click on com.raytheon.viz.product.awips -> developer.product and choose Debug As->Eclipse Application
+   Stop the debug session
+
+   Select Run->Debug Configurations...
+   Click on developer.product 
+
+   Add the following environment values: 
+  
+   Name: LD_LIBRARY_PATH 
+   Value: /awips2/python/lib:$LD_LIBRARY_PATH
+
+   Name: LD_PRELOAD
+   Value: /awips2/python/lib/libpython2.7.so
+  
+   Name: PATH
+   Value: /awips2/python/bin/:$PATH
+
+   Click Apply then click Debug
+   Click Close
