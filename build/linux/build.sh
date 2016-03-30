@@ -144,6 +144,7 @@ if [ ! -z "$NWS_BRANCH" ]; then
    ##################################
    # Create properties file for MPING
    ##################################
+   echo "gov.noaa.nws.sr.oun.viz.mping.feature" >> ${WORKSPACE}/baseline/build/features.txt
    echo "gov.noaa.nws.sr.oun.edex.mping.feature" >> ${WORKSPACE}/baseline/build.edex/features.txt
 fi
 
