@@ -9,7 +9,7 @@
 Name: awips2-python-jep
 Summary: AWIPS II Python Jep Distribution
 Version: 3.4.1
-Release: 1.el6
+Release: 2
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
@@ -43,7 +43,7 @@ fi
 mkdir -p %{_python_build_loc}
 
 %build
-JEP_SRC_DIR="%{_baseline_workspace}/foss/jep-%{version}/packaged"
+JEP_SRC_DIR="%{_baseline_workspace}/foss/jep/packaged"
 JEP_ZIP="jep-%{version}.zip"
 cp -v ${JEP_SRC_DIR}/${JEP_ZIP} \
    %{_python_build_loc}
@@ -64,7 +64,7 @@ if [ ! -d jep-%{version} ]; then
    file jep-%{version}
    exit 1
 fi
-source /etc/profile.d/awips2Python.sh
+source /etc/profile.d/awips2.sh
 RC=$?
 if [ ${RC} -ne 0 ]; then
    exit 1
@@ -100,6 +100,7 @@ popd > /dev/null
 %pre
 
 %post
+ln -s /awips2/python/lib/python2.7/site-packages/jep/libjep.so /awips2/python/lib/libjep.so
 
 %preun
 
