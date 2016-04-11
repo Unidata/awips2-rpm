@@ -206,7 +206,7 @@ function buildPythonPackage {
       /bin/bash build.sh -dev "buildRPM $RPM"
       if [ $? -ne 0 ]; then
          echo "ERROR: Could not build required python packages: $ENVRPMS!"
-         exit 1
+         return 1
       fi
    done
    popd > /dev/null 2>&1
@@ -214,8 +214,16 @@ function buildPythonPackage {
    stagePythonRPMs $VERSION
    if [ $? -ne 0 ]; then
       echo "ERROR: Could not install required python packages: $ENVRPMS!"
-      exit 1
+      return 1
    fi
+}
+
+# Remove the Python cached directory if one of the packages failed. 
+#  Arg1 - Python Version.
+function failPythonInstall {
+   local VERSION=${1}
+   echo "ERROR: Python install failed, See log above for errors. Removing invalid cached version."
+   sudo rm -rf /build/python/${VERSION}/
 }
 
 # Process the RPM just built for dependancies.
@@ -226,16 +234,29 @@ function processBuildEnv {
    stageRPM $LIB_ENV_BUILD_PACKAGE $LIB_ENV_BUILD_FOLDER $LIB_ENV_BUILD_VERSION
    if [ $? -ne 0 ]; then
       echo "ERROR: Could not install required package ${LIB_ENV_BUILD_PACKAGE}! See build logs for more details."
+      failPythonInstall $LIB_ENV_BUILD_VERSION
       exit 1
    fi
 
    if [ $LIB_ENV_BUILD_PACKAGE = "awips2-python" ]; then
       export ENVRPMS=("awips2-python-nose" "awips2-python-setuptools")
       buildPythonPackage $LIB_ENV_BUILD_VERSION
-      export ENVRPMS=("awips2-python-numpy")
+      if [ $? -ne 0 ]; then
+         failPythonInstall $LIB_ENV_BUILD_VERSION
+         exit 1
+      fi
+      export ENVRPMS=("awips2-python-numpy" "awips2-python-six")
       buildPythonPackage $LIB_ENV_BUILD_VERSION
-      export ENVRPMS=("awips2-python-thrift" "awips2-python-h5py" "awips2-python-dateutil" "awips2-python-pytz" "awips2-python-six" "awips2-python-pyparsing" )
+      if [ $? -ne 0 ]; then
+         failPythonInstall $LIB_ENV_BUILD_VERSION
+         exit 1
+      fi
+      export ENVRPMS=("awips2-python-thrift" "awips2-python-h5py" "awips2-python-dateutil" "awips2-python-pytz" "awips2-python-pyparsing" )
       buildPythonPackage $LIB_ENV_BUILD_VERSION
+      if [ $? -ne 0 ]; then
+         failPythonInstall $LIB_ENV_BUILD_VERSION
+         exit 1
+      fi
    fi
 
    # Make the original build request now that we have the required deps installed.
