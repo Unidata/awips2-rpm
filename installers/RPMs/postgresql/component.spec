@@ -22,6 +22,7 @@ Vendor: Raytheon
 Packager: %{_build_site}
 
 AutoReq: no
+requires: netcdf
 provides: awips2-postgresql
 provides: awips2-base-component
 
