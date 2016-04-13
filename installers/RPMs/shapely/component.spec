@@ -12,7 +12,7 @@
 Name: awips2-python-shapely
 Summary: AWIPS II Python shapely Distribution
 Version: %{_shapely_version}
-Release: 1
+Release: 2
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
@@ -96,7 +96,7 @@ fi
 __SHAPELY=shapely
 __SHAPELY_TAR=Shapely-%{_shapely_version}.tar.gz
 __SHAPELY_UNTARRED=Shapely-%{_shapely_version}
-SHAPELY_SRC_DIR="%{_baseline_workspace}/foss/${__SHAPELY}-%{version}/packaged"
+SHAPELY_SRC_DIR="%{_baseline_workspace}/foss/${__SHAPELY}/packaged"
 
 cp ${SHAPELY_SRC_DIR}/${__SHAPELY_TAR} \
    %{_python_build_loc}

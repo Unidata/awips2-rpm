@@ -10,7 +10,7 @@
 Name: awips2-python-matplotlib
 Summary: AWIPS II Python matplotlib Distribution
 Version: %{_version}
-Release: 1
+Release: 2
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
