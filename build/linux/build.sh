@@ -85,7 +85,12 @@ if [ "$(tail -c1 ${WORKSPACE}/baseline/build/features.txt; echo x)" != $'\nx' ];
    echo "" >> ${WORKSPACE}/baseline/build/features.txt
 fi
 
+# List the features to be build in additon to the core EDEX features.
 touch ${WORKSPACE}/baseline/build.edex/features.txt
+# Entries in this file will be skipped when packaging EDEX RPMs. Use this if
+#   a WA requires a custom RPM Spec file instead of the standard template.
+#   "common-base" is required to be ignored by default.
+echo "common-base" > ${WORKSPACE}/baseline/build.edex/component.ignore.txt
 
 repo=$repo_dir/ufcore
 parts_to_sync=( 'common/*' 'edex/*' 'features/*' 'viz/*' )
@@ -182,7 +187,7 @@ fi
 ##################################
 if [ ! -z "$HAZARD_SERVICES_BRANCH" ]; then
    repo=$repo_dir/18-Hazard_Services
-   parts_to_sync=( 'common/*' 'edex/*' 'viz/*' 'tools')
+   parts_to_sync=( 'common/*' 'edex/*' 'viz/*' 'tools' 'rpms-Hazard_Services' )
    $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $HAZARD_SERVICES_BRANCH $baseline ${parts_to_sync[*]}
    if [ $? -ne 0 ]; then
       exit 1
@@ -192,6 +197,7 @@ if [ ! -z "$HAZARD_SERVICES_BRANCH" ]; then
    ##################################
    echo "gov.noaa.gsd.viz.hazards.feature" >> ${WORKSPACE}/baseline/build/features.txt
    echo "com.raytheon.uf.edex.hazards.feature" >> ${WORKSPACE}/baseline/build.edex/features.txt
+   echo "edex-hazards" >> ${WORKSPACE}/baseline/build.edex/component.ignore.txt
 fi
 
 ##################################
@@ -334,7 +340,7 @@ fi
 ##################################
 if [ ! -z "$DATA_DELIVERY_BRANCH" ]; then
    repo=$repo_dir/Data_Delivery
-   parts_to_sync=( 'common/*' 'edex/*' 'features/*' 'viz/*')
+   parts_to_sync=( 'common/*' 'edex/*' 'features/*' 'viz/*' 'rpms-Data_Delivery' )
    $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $DATA_DELIVERY_BRANCH $baseline ${parts_to_sync[*]}
    if [ $? -ne 0 ]; then
       exit 1
@@ -347,6 +353,7 @@ if [ ! -z "$DATA_DELIVERY_BRANCH" ]; then
    echo "com.raytheon.uf.edex.datadelivery.core.feature" >> ${WORKSPACE}/baseline/build.edex/features.txt
    echo "com.raytheon.uf.edex.datadelivery.feature" >> ${WORKSPACE}/baseline/build.edex/features.txt
    echo "com.raytheon.uf.edex.dataprovideragent.feature" >> ${WORKSPACE}/baseline/build.edex/features.txt
+   echo "edex-datadelivery" >> ${WORKSPACE}/baseline/build.edex/component.ignore.txt
 fi
 
 export _component_release=$BUILD_NUMBER
