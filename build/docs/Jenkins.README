@@ -1,0 +1,154 @@
+
+Set up a new Jenkins job and give it a Project Name.
+
+Select the checkbox "This build is parameterized"
+
+Add the following String Parameters:
+Name: AWIPSII_RELEASE
+Default Value:
+Description: AWIPSII build release number, such as 23.1.  Leave blank for a date stamp.
+
+Name: AWIPSII_VERSION
+Default Value: <Current_Version>
+Description: Revision number of the AWIPS2 baseline to build. Must be set.
+
+Name: AWIPSII_BRANCH
+Default Value: <Branch Version>
+Description: AWIPS2_baseline branch version for this build. Must be set.
+
+Name: UFCORE_BRANCH
+Default Value: <Branch Version>
+Description: ufcore branch version for this build. Must be set.
+
+Name: UFCORE_FOSS_BRANCH
+Default Value: <Branch Version>
+Description: ufcore_foss branch version for this build. Must be set.
+
+Name: FOSS_BRANCH
+Default Value: <Branch Version>
+Description: AWIPS2_foss branch version for this build. Must be set.
+
+Name: BUILD_BRANCH
+Default Value: <Branch Version>
+Description: AWIPS2_build branch version for this build. Must be set.
+
+Name: STATIC_BRANCH
+Default Value: <Branch Version>
+Description: AWIPS2_static branch version for this build. Must be set.
+
+Name: NCEP_BRANCH
+Default Value: <Branch Version>
+Description: AWIPS2_NCEP branch version for this build. Leave unset to build without.
+
+Name: OGC_BRANCH
+Default Value: <Branch Version>
+Description: OGC branch version for this build. Leave unset to build without.
+
+Name: HAZARD_SERVICES_BRANCH
+Default Value: <Branch Version>
+Description: 18-Hazard_Services branch version for this build. Leave unset to build without.
+
+Name: GOES_R_BRANCH
+Default Value: <Branch Version>
+Description: 13.3-GOES-R branch version for this build. Leave unset to build without.
+
+Name: BMH_BRANCH
+Default Value: <Branch Version>
+Description: BMH branch version for this build. Leave unset to build without.
+
+Name: BMH_COTS_BRANCH
+Default Value: <Branch Version>
+Description: BMH_cots branch version for this build. Leave unset to build without.
+
+Name: OHD_BRANCH
+Default Value: <Branch Version>
+Description: OHD branch version for this build. Leave unset to build without.
+
+Name: GSD_BRANCH
+Default Value: <Branch Version>
+Description: AWIPS2_GSD branch version for this build. Leave unset to build without.
+
+Name: X_BAND_RADAR_BRANCH
+Default Value: <Branch Version>
+Description: X-Band_Radar branch version for this build. Leave unset to build without.
+
+Name: CIMSS_BRANCH
+Default Value: <Branch Version>
+Description: AWIPS2_CIMSS branch version for this build. Leave unset to build without.
+
+Name: COLLABORATION_BRANCH
+Default Value: <Branch Version>
+Description: Collaboration branch version for this build. Leave unset to build without.
+
+Name: DATA_DELIVERY_BRANCH
+Default Value: <Branch Version>
+Description: Data_Delivery branch version for this build. Leave unset to build without.
+
+Name: NWS_BRANCH
+Default Value: <Branch Version>
+Description: AWIPS2_NWS branch version for this build. Leave unset to build without.
+
+Name: AWIPSII_BUILD_SITE
+Default Value: <Site name running this build>
+Description: Definies where the RPMs were built. Must be set.
+
+Name: SYNC_DEST
+Default Value:
+Description: Setting this will rsync the artifacts to a secondary location. Leave unset to let them in the Jenkins workspace.
+
+Name: WINDOWS_STAGING
+Default Value:
+Description: Setting this will move the Windows CAVE zip to a staging area for the Windows Installer build to use. Leave unset to leave it in the Jenkins Workspace.
+
+Add the following Text Parameter:
+Name: RPMS
+Default Value:
+Description: Setting this will build just the specified RPM. Leave unset for a full build.
+
+Set up the Git repositories using the template below for all the above defined repositories:
+
+Repository URL: ssh://...../AWIPS2_baseline
+Branches to build: $AWIPS2_BRANCH
+Additional Behaviours:
+ Local subdirectory for repo: ${WORKSPACE}/git/AWIPS2_baseline
+
+Add an Execute Shell under Build. Add the following script to the shell window:
+
+## Linux Build
+BUILD_FILE=$WORKSPACE/git/AWIPS2_build/build/linux/build.sh
+
+chmod a+x $BUILD_FILE
+if [ $? -ne 0 ]; then
+   exit 1
+fi
+
+/bin/bash $BUILD_FILE
+if [ $? -ne 0 ]; then
+   exit 1
+fi
+
+## Windows Thinclient Build
+BUILD_FILE=$WORKSPACE/git/AWIPS2_build/build/windows/build.sh
+
+chmod a+x $BUILD_FILE
+if [ $? -ne 0 ]; then
+   exit 1
+fi
+
+/bin/bash $BUILD_FILE
+if [ $? -ne 0 ]; then
+   exit 1
+fi
+
+Add a "Trigger/call builds on other projects" build step under Build.
+Build Triggers:
+Projects to build: Windows-Installer
+Predefined parameters:
+AWIPSII_BRANCH=${AWIPSII_BRANCH}
+BUILD_FILE=${JOB_NAME}-${BUILD_NUMBER}
+BUILD_VERSION=${AWIPSII_VERSION}
+
+Add a E-mail notification under Post-build Actions if required.
+
+See Jenkins.Windows-Installer.README to setup the Windows INNO Setup build job.
+

@@ -1,0 +1,56 @@
+The following packages, identified in the %packages section of a kickstart script, provide the required libraries to build the AWIPS-II RPMs.  
+
+Recommended OS: RedHat 6u5, Kernel 2.6.32-573
+
+@ base
+@ core
+@ basic-desktop
+@ development
+@ additional-devel
+@ network-file-system-client
+@ network-tools
+@ performance
+@ ruby-runtime
+@ server-platform
+@ system-admin-tools
+createrepo
+tree
+libgfortran.i686
+zlib.i686
+libgfortran.x86_64
+gcc-gfortran.x86_64
+compat-libf2c-34.x86_64
+wxGTK.x86_64
+wxGTK-devel.x86_64
+pcre-devel.x86_64
+cmake.x86_64
+libuuid-devel.x86_64
+
+##needed for awips2-httpd-pypies
+apr-devel
+apr-util-devel
+
+##needed for apr-util-devel
+expat-devel
+openldap-devel
+
+##needed for 16.2.1
+tk-devel
+tcl-devel
+
+#needed for awips2-httpd-pypies
+httpd-devel
+
+#needed for httpd-devel
+httpd
+
+#needed for httpd
+httpd-tools
+apr-util-ldap
+
+#needed for build scripts
+cpio
+
+#needed by awips2-python-scientific
+netcdf
+netcdf-devel
