@@ -22,7 +22,7 @@ Vendor: Raytheon
 Packager: %{_build_site}
 
 AutoReq: no
-provides: awips2-java
+Provides: awips2-java = %{version}
 
 %description
 AWIPS II Java Distribution - Contains Java SE Development Kit (JDK) %{_java_version}
