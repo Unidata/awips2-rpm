@@ -66,17 +66,15 @@ if [ $? -ne 0 ]; then
    exit 1
 fi
 
-%post
-cd /awips2/yajsw/lib/core/jna
-unzip -qu jna-3.4.1.jar com/sun/jna/linux-amd64/libjnidispatch.so
-
-%preun
-
-#do not erase on an upgrade
-if [ "${1}" = "0" ]; then
-    rm -fr /awips2/yajsw/lib/core/jna/com/
+%pre
+# cleanup the unzip of jna-3.4.1.jar from any previous installs.
+if [ -d /awips2/yajsw/lib/core/jna/com ]; then
+   rm -rf /awips2/yajsw/lib/core/jna/com/
 fi
 
+%post
+
+%preun
 
 %clean
 rm -rf ${RPM_BUILD_ROOT}
