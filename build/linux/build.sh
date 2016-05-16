@@ -356,6 +356,23 @@ if [ ! -z "$DATA_DELIVERY_BRANCH" ]; then
    echo "edex-datadelivery" >> ${WORKSPACE}/baseline/build.edex/component.ignore.txt
 fi
 
+##################################
+# Sync the NASA SPoRT Repo
+##################################
+if [ ! -z "$NASA_SPORT_BRANCH" ]; then
+   repo=$repo_dir/AWIPS2_NASA_SPoRT
+   parts_to_sync=( 'edex/*' 'features/*')
+   $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $NASA_SPORT_BRANCH $baseline ${parts_to_sync[*]}
+   if [ $? -ne 0 ]; then
+      exit 1
+   fi
+   ##################################
+   # Create properties file for AWIPS2_NASA_SPoRT
+   ##################################
+   echo "gov.nasa.msfc.sport.edex.sportlma.feature" >> ${WORKSPACE}/baseline/build.edex/features.txt
+   echo "gov.nasa.msfc.sport.edex.glmdecoder.feature" >> ${WORKSPACE}/baseline/build.edex/features.txt
+fi
+
 export _component_release=$BUILD_NUMBER
 export _component_version=$AWIPSII_VERSION
 

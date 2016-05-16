@@ -88,6 +88,10 @@ Name: NWS_BRANCH
 Default Value: <Branch Version>
 Description: AWIPS2_NWS branch version for this build. Leave unset to build without.
 
+Name: NASA_SPORT_BRANCH
+Default Value: <Branch Version>
+Description: AWIPS2_NASA_SPoRT branch version for this build. Leave unset to build without.
+
 Name: AWIPSII_BUILD_SITE
 Default Value: <Site name running this build>
 Description: Definies where the RPMs were built. Must be set.
