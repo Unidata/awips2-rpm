@@ -234,6 +234,9 @@ if [ ! -z "$BMH_BRANCH" ]; then
    echo "com.raytheon.uf.common.bmh.feature" >> ${WORKSPACE}/baseline/build.edex/features.txt
    echo "com.raytheon.uf.edex.bmh.feature" >> ${WORKSPACE}/baseline/build.edex/features.txt
    echo "com.raytheon.uf.edex.request.bmh.feature" >> ${WORKSPACE}/baseline/build.edex/features.txt
+   echo "common-bmh" >> ${WORKSPACE}/baseline/build.edex/component.ignore.txt
+   echo "edex-bmh" >> ${WORKSPACE}/baseline/build.edex/component.ignore.txt
+   echo "edex-request-bmh" >> ${WORKSPACE}/baseline/build.edex/component.ignore.txt
 fi
 
 ##################################
