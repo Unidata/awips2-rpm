@@ -38,6 +38,7 @@ export CIMSS_BRANCH=
 export COLLABORATION_BRANCH=
 export DATA_DELIVERY_BRANCH=
 export NWS_BRANCH=
+export NASA_SPORT_BRANCH=
 
 ########################################
 # Advanced options                     #
