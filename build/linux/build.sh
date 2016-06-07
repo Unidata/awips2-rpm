@@ -10,6 +10,7 @@
 # Date          Ticket#  Engineer    Description
 # ------------- -------- ----------- -----------------------------
 # Mar 10, 2016  4734     dlovely     Initial creation
+# Apr 27, 2016  18528    shooper     Add Boundary Drawing Tool and Tracking Meteogram
 
 ####################################################################
 # Usage
@@ -357,6 +358,38 @@ if [ ! -z "$DATA_DELIVERY_BRANCH" ]; then
    echo "com.raytheon.uf.edex.datadelivery.feature" >> ${WORKSPACE}/baseline/build.edex/features.txt
    echo "com.raytheon.uf.edex.dataprovideragent.feature" >> ${WORKSPACE}/baseline/build.edex/features.txt
    echo "edex-datadelivery" >> ${WORKSPACE}/baseline/build.edex/component.ignore.txt
+fi
+
+##################################
+# Sync the AWIPS2_Boundary_Drawing_Tool Repo
+##################################
+if [ ! -z "$BOUNDARY_BRANCH" ]; then
+   repo=$repo_dir/AWIPS2_Boundary_Drawing_Tool
+   parts_to_sync=( 'features/*' 'viz/*' )
+   $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $BOUNDARY_BRANCH $baseline ${parts_to_sync[*]}
+   if [ $? -ne 0 ]; then
+      exit 1
+   fi
+   ###################################
+   # Create properties file for AWIPS2_Boundary_Drawing_Tool
+   ###################################
+   echo "gov.noaa.nws.mdl.viz.boundaryTool.common.feature" >> ${WORKSPACE}/baseline/build/features.txt
+fi
+
+##################################
+# Sync the Tracking_Meteogram Repo
+##################################
+if [ ! -z "$METEOGRAM_BRANCH" ]; then
+   repo=$repo_dir/Tracking_Meteogram
+   parts_to_sync=( 'features/*' 'viz/*' )
+   $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $METEOGRAM_BRANCH $baseline ${parts_to_sync[*]}
+   if [ $? -ne 0 ]; then
+      exit 1
+   fi
+   ###################################
+   # Create properties file for Tracking_Meteogram
+   ###################################
+   echo "gov.noaa.nws.viz.mdl.trackingmeteogram.feature" >> ${WORKSPACE}/baseline/build/features.txt
 fi
 
 ##################################
