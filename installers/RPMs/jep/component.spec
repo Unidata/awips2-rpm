@@ -9,7 +9,7 @@
 Name: awips2-python-jep
 Summary: AWIPS II Python Jep Distribution
 Version: 3.4.1
-Release: 3
+Release: 4
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
@@ -64,7 +64,6 @@ if [ ! -d jep-%{version} ]; then
    file jep-%{version}
    exit 1
 fi
-source /etc/profile.d/awips2.sh
 RC=$?
 if [ ${RC} -ne 0 ]; then
    exit 1
@@ -100,7 +99,7 @@ popd > /dev/null
 %pre
 
 %post
-if [ ! -f /awips2/python/lib/libjep.so ]; then
+if [ ! -L /awips2/python/lib/libjep.so ]; then
   ln -s /awips2/python/lib/python2.7/site-packages/jep/libjep.so /awips2/python/lib/libjep.so
 fi
 %preun
