@@ -21,9 +21,7 @@ Packager: %{_build_site}
 AutoReq: no
 Provides: awips2-qpid-lib = %{_qpid_version}
 
-BuildRequires: awips2-python
-BuildRequires: make
-BuildRequires: cmake >= 2.8.12.2
+BuildRequires: awips2-python, make, cmake, ruby, libuuid-devel
 
 %description
 AWIPS II QPID Lib Distribution - Contains the qpid shared libraries and

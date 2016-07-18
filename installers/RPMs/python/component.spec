@@ -23,8 +23,9 @@ AutoReq: no
 provides: awips2-python = %{version}
 
 # Required for  Tkinter
-BuildRequires: tk-devel
-BuildRequires: tcl-devel
+BuildRequires: gcc-gfortran
+BuildRequires: tk-devel, tcl-devel
+Requires: tk-devel, tcl-devel
 
 %description
 AWIPS II Python Distribution - Contains Python V2.7.10 plus modules
