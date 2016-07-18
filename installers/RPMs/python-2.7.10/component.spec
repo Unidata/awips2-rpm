@@ -22,6 +22,7 @@ AutoReq: no
 provides: awips2-python
 
 # Required for  Tkinter
+BuildRequires: gcc-gfortran
 BuildRequires: tk-devel, tcl-devel
 Requires: tk-devel, tcl-devel
 

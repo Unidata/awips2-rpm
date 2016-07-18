@@ -20,7 +20,7 @@ URL:            http://qpid.apache.org/
 Source0: %{qpid_src_dir}.tar.gz
 
 AutoReq: no
-BuildRequires: awips2-python, cmake
+BuildRequires: awips2-python, cmake, ruby, libuuid-devel
 provides: awips2-qpid-lib
 
 %description
