@@ -112,10 +112,6 @@ mkdir -p %{_build_root}/awips2/java
 if [ $? -ne 0 ]; then
    exit 1
 fi
-mkdir -p %{_build_root}/etc/profile.d
-if [ $? -ne 0 ]; then
-   exit 1
-fi
 
 chmod a+x %{_java_build_loc}/*.bin
 pushd . > /dev/null
@@ -138,13 +134,6 @@ if [ $? -ne 0 ]; then
    exit 1
 fi
 popd > /dev/null
-
-# Our profile.d scripts.
-JAVA_PROFILED_DIR="${JAVA_SCRIPTS_DIR}/profile.d"
-cp -v ${JAVA_PROFILED_DIR}/* %{_build_root}/etc/profile.d
-if [ $? -ne 0 ]; then
-   exit 1
-fi
 
 # The pydev certificate.
 # Install the self-signed pydev certificate to avoid dialog popups when running scripts.
@@ -227,8 +216,6 @@ rm -rf %{_java_build_loc}
 
 %files
 %defattr(644,awips,fxalpha,755)
-%attr(755,root,root) /etc/profile.d/awips2Java.csh
-%attr(755,root,root) /etc/profile.d/awips2Java.sh
 %dir /awips2/java
 %dir /awips2/java/bin
 

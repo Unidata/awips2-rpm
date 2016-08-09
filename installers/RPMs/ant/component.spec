@@ -5,7 +5,7 @@
 Name: awips2-ant
 Summary: AWIPS II Ant Distribution
 Version: 1.9.6
-Release: %{_component_version}.%{_component_release}
+Release: %{_component_version}%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: noarch
@@ -60,7 +60,6 @@ function copyLegal()
 }
 
 mkdir -p ${RPM_BUILD_ROOT}/awips2/ant
-mkdir -p ${RPM_BUILD_ROOT}/etc/profile.d
 
 CORE_PROJECT_DIR="%{_baseline_workspace}/foss"
 ANT_BIN_DIR="${CORE_PROJECT_DIR}/ant-%{version}/packaged"
@@ -75,7 +74,6 @@ cp -r %{_build_root}/awips2/apache-ant-%{version}/* \
    %{_build_root}/awips2/ant 
 rm -rf %{_build_root}/awips2/apache-ant-%{version}
 
-cp ${ANT_SCRIPTS_DIR}/profile.d/* %{_build_root}/etc/profile.d
 
 copyLegal "awips2/ant"
 
@@ -99,8 +97,6 @@ rm -rf ${RPM_BUILD_ROOT}
 
 %files
 %defattr(-,awips,fxalpha,-)
-%attr(755,root,root) /etc/profile.d/awips2Ant.csh
-%attr(755,root,root) /etc/profile.d/awips2Ant.sh
 %dir /awips2/ant
 %dir /awips2/ant/bin
 %attr(755,awips,fxalpha) /awips2/ant/bin/ant

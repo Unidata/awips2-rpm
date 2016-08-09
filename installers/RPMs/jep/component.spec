@@ -71,7 +71,7 @@ if [ ! -d jep-%{version} ]; then
    echo "Directory jep-%{version} not found!"
    exit 1
 fi
-source /etc/profile.d/awips2Python.sh
+source /etc/profile.d/awips2.sh
 RC=$?
 if [ ${RC} -ne 0 ]; then
    exit 1
@@ -120,10 +120,6 @@ rm -rf %{_python_build_loc}
 %defattr(644,awips,fxalpha,755)
 %dir /awips2/python/lib/python2.7/site-packages
 /awips2/python/lib/python2.7/site-packages/*
-%dir /awips2/python/lib/python2.7/site-packages/jep
-/awips2/python/lib/python2.7/site-packages/jep/jep-%{version}.jar
-/awips2/python/lib/python2.7/site-packages/jep/jep.so
-/awips2/python/lib/python2.7/site-packages/jep/libjep.so
 %defattr(755,awips,fxalpha,755)
 %dir /awips2/python/bin
 /awips2/python/bin/*
