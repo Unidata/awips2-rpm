@@ -21,7 +21,8 @@ Packager: %{_build_site}
 AutoReq: no
 Provides: awips2-qpid-lib = %{_qpid_version}
 
-BuildRequires: awips2-python, make, cmake, ruby, libuuid-devel
+BuildRequires: awips2-python, boost-devel
+BuildRequires: make, cmake, ruby, libuuid-devel
 
 %description
 AWIPS II QPID Lib Distribution - Contains the qpid shared libraries and
@@ -120,9 +121,16 @@ rm -rf ${RPM_BUILD_ROOT}
 rm -rf %{_qpid_build_loc}
 
 %files
-%defattr(644,awips,fxalpha,755)
-%dir /awips2/qpid
-%dir /awips2/qpid/lib
-/awips2/qpid/lib/*
+%defattr(644,awips,awips,755)
+/awips2/qpid/lib/libqmf*
+/awips2/qpid/lib/libqpid*
+/awips2/qpid/lib/pkgconfig/qmf2.pc
+/awips2/qpid/lib/pkgconfig/qpid.pc
+/awips2/qpid/lib/cmake/Qpid/QpidConfig.cmake
+/awips2/qpid/lib/cmake/Qpid/QpidConfigVersion.cmake
+/awips2/qpid/lib/python2.7/site-packages/qmfgen*
+/awips2/qpid/lib/qpid/daemon/ha.so
+/awips2/qpid/lib/qpid/daemon/store.so
+/awips2/qpid/lib/qpid/daemon/store.so.0.32
 %dir /awips2/qpid/include
 /awips2/qpid/include/*

@@ -31,7 +31,7 @@ install -pm 644 %{_patchdir}/qpid-java-broker-%{version}/alr/edex-alr/config/ede
 cp /awips2/qpid/config.json.alr /awips2/qpid/config.json
 
 %files
-%defattr(-,awips,fxalpha,-)
+%defattr(-,awips,awips,-)
 /awips2/qpid
 
 %changelog

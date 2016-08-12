@@ -9,7 +9,7 @@
 Name: awips2-python
 Summary: AWIPS II Python Distribution
 Version: 2.7.10
-Release: %{_component_version}.%{?dist}
+Release: %{_component_version}%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
@@ -276,7 +276,7 @@ rm -rf %{_build_root}
 rm -rf %{_python_build_loc}
 
 %files
-%defattr(644,awips,fxalpha,755)
+%defattr(644,awips,awips,755)
 %dir /awips2/python
 %dir /awips2/python/lib
 /awips2/python/lib/*
@@ -285,7 +285,7 @@ rm -rf %{_python_build_loc}
 /awips2/python/licenses/*
 %dir /awips2/python/share
 /awips2/python/share/*
-%defattr(755,awips,fxalpha,755)
+%defattr(755,awips,awips,755)
 %dir /awips2/python/include
 /awips2/python/include/*
 %dir /awips2/python/bin

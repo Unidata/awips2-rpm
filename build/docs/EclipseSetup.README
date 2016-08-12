@@ -24,8 +24,8 @@ EDEX and Development Environment Setup:
 2. Create user IDs
 
    sudo useradd awips
-   sudo groupadd fxalpha
-   sudo usermod -G -a fxalpha awips
+   sudo groupadd awips
+   sudo usermod -G -a awips awips
 
 3. Install base RPMs:
  
@@ -35,8 +35,8 @@ EDEX and Development Environment Setup:
 
 4. Change ownership and permission to developer's id:
  
-   sudo usermod -G -a fxalpha developer
-   sudo chown -R developer.fxalpha /awips2
+   sudo usermod -G -a awips developer
+   sudo chown -R developer.awips /awips2
    sudo chmod -R 775 /awips2
    sudo chmod 700 /awips2/data
 

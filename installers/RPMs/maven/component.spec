@@ -86,15 +86,15 @@ copyLegal "awips2/maven"
 rm -rf ${RPM_BUILD_ROOT}
 
 %files
-%defattr(-,awips,fxalpha,-)
+%defattr(-,awips,awips,-)
 %dir /awips2/maven
 %dir /awips2/maven/bin
-%attr(755,awips,fxalpha) /awips2/maven/bin/mvn
-%attr(644,awips,fxalpha) /awips2/maven/bin/mvn.bat
-%attr(755,awips,fxalpha) /awips2/maven/bin/mvnDebug
-%attr(644,awips,fxalpha) /awips2/maven/bin/mvnDebug.bat
-%attr(755,awips,fxalpha) /awips2/maven/bin/mvnyjp
-%attr(644,awips,fxalpha) /awips2/maven/bin/m2.conf
+%attr(755,awips,awips) /awips2/maven/bin/mvn
+%attr(644,awips,awips) /awips2/maven/bin/mvn.bat
+%attr(755,awips,awips) /awips2/maven/bin/mvnDebug
+%attr(644,awips,awips) /awips2/maven/bin/mvnDebug.bat
+%attr(755,awips,awips) /awips2/maven/bin/mvnyjp
+%attr(644,awips,awips) /awips2/maven/bin/m2.conf
 /awips2/maven/boot
 /awips2/maven/conf
 /awips2/maven/lib

@@ -7,7 +7,7 @@
 Name: awips2-yajsw
 Summary: AWIPS II yajsw Distribution
 Version: %{_yajsw_version}
-Release: %{_component_version}%{?dist}
+Release: 1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: noarch
@@ -47,21 +47,11 @@ fi
 
 %install
 DIST_DIR="%{_baseline_workspace}/foss/yajsw-%{_yajsw_version}/packaged"
-YAJSW_SCRIPTS_DIR="%{_baseline_workspace}/installers/RPMs/yajsw/scripts"
 
 YAJSW_ZIP="yajsw-dist.zip"
 
 unzip ${DIST_DIR}/${YAJSW_ZIP} -d %{_build_root}
 
-if [ $? -ne 0 ]; then
-   exit 1
-fi
-
-mkdir -p %{_build_root}/etc
-if [ $? -ne 0 ]; then
-   exit 1
-fi
-cp -rv ${YAJSW_SCRIPTS_DIR}/* %{_build_root}/etc
 if [ $? -ne 0 ]; then
    exit 1
 fi
@@ -80,13 +70,12 @@ fi
 rm -rf ${RPM_BUILD_ROOT}
 
 %files
-%defattr(644,awips,fxalpha,755)
+%defattr(644,awips,awips,755)
 %dir /awips2/yajsw
 /awips2/yajsw/*.jar
 /awips2/yajsw/*.txt
 %dir /awips2/yajsw/lib
 /awips2/yajsw/lib/*
-
-%defattr(755,awips,fxalpha,755)
+%defattr(755,awips,awips,755)
 %dir /awips2/yajsw/scripts
 /awips2/yajsw/scripts/*.sh

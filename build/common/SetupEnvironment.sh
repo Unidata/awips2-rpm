@@ -55,7 +55,7 @@ fi
 if [ -d /build/python/${PYTHON_VERSION} ]; then
    sudo rsync -a --delete /build/python/${PYTHON_VERSION}/ /awips2/python/
    BUILDUSER=`whoami`
-   sudo chown -R ${BUILDUSER}.fxalpha /awips2/python
+   sudo chown -R ${BUILDUSER}.awips /awips2/python
    sudo chmod -R 777 /awips2/python
    sudo ln -sf ${WORKSPACE}/git/AWIPS2_build/installers/RPMs/python/scripts/profile.d/awips2Python.sh /etc/profile.d/awips2Python.sh
    source ${WORKSPACE}/git/AWIPS2_build/installers/RPMs/python/scripts/profile.d/awips2Python.sh
@@ -194,7 +194,7 @@ function buildPythonPackage {
    # Update what we have so far in the build process.
    sudo rsync -a --delete /build/python/${VERSION}/ /awips2/python/
    BUILDUSER=`whoami`
-   sudo chown -R ${BUILDUSER}.fxalpha /awips2/python
+   sudo chown -R ${BUILDUSER}.awips /awips2/python
    sudo chmod -R 777 /awips2/python
    sudo ln -sf ${WORKSPACE}/git/AWIPS2_build/installers/RPMs/python/scripts/profile.d/awips2Python.sh /etc/profile.d/awips2Python.sh
    source ${WORKSPACE}/git/AWIPS2_build/installers/RPMs/python/scripts/profile.d/awips2Python.sh

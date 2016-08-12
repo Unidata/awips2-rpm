@@ -385,9 +385,9 @@ tar xzf %RPMBUILD_PYPIES_DIR/centos-noindex.tar.gz \
 rm -rf /awips2/httpd_pypies%{contentdir}/htdocs
 
 # docroot
-#mkdir -p $RPM_BUILD_ROOT/awips2/httpd_pypies%{contentdir}/html
-#install -m 644 -p $RPM_SOURCE_DIR/index.html \
-#        $RPM_BUILD_ROOT/awips2/httpd_pypies%{contentdir}/error/noindex.html
+mkdir -p $RPM_BUILD_ROOT/awips2/httpd_pypies%{contentdir}/html
+install -m 644 -p $RPM_SOURCE_DIR/index.html \
+        $RPM_BUILD_ROOT/awips2/httpd_pypies%{contentdir}/error/noindex.html
 
 # remove manual sources
 find $RPM_BUILD_ROOT/awips2/httpd_pypies%{contentdir}/manual \( \
@@ -618,7 +618,7 @@ echo "cleaning"
 rm -rf $RPM_BUILD_ROOT
 
 %files
-%defattr(-,awips,fxalpha)
+%defattr(-,awips,awips)
 
 #%doc ABOUT_APACHE README CHANGES LICENSE VERSIONING NOTICE
 
@@ -687,20 +687,22 @@ rm -rf $RPM_BUILD_ROOT
 
 %dir /awips2/httpd_pypies%{contentdir}
 %dir /awips2/httpd_pypies%{contentdir}/icons
+%dir /awips2/httpd_pypies%{contentdir}/html
 %dir /awips2/httpd_pypies%{contentdir}/error
 %dir /awips2/httpd_pypies%{contentdir}/error/include
 %dir /awips2/httpd_pypies%{contentdir}/noindex
 /awips2/httpd_pypies%{contentdir}/icons/*
 /awips2/httpd_pypies%{contentdir}/error/README
 /awips2/httpd_pypies%{contentdir}/error/*.var
+/awips2/httpd_pypies%{contentdir}/error/noindex.html
 /awips2/httpd_pypies%{contentdir}/error/include/*.html
 /awips2/httpd_pypies%{contentdir}/noindex/*
 
-#%attr(0710,awips,fxalpha) %dir /awips2/httpd_pypies/run/httpd
-%attr(0700,awips,fxalpha) %dir /awips2/httpd_pypies%{_localstatedir}/log/httpd
-%attr(0700,awips,fxalpha) %dir /awips2/httpd_pypies%{_localstatedir}/lib/dav
-%attr(0700,awips,fxalpha) %dir /awips2/httpd_pypies%{_localstatedir}/cache/httpd
-%attr(0700,awips,fxalpha) %dir /awips2/httpd_pypies%{_localstatedir}/cache/httpd/proxy
+#%attr(0710,awips,awips) %dir /awips2/httpd_pypies/run/httpd
+%attr(0700,awips,awips) %dir /awips2/httpd_pypies%{_localstatedir}/log/httpd
+%attr(0700,awips,awips) %dir /awips2/httpd_pypies%{_localstatedir}/lib/dav
+%attr(0700,awips,awips) %dir /awips2/httpd_pypies%{_localstatedir}/cache/httpd
+%attr(0700,awips,awips) %dir /awips2/httpd_pypies%{_localstatedir}/cache/httpd/proxy
 
 %{_unitdir}/*.service
 

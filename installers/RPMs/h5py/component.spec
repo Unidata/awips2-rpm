@@ -2,8 +2,6 @@
 %define _build_arch %(uname -i)
 %define _python_pkgs_dir "%{_baseline_workspace}/pythonPackages"
 %define _python_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-%define _installed_python %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c 'import sys; print(".".join(map(str, sys.version_info[:3])))'; else echo 0; fi)
-%define _installed_python_numpy %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c "import numpy; print numpy.__version__"; else echo 0; fi)
 %define _hdf5_version 1.8.4
 
 #
@@ -23,8 +21,8 @@ Vendor: Raytheon
 Packager: %{_build_site}
 
 AutoReq: no
-Requires: awips2-python = %{_installed_python}
-Requires: awips2-python-numpy = %{_installed_python_numpy}
+Requires: awips2-python
+Requires: awips2-python-numpy
 Requires: libz.so.1
 Provides: awips2-python-h5py = %{version}
 
@@ -200,6 +198,9 @@ rm -rf ${RPM_BUILD_ROOT}
 rm -rf %{_python_build_loc}
 
 %files
-%defattr(644,awips,fxalpha,755)
-%dir /awips2/python/lib
-/awips2/python/lib/*
+%defattr(644,awips,awips,755)
+%dir /awips2/python/lib/python2.7/site-packages/h5py/
+/awips2/python/lib/python2.7/site-packages/h5py*
+/awips2/python/lib/libsz.so
+/awips2/python/lib/libsz.so.2
+/awips2/python/lib/libsz.so.2.0.0

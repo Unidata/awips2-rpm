@@ -2,7 +2,6 @@
 %define _build_arch %(uname -i)
 %define _python_pkgs_dir "%{_baseline_workspace}/pythonPackages"
 %define _python_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-%define _installed_python %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c 'import sys; print(".".join(map(str, sys.version_info[:3])))'; else echo 0; fi)
 
 #
 # AWIPS II Python numpy Spec File
@@ -23,10 +22,11 @@ Packager: %{_build_site}
 AutoReq: no
 Requires: compat-libf2c-34(x86-64)
 Requires: libgfortran(x86-64)
-Requires: awips2-python = %{_installed_python}
+Requires: awips2-python
 Requires: awips2-python-nose
 Provides: awips2-python-numpy = %{version}
 
+BuildRequires: atlas, atlas-devel, subversion
 BuildRequires: awips2-python
 BuildRequires: awips2-python-nose
 BuildRequires: compat-libf2c-34(x86-64)
@@ -119,9 +119,8 @@ rm -rf %{_build_root}
 rm -rf %{_python_build_loc}
 
 %files
-%defattr(644,awips,fxalpha,755)
-%dir /awips2/python/lib/python2.7/site-packages
-/awips2/python/lib/python2.7/site-packages/*
-%defattr(755,awips,fxalpha,755)
-%dir /awips2/python/bin
-/awips2/python/bin/*
+%defattr(644,awips,awips,755)
+%dir /awips2/python/lib/python2.7/site-packages/numpy
+/awips2/python/lib/python2.7/site-packages/numpy*
+%defattr(755,awips,awips,755)
+/awips2/python/bin/f2py
