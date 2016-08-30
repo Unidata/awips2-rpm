@@ -56,14 +56,14 @@ repo_dir=$WORKSPACE/git
 ##################################
 # Setup the build environment
 ##################################
-source $repo_dir/AWIPS2_build/build/common/SetupEnvironment.sh
+source $repo_dir/awips2-rpm/build/common/SetupEnvironment.sh
 
 ##################################
 # Create empty, expected directories due to git limitations.
 ##################################
-$repo_dir/AWIPS2_build/build/common/createEmptyBuildDirectories.sh
+$repo_dir/awips2-rpm/build/common/createEmptyBuildDirectories.sh
 
-$repo_dir/AWIPS2_build/build/common/makeRPMBuildStructure.sh
+$repo_dir/awips2-rpm/build/common/makeRPMBuildStructure.sh
 if [ $? -ne 0 ]; then
    exit 1
 fi
@@ -71,10 +71,10 @@ fi
 ##################################
 # sync repos to baseline directory
 ##################################
-repo=$repo_dir/AWIPS2_baseline
+repo=$repo_dir/awips2-builds
 parts_to_sync=( 'build/*' 'RadarServer/*' 'edexOsgi/*' 'cave/*' 'localization/*' \
    'javaUtilities/*' 'rpms' 'pythonPackages' 'nativeLib/*' )
-$repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $AWIPSII_BRANCH $baseline ${parts_to_sync[*]}
+$repo_dir/awips2-rpm/build/common/sync_workspace.sh $repo $AWIPSII_BRANCH $baseline ${parts_to_sync[*]}
 if [ $? -ne 0 ]; then
    exit 1
 fi
@@ -93,30 +93,30 @@ touch ${WORKSPACE}/baseline/build.edex/features.txt
 #   "common-base" is required to be ignored by default.
 echo "common-base" > ${WORKSPACE}/baseline/build.edex/component.ignore.txt
 
-repo=$repo_dir/ufcore
+repo=$repo_dir/awips2-core
 parts_to_sync=( 'common/*' 'edex/*' 'features/*' 'viz/*' )
-$repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $UFCORE_BRANCH $baseline ${parts_to_sync[*]}
+$repo_dir/awips2-rpm/build/common/sync_workspace.sh $repo $UFCORE_BRANCH $baseline ${parts_to_sync[*]}
 if [ $? -ne 0 ]; then
    exit 1
 fi
 
-repo=$repo_dir/ufcore-foss
+repo=$repo_dir/awips2-core-foss
 parts_to_sync=( 'lib/*' )
-$repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $UFCORE_FOSS_BRANCH $baseline ${parts_to_sync[*]}
+$repo_dir/awips2-rpm/build/common/sync_workspace.sh $repo $UFCORE_FOSS_BRANCH $baseline ${parts_to_sync[*]}
 if [ $? -ne 0 ]; then
    exit 1
 fi
 
-repo=$repo_dir/AWIPS2_foss
+repo=$repo_dir/awips2-foss
 parts_to_sync=( 'lib/*' )
-$repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $FOSS_BRANCH $baseline ${parts_to_sync[*]}
+$repo_dir/awips2-rpm/build/common/sync_workspace.sh $repo $FOSS_BRANCH $baseline ${parts_to_sync[*]}
 if [ $? -ne 0 ]; then
    exit 1
 fi
 
-repo=$repo_dir/AWIPS2_build
+repo=$repo_dir/awips2-rpm
 parts_to_sync=( 'foss' 'installers')
-$repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $BUILD_BRANCH $baseline ${parts_to_sync[*]}
+$repo_dir/awips2-rpm/build/common/sync_workspace.sh $repo $BUILD_BRANCH $baseline ${parts_to_sync[*]}
 if [ $? -ne 0 ]; then
    exit 1
 fi
@@ -125,9 +125,9 @@ fi
 # Sync the AWIPS2 NWS Repo
 ##################################
 if [ ! -z "$NWS_BRANCH" ]; then
-   repo=$repo_dir/AWIPS2_NWS
+   repo=$repo_dir/awips2-nws
    parts_to_sync=( 'common/*' 'edex/*' 'features/*')
-   $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $NWS_BRANCH $baseline ${parts_to_sync[*]}
+   $repo_dir/awips2-rpm/build/common/sync_workspace.sh $repo $NWS_BRANCH $baseline ${parts_to_sync[*]}
    if [ $? -ne 0 ]; then
       exit 1
    fi
@@ -158,9 +158,9 @@ fi
 # Sync the AWIPS2 NCEP Repo
 ##################################
 if [ ! -z "$NCEP_BRANCH" ]; then
-   repo=$repo_dir/AWIPS2_NCEP
+   repo=$repo_dir/awips2-ncep
    parts_to_sync=( 'common/*' 'edex/*' 'features/*' 'viz/*')
-   $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $NCEP_BRANCH $baseline ${parts_to_sync[*]}
+   $repo_dir/awips2-rpm/build/common/sync_workspace.sh $repo $NCEP_BRANCH $baseline ${parts_to_sync[*]}
    if [ $? -ne 0 ]; then
       exit 1
    fi
@@ -170,9 +170,9 @@ fi
 # Sync the OGC Repo
 ##################################
 if [ ! -z "$OGC_BRANCH" ]; then
-   repo=$repo_dir/OGC
+   repo=$repo_dir/awips2-ogc
    parts_to_sync=( 'edex/*' 'foss/*' 'features/*')
-   $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $OGC_BRANCH $baseline ${parts_to_sync[*]}
+   $repo_dir/awips2-rpm/build/common/sync_workspace.sh $repo $OGC_BRANCH $baseline ${parts_to_sync[*]}
    if [ $? -ne 0 ]; then
       exit 1
    fi
@@ -187,9 +187,9 @@ fi
 # Sync the Hazard Services Repo
 ##################################
 if [ ! -z "$HAZARD_SERVICES_BRANCH" ]; then
-   repo=$repo_dir/18-Hazard_Services
+   repo=$repo_dir/awips2-hazards
    parts_to_sync=( 'common/*' 'edex/*' 'viz/*' 'tools' 'rpms-Hazard_Services' )
-   $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $HAZARD_SERVICES_BRANCH $baseline ${parts_to_sync[*]}
+   $repo_dir/awips2-rpm/build/common/sync_workspace.sh $repo $HAZARD_SERVICES_BRANCH $baseline ${parts_to_sync[*]}
    if [ $? -ne 0 ]; then
       exit 1
    fi
@@ -205,9 +205,9 @@ fi
 # Sync the 13.3 GEOS-R Repo
 ##################################
 if [ ! -z "$GOES_R_BRANCH" ]; then
-   repo=$repo_dir/13.3-GOES-R
+   repo=$repo_dir/awips2-goesr
    parts_to_sync=( 'cave/*' 'cots/*' 'edexOsgi/*')
-   $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $GOES_R_BRANCH $baseline ${parts_to_sync[*]}
+   $repo_dir/awips2-rpm/build/common/sync_workspace.sh $repo $GOES_R_BRANCH $baseline ${parts_to_sync[*]}
    if [ $? -ne 0 ]; then
       exit 1
    fi
@@ -221,44 +221,44 @@ fi
 ##################################
 # Sync the BMH Repo
 ##################################
-if [ ! -z "$BMH_BRANCH" ]; then
-   repo=$repo_dir/BMH
-   parts_to_sync=( 'cave/*' 'common/*' 'cots/*' 'edex/*' 'features/*' 'foss/*' 'rpms-BMH' 'test/*' )
-   $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $BMH_BRANCH $baseline ${parts_to_sync[*]}
-   if [ $? -ne 0 ]; then
-      exit 1
-   fi
-   ##################################
-   # Create properties file for BMH
-   ##################################
-   echo "com.raytheon.uf.viz.bmh.feature" >> ${WORKSPACE}/baseline/build/features.txt
-   echo "com.raytheon.uf.common.bmh.feature" >> ${WORKSPACE}/baseline/build.edex/features.txt
-   echo "com.raytheon.uf.edex.bmh.feature" >> ${WORKSPACE}/baseline/build.edex/features.txt
-   echo "com.raytheon.uf.edex.request.bmh.feature" >> ${WORKSPACE}/baseline/build.edex/features.txt
-   echo "common-bmh" >> ${WORKSPACE}/baseline/build.edex/component.ignore.txt
-   echo "edex-bmh" >> ${WORKSPACE}/baseline/build.edex/component.ignore.txt
-   echo "edex-request-bmh" >> ${WORKSPACE}/baseline/build.edex/component.ignore.txt
-fi
+#if [ ! -z "$BMH_BRANCH" ]; then
+#   repo=$repo_dir/BMH
+#   parts_to_sync=( 'cave/*' 'common/*' 'cots/*' 'edex/*' 'features/*' 'foss/*' 'rpms-BMH' 'test/*' )
+#   $repo_dir/awips2-rpm/build/common/sync_workspace.sh $repo $BMH_BRANCH $baseline ${parts_to_sync[*]}
+#   if [ $? -ne 0 ]; then
+#      exit 1
+#   fi
+#   ##################################
+#   # Create properties file for BMH
+#   ##################################
+#   echo "com.raytheon.uf.viz.bmh.feature" >> ${WORKSPACE}/baseline/build/features.txt
+#   echo "com.raytheon.uf.common.bmh.feature" >> ${WORKSPACE}/baseline/build.edex/features.txt
+#   echo "com.raytheon.uf.edex.bmh.feature" >> ${WORKSPACE}/baseline/build.edex/features.txt
+#   echo "com.raytheon.uf.edex.request.bmh.feature" >> ${WORKSPACE}/baseline/build.edex/features.txt
+#   echo "common-bmh" >> ${WORKSPACE}/baseline/build.edex/component.ignore.txt
+#   echo "edex-bmh" >> ${WORKSPACE}/baseline/build.edex/component.ignore.txt
+#   echo "edex-request-bmh" >> ${WORKSPACE}/baseline/build.edex/component.ignore.txt
+#fi
 
 ##################################
 # Sync the BMH_cots Repo
 ##################################
-if [ ! -z "$BMH_COTS_BRANCH" ]; then
-   repo=$repo_dir/BMH_cots
-   parts_to_sync=( 'neospeech' 'foss' )
-   $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $BMH_COTS_BRANCH $baseline ${parts_to_sync[*]}
-   if [ $? -ne 0 ]; then
-      exit 1
-   fi
-fi
+#if [ ! -z "$BMH_COTS_BRANCH" ]; then
+#   repo=$repo_dir/BMH_cots
+#   parts_to_sync=( 'neospeech' 'foss' )
+#   $repo_dir/awips2-rpm/build/common/sync_workspace.sh $repo $BMH_COTS_BRANCH $baseline ${parts_to_sync[*]}
+#   if [ $? -ne 0 ]; then
+#      exit 1
+#   fi
+#fi
 
 ##################################
 # Sync the OHD Repo
 ##################################
 if [ ! -z "$OHD_BRANCH" ]; then
-   repo=$repo_dir/OHD
+   repo=$repo_dir/awips2-ohd
    parts_to_sync=( 'lib/*' 'edex/*' 'features/*' )
-   $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $OHD_BRANCH $baseline ${parts_to_sync[*]}
+   $repo_dir/awips2-rpm/build/common/sync_workspace.sh $repo $OHD_BRANCH $baseline ${parts_to_sync[*]}
    if [ $? -ne 0 ]; then
       exit 1
    fi
@@ -277,9 +277,9 @@ fi
 # Sync the AWIPS2 GSD Repo
 ##################################
 if [ ! -z "$GSD_BRANCH" ]; then
-   repo=$repo_dir/AWIPS2_GSD
+   repo=$repo_dir/awips2-gsd
    parts_to_sync=( 'features/*' 'viz/*')
-   $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $GSD_BRANCH $baseline ${parts_to_sync[*]}
+   $repo_dir/awips2-rpm/build/common/sync_workspace.sh $repo $GSD_BRANCH $baseline ${parts_to_sync[*]}
    if [ $? -ne 0 ]; then
       exit 1
    fi
@@ -292,27 +292,27 @@ fi
 ##################################
 # Sync the X Band Radar Repo
 ##################################
-if [ ! -z "$X_BAND_RADAR_BRANCH" ]; then
-   repo=$repo_dir/X-Band_Radar
-   parts_to_sync=( 'cave/*' 'edexOsgi/*')
-   $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $X_BAND_RADAR_BRANCH $baseline ${parts_to_sync[*]}
-   if [ $? -ne 0 ]; then
-      exit 1
-   fi
-   ##################################
-   # Create properties file for X-Band-Radar
-   ##################################
-   echo "com.raytheon.uf.viz.dataplugin.nswrc.feature" >> ${WORKSPACE}/baseline/build/features.txt
-   echo "com.raytheon.uf.edex.nswrc.radar.feature" >> ${WORKSPACE}/baseline/build.edex/features.txt
-fi
+#if [ ! -z "$X_BAND_RADAR_BRANCH" ]; then
+#   repo=$repo_dir/X-Band_Radar
+#   parts_to_sync=( 'cave/*' 'edexOsgi/*')
+#   $repo_dir/awips2-rpm/build/common/sync_workspace.sh $repo $X_BAND_RADAR_BRANCH $baseline ${parts_to_sync[*]}
+#   if [ $? -ne 0 ]; then
+#      exit 1
+#   fi
+#   ##################################
+#   # Create properties file for X-Band-Radar
+#   ##################################
+#   echo "com.raytheon.uf.viz.dataplugin.nswrc.feature" >> ${WORKSPACE}/baseline/build/features.txt
+#   echo "com.raytheon.uf.edex.nswrc.radar.feature" >> ${WORKSPACE}/baseline/build.edex/features.txt
+#fi
 
 ##################################
 # Sync the AWIPS2 CIMSS Repo
 ##################################
 if [ ! -z "$CIMSS_BRANCH" ]; then
-   repo=$repo_dir/AWIPS2_CIMSS
+   repo=$repo_dir/awips2-cimss
    parts_to_sync=( 'common/*' 'edex/*' 'features/*' 'viz/*')
-   $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $CIMSS_BRANCH $baseline ${parts_to_sync[*]}
+   $repo_dir/awips2-rpm/build/common/sync_workspace.sh $repo $CIMSS_BRANCH $baseline ${parts_to_sync[*]}
    if [ $? -ne 0 ]; then
       exit 1
    fi
@@ -327,9 +327,9 @@ fi
 # Sync the Collaboration Repo
 ##################################
 if [ ! -z "$COLLABORATION_BRANCH" ]; then
-   repo=$repo_dir/Collaboration
+   repo=$repo_dir/awips2-collaboration
    parts_to_sync=( 'viz/*' 'features/*' 'common/*' 'openfire/*' 'rpms-Collaboration' 'foss')
-   $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $COLLABORATION_BRANCH $baseline ${parts_to_sync[*]}
+   $repo_dir/awips2-rpm/build/common/sync_workspace.sh $repo $COLLABORATION_BRANCH $baseline ${parts_to_sync[*]}
    if [ $? -ne 0 ]; then
       exit 1
    fi
@@ -343,9 +343,9 @@ fi
 # Sync the Data Delivery Repo
 ##################################
 if [ ! -z "$DATA_DELIVERY_BRANCH" ]; then
-   repo=$repo_dir/Data_Delivery
+   repo=$repo_dir/awips2-data-delivery
    parts_to_sync=( 'common/*' 'edex/*' 'features/*' 'viz/*' 'rpms-Data_Delivery' )
-   $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $DATA_DELIVERY_BRANCH $baseline ${parts_to_sync[*]}
+   $repo_dir/awips2-rpm/build/common/sync_workspace.sh $repo $DATA_DELIVERY_BRANCH $baseline ${parts_to_sync[*]}
    if [ $? -ne 0 ]; then
       exit 1
    fi
@@ -364,9 +364,9 @@ fi
 # Sync the AWIPS2_Boundary_Drawing_Tool Repo
 ##################################
 if [ ! -z "$BOUNDARY_BRANCH" ]; then
-   repo=$repo_dir/AWIPS2_Boundary_Drawing_Tool
+   repo=$repo_dir/awips2-drawing
    parts_to_sync=( 'features/*' 'viz/*' )
-   $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $BOUNDARY_BRANCH $baseline ${parts_to_sync[*]}
+   $repo_dir/awips2-rpm/build/common/sync_workspace.sh $repo $BOUNDARY_BRANCH $baseline ${parts_to_sync[*]}
    if [ $? -ne 0 ]; then
       exit 1
    fi
@@ -379,26 +379,26 @@ fi
 ##################################
 # Sync the Tracking_Meteogram Repo
 ##################################
-if [ ! -z "$METEOGRAM_BRANCH" ]; then
-   repo=$repo_dir/Tracking_Meteogram
-   parts_to_sync=( 'features/*' 'viz/*' )
-   $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $METEOGRAM_BRANCH $baseline ${parts_to_sync[*]}
-   if [ $? -ne 0 ]; then
-      exit 1
-   fi
-   ###################################
-   # Create properties file for Tracking_Meteogram
-   ###################################
-   echo "gov.noaa.nws.viz.mdl.trackingmeteogram.feature" >> ${WORKSPACE}/baseline/build/features.txt
-fi
+#if [ ! -z "$METEOGRAM_BRANCH" ]; then
+#   repo=$repo_dir/Tracking_Meteogram
+#   parts_to_sync=( 'features/*' 'viz/*' )
+#   $repo_dir/awips2-rpm/build/common/sync_workspace.sh $repo $METEOGRAM_BRANCH $baseline ${parts_to_sync[*]}
+#   if [ $? -ne 0 ]; then
+#      exit 1
+#   fi
+#   ###################################
+#   # Create properties file for Tracking_Meteogram
+#   ###################################
+#   echo "gov.noaa.nws.viz.mdl.trackingmeteogram.feature" >> ${WORKSPACE}/baseline/build/features.txt
+#fi
 
 ##################################
 # Sync the NASA SPoRT Repo
 ##################################
 if [ ! -z "$NASA_SPORT_BRANCH" ]; then
-   repo=$repo_dir/AWIPS2_NASA_SPoRT
+   repo=$repo_dir/awips2-nasa
    parts_to_sync=( 'edex/*' 'features/*')
-   $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $NASA_SPORT_BRANCH $baseline ${parts_to_sync[*]}
+   $repo_dir/awips2-rpm/build/common/sync_workspace.sh $repo $NASA_SPORT_BRANCH $baseline ${parts_to_sync[*]}
    if [ $? -ne 0 ]; then
       exit 1
    fi
@@ -419,7 +419,7 @@ export _component_version=$AWIPSII_VERSION
 ##################################
 # Set Build Envrionment Variables
 ##################################
-$repo_dir/AWIPS2_build/build/common/setup_build_environment.sh
+$repo_dir/awips2-rpm/build/common/setup_build_environment.sh
 
 ##################################
 # Allow execution of the cave rpm build build.sh script.
@@ -444,7 +444,7 @@ if [ ! -z "$RPMS" ]; then
 
    # Return back to SetupEnvironment.sh if building dependant packages
    if [ ! -z "$LIB_ENV_BUILD_PACKAGE" ]; then
-      processBuildEnv ${WORKSPACE}/git/AWIPS2_build/build/linux/build.sh
+      processBuildEnv ${WORKSPACE}/git/awips2-rpm/build/linux/build.sh
       if [ $? -ne 0 ]; then
          exit 1
       fi
@@ -486,7 +486,7 @@ fi
 # Install the rpms in the repo
 ##################################
 if [ ! -z "$SYNC_DEST" ]; then
-   $repo_dir/AWIPS2_build/build/common/build_install_rpms.sh ${SYNC_DEST}
+   $repo_dir/awips2-rpm/build/common/build_install_rpms.sh ${SYNC_DEST}
    # Cleanup the rpmbuild directory after we copy over the RPMs.
    sudo rm -rf ${WORKSPACE}/rpmbuild
    sudo rm -rf ${WORKSPACE}/eclipse-repo

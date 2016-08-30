@@ -2,7 +2,7 @@
 # Sample script to build by command line without Jenkins.
 
 # Set to your site.
-export AWIPSII_BUILD_SITE=Dev_Org
+export AWIPSII_BUILD_SITE=Unidata
 
 # Set this to the base workspace directory.
 # Your workspace should contain the Git repos in $WORKSPACE/git/
@@ -11,8 +11,8 @@ export WORKSPACE=
 ########################################
 # Build Version                        #
 ########################################
-export AWIPSII_RELEASE=
-export AWIPSII_VERSION=
+export AWIPSII_RELEASE=16.2.2
+export AWIPSII_VERSION=4
 
 ########################################
 # Branch Versions                      #
