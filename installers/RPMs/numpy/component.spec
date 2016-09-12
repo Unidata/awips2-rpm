@@ -31,6 +31,7 @@ BuildRequires: awips2-python
 BuildRequires: awips2-python-nose
 BuildRequires: compat-libf2c-34(x86-64)
 BuildRequires: libgfortran(x86-64)
+BuildRequires: atlas-devel
 
 %description
 AWIPS II Python numpy Site-Package
