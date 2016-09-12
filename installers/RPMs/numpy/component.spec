@@ -31,6 +31,7 @@ BuildRequires: awips2-python
 BuildRequires: awips2-python-nose
 BuildRequires: compat-libf2c-34(x86-64) >= 3.4.6-19.el6
 BuildRequires: libgfortran(x86-64) >= 4.4.7-3.el6
+BuildRequires: atlas-devel
 
 %description
 AWIPS II Python numpy Site-Package
@@ -73,7 +74,7 @@ if [ ! -d numpy-%{version} ]; then
    echo "Directory numpy-%{version} not found!"
    exit 1
 fi
-source /etc/profile.d/awips2Python.sh
+source /etc/profile.d/awips2.sh
 RC=$?
 if [ ${RC} -ne 0 ]; then
    exit 1
