@@ -7,7 +7,7 @@
 Name: awips2-yajsw
 Summary: AWIPS II yajsw Distribution
 Version: %{_yajsw_version}
-Release: %{_component_version}.%{_component_release}%{?dist}
+Release: 1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: noarch
@@ -47,7 +47,6 @@ fi
 
 %install
 DIST_DIR="%{_baseline_workspace}/foss/yajsw-%{_yajsw_version}/packaged"
-YAJSW_SCRIPTS_DIR="%{_baseline_workspace}/installers/RPMs/yajsw/scripts"
 
 YAJSW_ZIP="yajsw-dist.zip"
 
@@ -57,13 +56,10 @@ if [ $? -ne 0 ]; then
    exit 1
 fi
 
-mkdir -p %{_build_root}/etc
-if [ $? -ne 0 ]; then
-   exit 1
-fi
-cp -rv ${YAJSW_SCRIPTS_DIR}/* %{_build_root}/etc
-if [ $? -ne 0 ]; then
-   exit 1
+%pre
+# cleanup the unzip of jna-3.4.1.jar from any previous installs.
+if [ -d /awips2/yajsw/lib/core/jna/com ]; then
+   rm -rf /awips2/yajsw/lib/core/jna/com/
 fi
 
 %pre
@@ -80,16 +76,12 @@ fi
 rm -rf ${RPM_BUILD_ROOT}
 
 %files
-%defattr(644,awips,fxalpha,755)
-%dir /awips2
+%defattr(644,awips,awips,755)
 %dir /awips2/yajsw
 /awips2/yajsw/*.jar
 /awips2/yajsw/*.txt
 %dir /awips2/yajsw/lib
 /awips2/yajsw/lib/*
-
-%defattr(755,awips,fxalpha,755)
+%defattr(755,awips,awips,755)
 %dir /awips2/yajsw/scripts
 /awips2/yajsw/scripts/*.sh
-
-%attr(744,root,root) /etc/profile.d/*

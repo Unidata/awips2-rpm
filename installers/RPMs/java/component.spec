@@ -11,7 +11,7 @@
 Name: awips2-java
 Summary: AWIPS II Java Distribution
 Version: %{_java_version}
-Release: %{_component_version}.%{_component_release}
+Release: 1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
@@ -112,10 +112,6 @@ mkdir -p %{_build_root}/awips2/java
 if [ $? -ne 0 ]; then
    exit 1
 fi
-mkdir -p %{_build_root}/etc/profile.d
-if [ $? -ne 0 ]; then
-   exit 1
-fi
 
 chmod a+x %{_java_build_loc}/*.bin
 pushd . > /dev/null
@@ -138,13 +134,6 @@ if [ $? -ne 0 ]; then
    exit 1
 fi
 popd > /dev/null
-
-# Our profile.d scripts.
-JAVA_PROFILED_DIR="${JAVA_SCRIPTS_DIR}/profile.d"
-cp -v ${JAVA_PROFILED_DIR}/* %{_build_root}/etc/profile.d
-if [ $? -ne 0 ]; then
-   exit 1
-fi
 
 # The pydev certificate.
 # Install the self-signed pydev certificate to avoid dialog popups when running scripts.
@@ -226,9 +215,7 @@ rm -rf ${RPM_BUILD_ROOT}
 rm -rf %{_java_build_loc}
 
 %files
-%defattr(644,awips,fxalpha,755)
-%attr(755,root,root) /etc/profile.d/awips2Java.csh
-%attr(755,root,root) /etc/profile.d/awips2Java.sh
+%defattr(644,awips,awips,755)
 %dir /awips2/java
 %dir /awips2/java/bin
 
@@ -278,7 +265,7 @@ rm -rf %{_java_build_loc}
 
 /awips2/java/src.zip
 
-%defattr(755,awips,fxalpha,755)
+%defattr(755,awips,awips,755)
 /awips2/java/bin/*
 /awips2/java/lib/*
 /awips2/java/jre/bin/*

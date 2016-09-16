@@ -65,7 +65,6 @@ function copyLegal()
 }
 
 mkdir -p ${RPM_BUILD_ROOT}/awips2/maven
-mkdir -p ${RPM_BUILD_ROOT}/etc/profile.d
 
 
 CORE_PROJECT_DIR="%{_baseline_workspace}/foss"
@@ -81,25 +80,21 @@ cp -r %{_build_root}/awips2/apache-maven-%{version}/* \
    %{_build_root}/awips2/maven
 rm -rf %{_build_root}/awips2/apache-maven-%{version}
 
-cp ${MAVEN_SCRIPTS_DIR}/profile.d/* %{_build_root}/etc/profile.d 
-
 copyLegal "awips2/maven"
 
 %clean
 rm -rf ${RPM_BUILD_ROOT}
 
 %files
-%defattr(-,awips,fxalpha,-)
-%attr(755,root,root) /etc/profile.d/awips2Maven.csh
-%attr(755,root,root) /etc/profile.d/awips2Maven.sh
+%defattr(-,awips,awips,-)
 %dir /awips2/maven
 %dir /awips2/maven/bin
-%attr(755,awips,fxalpha) /awips2/maven/bin/mvn
-%attr(644,awips,fxalpha) /awips2/maven/bin/mvn.bat
-%attr(755,awips,fxalpha) /awips2/maven/bin/mvnDebug
-%attr(644,awips,fxalpha) /awips2/maven/bin/mvnDebug.bat
-%attr(755,awips,fxalpha) /awips2/maven/bin/mvnyjp
-%attr(644,awips,fxalpha) /awips2/maven/bin/m2.conf
+%attr(755,awips,awips) /awips2/maven/bin/mvn
+%attr(644,awips,awips) /awips2/maven/bin/mvn.bat
+%attr(755,awips,awips) /awips2/maven/bin/mvnDebug
+%attr(644,awips,awips) /awips2/maven/bin/mvnDebug.bat
+%attr(755,awips,awips) /awips2/maven/bin/mvnyjp
+%attr(644,awips,awips) /awips2/maven/bin/m2.conf
 /awips2/maven/boot
 /awips2/maven/conf
 /awips2/maven/lib

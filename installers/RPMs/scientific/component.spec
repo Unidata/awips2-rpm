@@ -2,7 +2,6 @@
 %define _build_arch %(uname -i)
 %define _python_pkgs_dir "%{_baseline_workspace}/pythonPackages"
 %define _python_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-%define _installed_python %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c 'import sys; print(".".join(map(str, sys.version_info[:3])))'; else echo 0; fi)
 
 #
 # AWIPS II Python scientific Spec File
@@ -21,7 +20,7 @@ Vendor: Raytheon
 Packager: %{_build_site}
 
 AutoReq: no
-Requires: awips2-python = %{_installed_python}
+Requires: awips2-python
 Requires: netcdf >= 3.0.0
 Provides: awips2-python-scientific = %{version}
 
@@ -89,11 +88,11 @@ rm -rf %{_build_root}
 rm -rf %{_python_build_loc}
 
 %files
-%defattr(644,awips,fxalpha,755)
-%dir /awips2/python/lib/python2.7/site-packages
-/awips2/python/lib/python2.7/site-packages/*
-%dir /awips2/python/include
-/awips2/python/include/*
-%defattr(755,awips,fxalpha,755)
-%dir /awips2/python/bin
-/awips2/python/bin/*
+%defattr(644,awips,awips,755)
+%dir /awips2/python/lib/python2.7/site-packages/Scientific
+/awips2/python/lib/python2.7/site-packages/Scientific/*
+/awips2/python/lib/python2.7/site-packages/ScientificPython-2.8-py2.7.egg-info
+/awips2/python/include/python2.7/Scientific/*
+%defattr(755,awips,awips,755)
+/awips2/python/bin/bsp_virtual
+/awips2/python/bin/task_manager

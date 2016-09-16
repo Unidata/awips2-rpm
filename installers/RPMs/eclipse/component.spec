@@ -194,7 +194,7 @@ echo "-Dorg.eclipse.swt.browser.DefaultType=mozilla" >> %{_build_root}/awips2/ec
 rm -rf ${RPM_BUILD_ROOT}
 
 %files
-%defattr(644,awips,fxalpha,755)
+%defattr(644,awips,awips,755)
 %dir /awips2/eclipse
 %dir /awips2/eclipse/about_files
 /awips2/eclipse/about_files/*
@@ -209,7 +209,7 @@ rm -rf ${RPM_BUILD_ROOT}
 %dir /awips2/eclipse/readme
 /awips2/eclipse/readme/*
 %dir /awips2/eclipse/dropins
-%defattr(755,awips,fxalpha,755)
+%defattr(755,awips,awips,755)
 /awips2/eclipse/about.html
 /awips2/eclipse/artifacts.xml
 /awips2/eclipse/eclipse

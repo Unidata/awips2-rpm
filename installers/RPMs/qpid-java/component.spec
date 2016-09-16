@@ -27,7 +27,7 @@ Java implementation of Apache Qpid - common files
 Summary:	Java implementation of Apache Qpid - client
 Group: 		Development/Java
 BuildArch:	noarch
-Requires:	awips2-qpid-java-common = %{version}-%{release}
+Requires:	awips2-qpid-java-common
 Requires:	log4j >= 1.2.12
 
 %description client
@@ -102,12 +102,10 @@ install -dm 755 %{buildroot}/awips2/qpid/lib/opt
 rm -rf %{buildroot}
 
 %files common
-%defattr(644,awips,fxalpha,644)
-%dir /awips2/qpid
-%dir /awips2/qpid/lib
+%defattr(644,awips,awips,644)
 %doc /awips2/qpid/LICENSE
 %doc /awips2/qpid/NOTICE
-%defattr(644,awips,fxalpha,755)
+%defattr(644,awips,awips,755)
 %dir /awips2/qpid/lib/opt
 /awips2/qpid/lib/opt/qpid-common-%{version}.jar
 /awips2/qpid/lib/opt/geronimo-jms_1.1_spec-1.1.1.jar
@@ -115,9 +113,7 @@ rm -rf %{buildroot}
 
 
 %files client
-%defattr(644,awips,fxalpha,755)
-%dir /awips2/qpid
-%dir /awips2/qpid/lib
+%defattr(644,awips,awips,755)
 %dir /awips2/qpid/lib/opt
 /awips2/qpid/lib/opt/qpid-client-%{version}.jar
 

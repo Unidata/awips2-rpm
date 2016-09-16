@@ -99,13 +99,12 @@ mkdir -p %{buildroot}/awips2/qpid/log
 rm -rf %{buildroot}
 
 %files
-%defattr(644,awips,fxalpha,644)
+%defattr(644,awips,awips,644)
 /awips2/qpid/config.json
 /awips2/qpid/edex/config/edex.json
-%defattr(755,awips,fxalpha,755)
+%defattr(755,awips,awips,755)
 %dir /awips2/qpid
 %dir /awips2/qpid/log
-%dir /awips2/qpid/lib
 %dir /awips2/qpid/edex
 %dir /awips2/qpid/edex/config
 /awips2/qpid/bin

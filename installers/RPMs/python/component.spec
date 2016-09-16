@@ -9,7 +9,7 @@
 Name: awips2-python
 Summary: AWIPS II Python Distribution
 Version: 2.7.10
-Release: %{_component_version}.%{_component_release}%{?dist}
+Release: %{_component_version}%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
@@ -23,9 +23,8 @@ AutoReq: no
 provides: awips2-python = %{version}
 
 # Required for  Tkinter
-BuildRequires: tk-devel
-BuildRequires: tcl-devel
 BuildRequires: gcc-gfortran
+BuildRequires: tk-devel, tcl-devel
 Requires: tk-devel, tcl-devel
 
 %description
@@ -128,17 +127,8 @@ if [ ${RC} -ne 0 ]; then
    exit 1
 fi
 
-# Our profile.d scripts.
-mkdir -p %{_build_root}/etc/profile.d
 PYTHON_PROJECT_DIR="%{_baseline_workspace}/installers/RPMs/python"
 PYTHON_PROJECT_SRC_DIR="${PYTHON_PROJECT_DIR}/src"
-PYTHON_SCRIPTS_DIR="${PYTHON_PROJECT_DIR}/scripts"
-PYTHON_PROFILED_DIR="${PYTHON_SCRIPTS_DIR}/profile.d"
-cp -v ${PYTHON_PROFILED_DIR}/* %{_build_root}/etc/profile.d
-RC=$?
-if [ ${RC} -ne 0 ]; then
-   exit 1
-fi
 
 # The external libraries (hdf5, netcdf, ...) and headers
 # we include with python.
@@ -286,9 +276,7 @@ rm -rf %{_build_root}
 rm -rf %{_python_build_loc}
 
 %files
-%defattr(644,awips,fxalpha,755)
-%attr(755,root,root) /etc/profile.d/awips2Python.csh
-%attr(755,root,root) /etc/profile.d/awips2Python.sh
+%defattr(644,awips,awips,755)
 %dir /awips2/python
 %dir /awips2/python/lib
 /awips2/python/lib/*
@@ -297,7 +285,7 @@ rm -rf %{_python_build_loc}
 /awips2/python/licenses/*
 %dir /awips2/python/share
 /awips2/python/share/*
-%defattr(755,awips,fxalpha,755)
+%defattr(755,awips,awips,755)
 %dir /awips2/python/include
 /awips2/python/include/*
 %dir /awips2/python/bin

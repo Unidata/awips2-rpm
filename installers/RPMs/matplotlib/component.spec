@@ -2,8 +2,6 @@
 %define _build_arch %(uname -i)
 %define _python_pkgs_dir "%{_baseline_workspace}/pythonPackages"
 %define _python_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-%define _installed_python %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c 'import sys; print(".".join(map(str, sys.version_info[:3])))'; else echo 0; fi)
-%define _installed_python_numpy %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c "import numpy; print numpy.__version__"; else echo 0; fi)
 
 #
 # AWIPS II Python matplotlib Spec File
@@ -11,7 +9,7 @@
 Name: awips2-python-matplotlib
 Summary: AWIPS II Python matplotlib Distribution
 Version: 1.4.3
-Release: %{_component_version}.%{_component_release}%{?dist}
+Release: %{_component_version}%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
@@ -22,8 +20,8 @@ Vendor: Raytheon
 Packager: %{_build_site}
 
 AutoReq: no
-Requires: awips2-python = %{_installed_python}
-Requires: awips2-python-numpy = %{_installed_python_numpy}
+Requires: awips2-python
+Requires: awips2-python-numpy
 Requires: awips2-python-six
 Requires: awips2-python-dateutil
 Requires: awips2-python-pytz
@@ -107,6 +105,8 @@ rm -rf %{_build_root}
 rm -rf %{_python_build_loc}
 
 %files
-%defattr(644,awips,fxalpha,755)
-%dir /awips2/python/lib/python2.7/site-packages
-/awips2/python/lib/python2.7/site-packages/* 
+%defattr(644,awips,awips,755)
+#%dir /awips2/python/lib/python2.7/site-packages
+/awips2/python/lib/python2.7/site-packages/matplotlib* 
+/awips2/python/lib/python2.7/site-packages/mpl_toolkits* 
+/awips2/python/lib/python2.7/site-packages/pylab*
