@@ -90,6 +90,5 @@ rm -rf ${RPM_BUILD_ROOT}
 
 %defattr(755,awips,fxalpha,755)
 %dir /awips2/yajsw/scripts
+%dir /awips2/yajsw/log
 /awips2/yajsw/scripts/*.sh
-
-%attr(744,root,root) /etc/profile.d/*
