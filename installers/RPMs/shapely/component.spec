@@ -64,11 +64,12 @@ _python_staging=%{_python_build_loc}/awips2/python
 
 mkdir -p ${_python_staging}
 # build geos
-__GEOS_TAR=geos-3.4.2.tar.bz2
-__GEOS_UNTARRED=geos-3.4.2
-__GEOS_VERSION=3.4.2
+# TODO: link to /awips2/postgresql/lib and include
+__GEOS_TAR=geos-3.5.0.tar.bz2
+__GEOS_UNTARRED=geos-3.5.0
+__GEOS_VERSION=3.5.0
 PYTHON_RPM_DIR="%{_baseline_workspace}/rpms/python.site-packages"
-INSTALLER_SHAPELY_DIR="%{_baseline_workspace}/foss/geos-${__GEOS_VERSION}/packaged"
+INSTALLER_SHAPELY_DIR="%{_baseline_workspace}/foss/geos/packaged"
 
 cp ${INSTALLER_SHAPELY_DIR}/${__GEOS_TAR} \
    %{_python_build_loc}
