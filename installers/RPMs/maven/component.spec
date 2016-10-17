@@ -56,7 +56,7 @@ function copyLegal()
    tar -cjf %{_baseline_workspace}/rpms/legal/FOSS_licenses.tar \
       %{_baseline_workspace}/rpms/legal/FOSS_licenses/
    
-   cp "%{_baseline_workspace}/rpms/legal/Master_Rights_File.pdf" \
+   cp "%{_baseline_workspace}/FOSS_COTS_License.pdf" \
       %{_build_root}/${COMPONENT_BUILD_DIR}/licenses
    cp %{_baseline_workspace}/rpms/legal/FOSS_licenses.tar \
       %{_build_root}/${COMPONENT_BUILD_DIR}/licenses
@@ -65,7 +65,6 @@ function copyLegal()
 }
 
 mkdir -p ${RPM_BUILD_ROOT}/awips2/maven
-mkdir -p ${RPM_BUILD_ROOT}/etc/profile.d
 
 
 CORE_PROJECT_DIR="%{_baseline_workspace}/foss"
@@ -81,8 +80,6 @@ cp -r %{_build_root}/awips2/apache-maven-%{version}/* \
    %{_build_root}/awips2/maven
 rm -rf %{_build_root}/awips2/apache-maven-%{version}
 
-cp ${MAVEN_SCRIPTS_DIR}/profile.d/* %{_build_root}/etc/profile.d 
-
 copyLegal "awips2/maven"
 
 %clean
@@ -90,8 +87,6 @@ rm -rf ${RPM_BUILD_ROOT}
 
 %files
 %defattr(-,awips,fxalpha,-)
-%attr(755,root,root) /etc/profile.d/awips2Maven.csh
-%attr(755,root,root) /etc/profile.d/awips2Maven.sh
 %dir /awips2/maven
 %dir /awips2/maven/bin
 %attr(755,awips,fxalpha) /awips2/maven/bin/mvn

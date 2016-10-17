@@ -108,7 +108,7 @@ function copyLegal()
    tar -cjf %{_baseline_workspace}/rpms/legal/FOSS_licenses.tar \
       %{_baseline_workspace}/rpms/legal/FOSS_licenses/
    
-   cp "%{_baseline_workspace}/rpms/legal/Master_Rights_File.pdf" \
+   cp "%{_baseline_workspace}/FOSS_COTS_License.pdf" \
       ${RPM_BUILD_ROOT}/${COMPONENT_BUILD_DIR}/licenses
    cp %{_baseline_workspace}/rpms/legal/FOSS_licenses.tar \
       ${RPM_BUILD_ROOT}/${COMPONENT_BUILD_DIR}/licenses
@@ -150,17 +150,17 @@ if [ $? -ne 0 ]; then
 fi
 
 SRC_DIR="%{_postgres_src_loc}/packaged"
-PROJ_SRC="proj-4.8.0.zip"
+PROJ_SRC="proj-4.9.3.zip"
 POSTGIS_SRC="postgis-2.0.6.tar.gz"
 GEOS_BASE="geos-3.4.2"
 GEOS_SRC="geos-3.4.2.tar.bz2"
-GDAL_SRC="gdal192.zip"
+GDAL_SRC="gdal211.zip"
 
 # The directory that the src will be in after the tars are unzipped.
-PROJ_SRC_DIR="proj-4.8.0"
+PROJ_SRC_DIR="proj-4.9.3"
 POSTGIS_SRC_DIR="postgis-2.0.6"
 GEOS_SRC_DIR="geos-3.4.2"
-GDAL_SRC_DIR="gdal-1.9.2"
+GDAL_SRC_DIR="gdal-2.1.1"
 
 cp ${SRC_DIR}/${POSTGIS_SRC} %{_postgres_build_loc}
 cp ${SRC_DIR}/${PROJ_SRC} %{_postgres_build_loc}
@@ -279,14 +279,10 @@ cp -r %{_postgres_script_loc}/start_postgres.sh ${RPM_BUILD_ROOT}/awips2/postgre
 
 copyLegal "awips2/postgresql"
 
-mkdir -p %{_build_root}/etc/profile.d
 mkdir -p %{_build_root}/etc/ld.so.conf.d
 mkdir -p %{_build_root}/etc/init.d
 touch %{_build_root}/etc/ld.so.conf.d/awips2-postgresql-%{_build_arch}.conf
 echo "/awips2/postgresql/lib" >> %{_build_root}/etc/ld.so.conf.d/awips2-postgresql-%{_build_arch}.conf
-
-PROFILE_D_DIR="%{_postgres_script_loc}/profile.d"
-cp ${PROFILE_D_DIR}/* %{_build_root}/etc/profile.d 
 
 # Include the postgresql service script
 cp %{_postgres_script_loc}/init.d/edex_postgres \
@@ -327,8 +323,6 @@ and populate the AWIPS II databases.
 
 %files
 %defattr(644,awips,fxalpha,755)
-%attr(755,root,root) /etc/profile.d/awips2Postgres.csh
-%attr(755,root,root) /etc/profile.d/awips2Postgres.sh
 %attr(755,root,root) /etc/ld.so.conf.d/awips2-postgresql-%{_build_arch}.conf
 %attr(744,root,root) /etc/init.d/edex_postgres
 %attr(700,awips,fxalpha) /awips2/data
@@ -349,8 +343,6 @@ and populate the AWIPS II databases.
 
 %files -n awips2-psql
 %defattr(755,awips,fxalpha,755)
-%attr(755,root,root) /etc/profile.d/awips2PSQL.csh
-%attr(755,root,root) /etc/profile.d/awips2PSQL.sh
 %dir /awips2
 %dir /awips2/psql
 %dir /awips2/psql/bin

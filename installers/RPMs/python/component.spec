@@ -109,7 +109,7 @@ function copyLegal()
    
    mkdir -p %{_build_root}/${COMPONENT_BUILD_DIR}/licenses
 
-   cp "%{_baseline_workspace}/rpms/legal/Master_Rights_File.pdf" \
+   cp "%{_baseline_workspace}/FOSS_COTS_License.pdf" \
       %{_build_root}/${COMPONENT_BUILD_DIR}/licenses    
 }
 pushd . > /dev/null
@@ -123,18 +123,6 @@ fi
 
 popd > /dev/null
 
-RC=$?
-if [ ${RC} -ne 0 ]; then
-   exit 1
-fi
-
-# Our profile.d scripts.
-mkdir -p %{_build_root}/etc/profile.d
-PYTHON_PROJECT_DIR="%{_baseline_workspace}/installers/RPMs/python"
-PYTHON_PROJECT_SRC_DIR="${PYTHON_PROJECT_DIR}/src"
-PYTHON_SCRIPTS_DIR="${PYTHON_PROJECT_DIR}/scripts"
-PYTHON_PROFILED_DIR="${PYTHON_SCRIPTS_DIR}/profile.d"
-cp -v ${PYTHON_PROFILED_DIR}/* %{_build_root}/etc/profile.d
 RC=$?
 if [ ${RC} -ne 0 ]; then
    exit 1
@@ -287,8 +275,6 @@ rm -rf %{_python_build_loc}
 
 %files
 %defattr(644,awips,fxalpha,755)
-%attr(755,root,root) /etc/profile.d/awips2Python.csh
-%attr(755,root,root) /etc/profile.d/awips2Python.sh
 %dir /awips2/python
 %dir /awips2/python/lib
 /awips2/python/lib/*

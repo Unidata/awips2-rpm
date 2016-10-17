@@ -1,5 +1,6 @@
 %global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')
 %define _build_arch %(uname -i)
+%define _version 0.15.1
 %define _python_pkgs_dir "%{_baseline_workspace}/pythonPackages"
 %define _python_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 %define _installed_python %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c 'import sys; print(".".join(map(str, sys.version_info[:3])))'; else echo 0; fi)
@@ -10,21 +11,21 @@
 #
 Name: awips2-python-scipy
 Summary: AWIPS II Python scipy Distribution
-Version: 0.15.1
-Release: 1%{?dist}
+Version: %{_component_version}
+Release: %{_version}.1
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
 URL: N/A
 License: N/A
 Distribution: N/A
-Vendor: Raytheon
+Vendor: %{_build_vendor}
 Packager: %{_build_site}
 
 AutoReq: no
-Requires: awips2-python = %{_installed_python}
-Requires: awips2-python-numpy = %{_installed_python_numpy}
-provides: awips2-python-scipy = %{version}
+Requires: awips2-python
+Requires: awips2-python-numpy
+provides: awips2-python-scipy
 
 BuildRequires: awips2-python
 BuildRequires: awips2-python-numpy
@@ -49,7 +50,7 @@ fi
 mkdir -p %{_python_build_loc}
 
 %build
-SCIPY_SRC_DIR="%{_baseline_workspace}/foss/scipy-%{version}/packaged"
+SCIPY_SRC_DIR="%{_baseline_workspace}/foss/scipy-%{_version}/packaged"
 
 cp -v ${SCIPY_SRC_DIR}/* \
    %{_python_build_loc}
@@ -60,7 +61,7 @@ fi
 
 export BLAS=/awips2/python/lib
 export LAPACK=/awips2/python/lib
-source /etc/profile.d/awips2Python.sh
+source /etc/profile.d/awips2.sh
 RC=$?
 if [ ${RC} -ne 0 ]; then
    exit 1
@@ -68,8 +69,8 @@ fi
 
 pushd . > /dev/null
 cd %{_python_build_loc}
-tar xvf scipy-%{version}.tar.gz
-cd scipy-%{version}
+tar xvf scipy-%{_version}.tar.gz
+cd scipy-%{_version}
 export LD_LIBRARY_PATH=/awips2/python/lib
 /awips2/python/bin/python setup.py build
 RC=$?
@@ -90,7 +91,7 @@ export BLAS=/awips2/python/lib
 export LAPACK=/awips2/python/lib
 
 pushd . > /dev/null
-cd %{_python_build_loc}/scipy-%{version}
+cd %{_python_build_loc}/scipy-%{_version}
 export LD_LIBRARY_PATH=/awips2/python/lib
 /awips2/python/bin/python setup.py install \
    --root=%{_build_root} \

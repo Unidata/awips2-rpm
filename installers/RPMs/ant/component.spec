@@ -51,7 +51,7 @@ function copyLegal()
    tar -cjf %{_baseline_workspace}/rpms/legal/FOSS_licenses.tar \
       %{_baseline_workspace}/rpms/legal/FOSS_licenses/
    
-   cp "%{_baseline_workspace}/rpms/legal/Master_Rights_File.pdf" \
+   cp "%{_baseline_workspace}/FOSS_COTS_License.pdf" \
       %{_build_root}/${COMPONENT_BUILD_DIR}/licenses
    cp %{_baseline_workspace}/rpms/legal/FOSS_licenses.tar \
       %{_build_root}/${COMPONENT_BUILD_DIR}/licenses
@@ -60,7 +60,6 @@ function copyLegal()
 }
 
 mkdir -p ${RPM_BUILD_ROOT}/awips2/ant
-mkdir -p ${RPM_BUILD_ROOT}/etc/profile.d
 
 CORE_PROJECT_DIR="%{_baseline_workspace}/foss"
 ANT_BIN_DIR="${CORE_PROJECT_DIR}/ant-%{version}/packaged"
@@ -74,8 +73,6 @@ tar -xf ${ANT_BIN_DIR}/${ANT_TAR_FILE} \
 cp -r %{_build_root}/awips2/apache-ant-%{version}/* \
    %{_build_root}/awips2/ant 
 rm -rf %{_build_root}/awips2/apache-ant-%{version}
-
-cp ${ANT_SCRIPTS_DIR}/profile.d/* %{_build_root}/etc/profile.d
 
 copyLegal "awips2/ant"
 
@@ -99,8 +96,6 @@ rm -rf ${RPM_BUILD_ROOT}
 
 %files
 %defattr(-,awips,fxalpha,-)
-%attr(755,root,root) /etc/profile.d/awips2Ant.csh
-%attr(755,root,root) /etc/profile.d/awips2Ant.sh
 %dir /awips2/ant
 %dir /awips2/ant/bin
 %attr(755,awips,fxalpha) /awips2/ant/bin/ant
