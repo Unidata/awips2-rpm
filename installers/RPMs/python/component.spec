@@ -128,6 +128,10 @@ if [ ${RC} -ne 0 ]; then
    exit 1
 fi
 
+PYTHON_PROJECT_DIR="%{_baseline_workspace}/installers/RPMs/python"
+PYTHON_PROJECT_SRC_DIR="${PYTHON_PROJECT_DIR}/src"`
+PYTHON_PROJECT_NATIVE_DIR="${PYTHON_PROJECT_DIR}/nativeLib"
+
 # The external libraries (hdf5, netcdf, ...) and headers
 # we include with python.
 
@@ -163,9 +167,6 @@ fi
 
 popd > /dev/null
 
-PYTHON_PROJECT_DIR="%{_baseline_workspace}/installers/RPMs/python"
-PYTHON_PROJECT_SRC_DIR="${PYTHON_PROJECT_DIR}/src"
-PYTHON_PROJECT_NATIVE_DIR="${PYTHON_PROJECT_DIR}/nativeLib"
 FOSS_LAPACK_DIR="%{_baseline_workspace}/foss/lapack-%{_lapack_version}/packaged/"
 LAPACK_TAR="lapack-%{_lapack_version}.tgz"
 LAPACK_PATCH="lapack.patch1"
