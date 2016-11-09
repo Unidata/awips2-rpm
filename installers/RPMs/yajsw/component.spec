@@ -47,7 +47,6 @@ fi
 
 %install
 DIST_DIR="%{_baseline_workspace}/foss/yajsw-%{_yajsw_version}/packaged"
-YAJSW_SCRIPTS_DIR="%{_baseline_workspace}/installers/RPMs/yajsw/scripts"
 
 YAJSW_ZIP="yajsw-dist.zip"
 
@@ -58,10 +57,6 @@ if [ $? -ne 0 ]; then
 fi
 
 mkdir -p %{_build_root}/etc
-if [ $? -ne 0 ]; then
-   exit 1
-fi
-cp -rv ${YAJSW_SCRIPTS_DIR}/* %{_build_root}/etc
 if [ $? -ne 0 ]; then
    exit 1
 fi
@@ -90,5 +85,4 @@ rm -rf ${RPM_BUILD_ROOT}
 
 %defattr(755,awips,fxalpha,755)
 %dir /awips2/yajsw/scripts
-%dir /awips2/yajsw/log
 /awips2/yajsw/scripts/*.sh
