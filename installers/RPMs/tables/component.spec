@@ -9,7 +9,7 @@
 #
 Name: awips2-python-tables
 Summary: AWIPS II Python tables Distribution
-Version: 2.1.2
+Version: 3.1.0
 Release: 1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
@@ -17,7 +17,7 @@ BuildArch: %{_build_arch}
 URL: N/A
 License: N/A
 Distribution: N/A
-Vendor: Raytheon
+Vendor: %{_build_vendor}
 Packager: %{_build_site}
 
 AutoReq: no
@@ -85,28 +85,22 @@ else
    export HDF5_DIR="%{_python_build_loc}/hdf5-%{_hdf5_version}-patch1-linux-x86_64-shared"
 fi
 
-TABLES_SRC_DIR="%{_baseline_workspace}/foss/tables-%{version}/packaged"
-TABLES_TAR="tables-%{version}.tar.gz"
-cp -v ${TABLES_SRC_DIR}/${TABLES_TAR} \
+TABLES_SRC_DIR="%{_baseline_workspace}/foss/tables/packaged"
+TABLES_TAR="v.%{version}.tar.gz"
+TABLES_DIR="PyTables-v.%{version}"
+cp -R ${TABLES_SRC_DIR}/${TABLES_TAR} \
    %{_python_build_loc}
 RC=$?
 if [ ${RC} -ne 0 ]; then
    exit 1
 fi
 
-pushd . > /dev/null
 cd %{_python_build_loc}
-tar -xvf ${TABLES_TAR}
-RC=$?
-if [ ${RC} -ne 0 ]; then
-   exit 1
-fi
-rm -fv ${TABLES_TAR}
-if [ ! -d tables-%{version} ]; then
-   echo "Directory tables-%{version} not found!"
-   exit 1
-fi
-cd tables-%{version}
+tar -xvzf ${TABLES_TAR}
+
+pushd . > /dev/null
+cd %{_python_build_loc}/${TABLES_DIR}
+cp ${TABLES_SRC_DIR}/setup.py .
 /awips2/python/bin/python setup.py build_ext --inplace
 RC=$?
 if [ ${RC} -ne 0 ]; then
@@ -115,6 +109,7 @@ fi
 popd > /dev/null
 
 %install
+TABLES_DIR="PyTables-v.%{version}"
 export HDF5_DIR=
 if [ "%{_build_arch}" = "i386" ]; then
    export HDF5_DIR="%{_python_build_loc}/hdf5-%{_hdf5_version}-patch1-linux-shared"
@@ -123,7 +118,7 @@ else
 fi
 
 pushd . > /dev/null
-cd %{_python_build_loc}/tables-%{version}
+cd %{_python_build_loc}/${TABLES_DIR}
 /awips2/python/bin/python setup.py install \
    --root=%{_build_root} \
    --prefix=/awips2/python
