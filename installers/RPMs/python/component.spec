@@ -123,13 +123,8 @@ fi
 
 popd > /dev/null
 
-RC=$?
-if [ ${RC} -ne 0 ]; then
-   exit 1
-fi
-
 PYTHON_PROJECT_DIR="%{_baseline_workspace}/installers/RPMs/python"
-PYTHON_PROJECT_SRC_DIR="${PYTHON_PROJECT_DIR}/src"`
+PYTHON_PROJECT_SRC_DIR="${PYTHON_PROJECT_DIR}/src"
 PYTHON_PROJECT_NATIVE_DIR="${PYTHON_PROJECT_DIR}/nativeLib"
 
 # The external libraries (hdf5, netcdf, ...) and headers

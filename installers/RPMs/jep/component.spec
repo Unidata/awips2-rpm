@@ -11,7 +11,7 @@
 Name: awips2-python-jep
 Summary: AWIPS II Python Jep Distribution
 Version: 3.4.1
-Release: 1.el6
+Release: 2.el6
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
@@ -107,6 +107,9 @@ popd > /dev/null
 %pre
 
 %post
+if [ ! -L /awips2/python/lib/libjep.so ]; then
+  ln -s /awips2/python/lib/python2.7/site-packages/jep/libjep.so /awips2/python/lib/libjep.so
+fi
 
 %preun
 
