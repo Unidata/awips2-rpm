@@ -2,7 +2,6 @@
 %define _build_arch %(uname -i)
 %define _python_pkgs_dir "%{_baseline_workspace}/pythonPackages"
 %define _python_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-%define _installed_python %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c 'import sys; print(".".join(map(str, sys.version_info[:3])))'; else echo 0; fi)
 
 #
 # AWIPS II Python numpy Spec File
@@ -21,16 +20,16 @@ Vendor: Raytheon
 Packager: %{_build_site}
 
 AutoReq: no
-Requires: compat-libf2c-34(x86-64) >= 3.4.6-19.el6
-Requires: libgfortran(x86-64) >= 4.4.7-3.el6
-Requires: awips2-python = %{_installed_python}
+Requires: compat-libf2c-34(x86-64)
+Requires: libgfortran(x86-64)
+Requires: awips2-python
 Requires: awips2-python-nose
 Provides: awips2-python-numpy = %{version}
 
 BuildRequires: awips2-python
 BuildRequires: awips2-python-nose
-BuildRequires: compat-libf2c-34(x86-64) >= 3.4.6-19.el6
-BuildRequires: libgfortran(x86-64) >= 4.4.7-3.el6
+BuildRequires: compat-libf2c-34(x86-64)
+BuildRequires: libgfortran(x86-64)
 BuildRequires: atlas-devel
 
 %description
