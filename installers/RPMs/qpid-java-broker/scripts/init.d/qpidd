@@ -3,7 +3,7 @@
 # qpidd  This shell script takes care of starting and stopping
 #                the AWIPS qpid instance.
 #
-# chkconfig: - 99 10
+# chkconfig: 35 98 10
 # description: Qpid messaging broker used by the AWIPS 2 instance
 # processname: qpid-server
 # config: /awips2/qpid/etc/config.json
@@ -62,8 +62,8 @@ start() {
    DAEMON="/bin/bash ${QPID_HOME}/bin/${prog}"
    
    QPIDSTARTLOG=${QPID_HOME}/log/start-qpid-$TODAY.log
-   su - $QPIDUSER -c "$DAEMON" >> $QPIDSTARTLOG 2>&1 &
-   sleep 5
+   su $QPIDUSER -c "$DAEMON" >> $QPIDSTARTLOG 2>&1 &
+   sleep 8
    checkStatus
 }
 
@@ -85,9 +85,11 @@ stop() {
       
       # stop the wrapper
       kill ${pid_wrapper}
+      pkill -f qpid
    else
       # stop qpid
       kill ${pid_qpid}
+      pkill -f qpid
    fi
    
    # wait for and verify that qpid has stopped running

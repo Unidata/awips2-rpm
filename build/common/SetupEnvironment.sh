@@ -48,17 +48,17 @@ fi
 # Keep track of all the version combinations we could have with the pre-installed Python packages.
 PYTHON_VERSION=$(getFOSSVersion python)-$(getFOSSVersion nose)-$(getFOSSVersion numpy)-$(getFOSSVersion setuptools)-$(getFOSSVersion thrift)-$(getFOSSVersion h5py)-$(getFOSSVersion python-dateutil)-$(getFOSSVersion pytz)-$(getFOSSVersion six)-$(getFOSSVersion pyparsing)
 
-sudo rm -f /etc/profile.d/awips2Python.sh
+sudo rm -f /etc/profile.d/awips2.sh
 if [ $? -ne 0 ]; then
-   sudo rm -rf /etc/profile.d/awips2Python.sh
+   sudo rm -rf /etc/profile.d/awips2.sh
 fi
 if [ -d /build/python/${PYTHON_VERSION} ]; then
    sudo rsync -a --delete /build/python/${PYTHON_VERSION}/ /awips2/python/
    BUILDUSER=`whoami`
    sudo chown -R ${BUILDUSER}.awips /awips2/python
    sudo chmod -R 777 /awips2/python
-   sudo ln -sf ${WORKSPACE}/git/AWIPS2_build/installers/RPMs/python/scripts/profile.d/awips2Python.sh /etc/profile.d/awips2Python.sh
-   source ${WORKSPACE}/git/AWIPS2_build/installers/RPMs/python/scripts/profile.d/awips2Python.sh
+   sudo ln -sf ${WORKSPACE}/git/AWIPS2_build/installers/RPMs/python/scripts/profile.d/awips2.sh /etc/profile.d/awips2.sh
+   source ${WORKSPACE}/git/AWIPS2_build/installers/RPMs/python/scripts/profile.d/awips2.sh
    python --version
 else
    #DIR Not found! Lets build it.
@@ -196,8 +196,8 @@ function buildPythonPackage {
    BUILDUSER=`whoami`
    sudo chown -R ${BUILDUSER}.awips /awips2/python
    sudo chmod -R 777 /awips2/python
-   sudo ln -sf ${WORKSPACE}/git/AWIPS2_build/installers/RPMs/python/scripts/profile.d/awips2Python.sh /etc/profile.d/awips2Python.sh
-   source ${WORKSPACE}/git/AWIPS2_build/installers/RPMs/python/scripts/profile.d/awips2Python.sh
+   sudo ln -sf ${WORKSPACE}/git/AWIPS2_build/installers/RPMs/python/scripts/profile.d/awips2.sh /etc/profile.d/awips2.sh
+   source ${WORKSPACE}/git/AWIPS2_build/installers/RPMs/python/scripts/profile.d/awips2.sh
 
    pushd . > /dev/null 2>&1
    cd ${WORKSPACE}/baseline/rpms/build/x86_64
