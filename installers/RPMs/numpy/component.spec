@@ -26,7 +26,6 @@ Requires: awips2-python
 Requires: awips2-python-nose
 Provides: awips2-python-numpy = %{version}
 
-BuildRequires: atlas, atlas-devel, subversion
 BuildRequires: awips2-python
 BuildRequires: awips2-python-nose
 BuildRequires: compat-libf2c-34(x86-64)
@@ -120,8 +119,9 @@ rm -rf %{_build_root}
 rm -rf %{_python_build_loc}
 
 %files
-%defattr(644,awips,awips,755)
-%dir /awips2/python/lib/python2.7/site-packages/numpy
-/awips2/python/lib/python2.7/site-packages/numpy*
-%defattr(755,awips,awips,755)
-/awips2/python/bin/f2py
+%defattr(644,awips,fxalpha,755)
+%dir /awips2/python/lib/python2.7/site-packages
+/awips2/python/lib/python2.7/site-packages/*
+%defattr(755,awips,fxalpha,755)
+%dir /awips2/python/bin
+/awips2/python/bin/*
