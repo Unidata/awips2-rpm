@@ -8,7 +8,7 @@
 #
 Name: awips2-python-numpy
 Summary: AWIPS II Python numpy Distribution
-Version: 1.11.2
+Version: 1.9.2
 Release: 1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
@@ -28,9 +28,8 @@ Provides: awips2-python-numpy = %{version}
 
 BuildRequires: awips2-python
 BuildRequires: awips2-python-nose
-BuildRequires: compat-libf2c-34(x86-64)
-BuildRequires: libgfortran(x86-64)
-BuildRequires: atlas-devel
+BuildRequires: compat-libf2c-34(x86-64) >= 3.4.6-19.el6
+BuildRequires: libgfortran(x86-64) >= 4.4.7-3.el6
 
 %description
 AWIPS II Python numpy Site-Package
@@ -52,7 +51,7 @@ fi
 mkdir -p %{_python_build_loc}
 
 %build
-NUMPY_SRC_DIR="%{_baseline_workspace}/foss/numpy/packaged"
+NUMPY_SRC_DIR="%{_baseline_workspace}/foss/numpy-%{version}/packaged"
 NUMPY_TAR="numpy-%{version}.tar.gz"
 cp -v ${NUMPY_SRC_DIR}/${NUMPY_TAR} \
    %{_python_build_loc}
@@ -79,17 +78,17 @@ if [ ${RC} -ne 0 ]; then
    exit 1
 fi
 cd numpy-%{version}
-#/awips2/python/bin/python setup.py clean
-#RC=$?
-#if [ ${RC} -ne 0 ]; then
-#   exit 1
-#fi 
-#/awips2/python/bin/python setup.py build
-#RC=$?
-#if [ ${RC} -ne 0 ]; then
-#   exit 1
-#fi
-#popd > /dev/null
+/awips2/python/bin/python setup.py clean
+RC=$?
+if [ ${RC} -ne 0 ]; then
+   exit 1
+fi 
+/awips2/python/bin/python setup.py build
+RC=$?
+if [ ${RC} -ne 0 ]; then
+   exit 1
+fi
+popd > /dev/null
 
 %install
 NUMPY_SRC_DIR="%{_python_pkgs_dir}/numpy"
