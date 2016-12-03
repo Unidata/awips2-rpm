@@ -8,15 +8,15 @@
 #
 Name: awips2-python-matplotlib
 Summary: AWIPS II Python matplotlib Distribution
-Version: 1.4.3
-Release: %{_component_version}%{?dist}
+Version: 1.5.1
+Release: 2
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
 URL: N/A
 License: N/A
 Distribution: N/A
-Vendor: Raytheon
+Vendor: %{_build_vendor}
 Packager: %{_build_site}
 
 AutoReq: no
@@ -26,8 +26,7 @@ Requires: awips2-python-six
 Requires: awips2-python-dateutil
 Requires: awips2-python-pytz
 Requires: awips2-python-pyparsing
-Requires: libpng
-Requires: freetype
+Requires: libpng, freetype
 Provides: awips2-python-matplotlib
 
 BuildRequires: awips2-python
@@ -37,8 +36,7 @@ BuildRequires: awips2-python-dateutil
 BuildRequires: awips2-python-pyparsing
 BuildRequires: awips2-python-six
 BuildRequires: awips2-python-pytz
-BuildRequires: libpng
-BuildRequires: freetype
+BuildRequires: libpng, freetype
 
 %description
 AWIPS II Python matplotlib Site-Package
@@ -63,13 +61,17 @@ fi
 mkdir -p %{_python_build_loc}
 
 %build
-MATPLOTLIB_SRC_DIR="%{_baseline_workspace}/foss/matplotlib-%{version}/packaged"
+MATPLOTLIB_SRC_DIR="%{_baseline_workspace}/foss/matplotlib/packaged"
 
 cp -rv ${MATPLOTLIB_SRC_DIR}/matplotlib-%{version}.tar.gz %{_python_build_loc}
 pushd . > /dev/null
 cd %{_python_build_loc}
 tar xf matplotlib-%{version}.tar.gz
 cd matplotlib-%{version}
+
+#create setup.cfg and require pytz build
+cp -v setup.cfg.template setup.cfg
+sed -i 's/#pytz = False/pytz = True/g' setup.cfg
 
 export LD_LIBRARY_PATH=/awips2/python/lib
 /awips2/python/bin/python setup.py build
@@ -105,8 +107,6 @@ rm -rf %{_build_root}
 rm -rf %{_python_build_loc}
 
 %files
-%defattr(644,awips,awips,755)
-#%dir /awips2/python/lib/python2.7/site-packages
-/awips2/python/lib/python2.7/site-packages/matplotlib* 
-/awips2/python/lib/python2.7/site-packages/mpl_toolkits* 
-/awips2/python/lib/python2.7/site-packages/pylab*
+%defattr(644,awips,fxalpha,755)
+%dir /awips2/python/lib/python2.7/site-packages
+/awips2/python/lib/python2.7/site-packages/* 
