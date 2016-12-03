@@ -8,7 +8,7 @@
 %define HTTP_FOSS_DIR "%{_baseline_workspace}/foss/%{HTTP_PACKAGE_NAME}/packaged/"
 %define HTTP_PACKAGE_NAME "httpd-%{version}"
 %define HTTP_PATCHES_TAR "%{HTTP_PACKAGE_NAME}-SOURCES.tar"
-%define HTTP_PATCHES_RPM "httpd-%{version}-%{release}_7.src.rpm"
+%define HTTP_PATCHES_RPM "httpd-2.2.15-47.el6_7.src.rpm"
 %define HTTP_SOURCE_TAR "%{HTTP_PACKAGE_NAME}.tar.gz"
 %define RPMBUILD_PYPIES_DIR "%{_baseline_workspace}/rpmbuild/BUILD/httpd-pypies"
 %define RPMBUILD_HTTP_DIR %RPMBUILD_PYPIES_DIR/%HTTP_PACKAGE_NAME
@@ -16,7 +16,7 @@
 Summary: Pypies Apache HTTP Server
 Name: awips2-httpd-pypies
 Version: 2.2.15
-Release: 47%{?dist}
+Release: 48%{?dist}
 URL: http://httpd.apache.org/
 License: ASL 2.0
 Group: AWIPSII
@@ -36,7 +36,7 @@ Provides: httpd-mmn = %{mmn}
 Obsoletes: apache, secureweb, mod_dav, mod_gzip, stronghold-apache
 Obsoletes: stronghold-htdocs, mod_put, mod_roaming
 Conflicts: pcre < 4.0
-Requires: httpd-tools >= %{version}-%{release}, apr-util-ldap
+Requires: httpd-tools, apr-util-ldap
 Requires: awips2-pypies
 Packager: %{_build_site}
 
@@ -648,8 +648,8 @@ rm -rf $RPM_BUILD_ROOT
 /awips2/httpd_pypies%{_sysconfdir}/httpd/logs
 /awips2/httpd_pypies%{_sysconfdir}/httpd/run
 %dir /awips2/httpd_pypies%{_sysconfdir}/httpd/conf
-%config(noreplace) /awips2/httpd_pypies%{_sysconfdir}/httpd/conf/httpd.conf
-%config(noreplace) /awips2/httpd_pypies%{_sysconfdir}/httpd/conf.d/pypies.conf
+%config /awips2/httpd_pypies%{_sysconfdir}/httpd/conf/httpd.conf
+%config /awips2/httpd_pypies%{_sysconfdir}/httpd/conf.d/pypies.conf
 %config(noreplace) /awips2/httpd_pypies%{_sysconfdir}/httpd/conf.d/welcome.conf
 %config(noreplace) /awips2/httpd_pypies%{_sysconfdir}/httpd/conf/magic
 
