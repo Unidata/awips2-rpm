@@ -142,10 +142,8 @@ rm -rf %{_python_build_loc}
 
 %files
 %defattr(644,awips,awips,755)
-%dir /awips2/python/lib/python2.7/site-packages/tables
-/awips2/python/lib/python2.7/site-packages/tables/*
-/awips2/python/lib/python2.7/site-packages/tables-2.1.2-py2.7.egg-info
+/awips2/python/lib/python2.7/site-packages/tables*
 %defattr(755,awips,awips,755)
-/awips2/python/bin/nctoh5
 /awips2/python/bin/ptdump
+/awips2/python/bin/pt2to3
 /awips2/python/bin/ptrepack

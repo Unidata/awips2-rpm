@@ -9,7 +9,7 @@
 Name: awips2-python-numpy
 Summary: AWIPS II Python numpy Distribution
 Version: 1.9.2
-Release: 1%{?dist}
+Release: 3%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
@@ -118,9 +118,7 @@ rm -rf %{_build_root}
 rm -rf %{_python_build_loc}
 
 %files
-%defattr(644,awips,fxalpha,755)
-%dir /awips2/python/lib/python2.7/site-packages
-/awips2/python/lib/python2.7/site-packages/*
-%defattr(755,awips,fxalpha,755)
-%dir /awips2/python/bin
-/awips2/python/bin/*
+%defattr(644,awips,awips,755)
+/awips2/python/lib/python2.7/site-packages/numpy*
+%defattr(755,awips,awips,755)
+/awips2/python/bin/f2py
