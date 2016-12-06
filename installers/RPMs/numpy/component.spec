@@ -22,10 +22,12 @@ Packager: %{_build_site}
 AutoReq: no
 Requires: compat-libf2c-34(x86-64)
 Requires: libgfortran(x86-64)
+Requires: atlas, nss-devel
 Requires: awips2-python
 Requires: awips2-python-nose
 Provides: awips2-python-numpy = %{version}
 
+BuildRequires: atlas, nss-devel
 BuildRequires: awips2-python
 BuildRequires: awips2-python-nose
 BuildRequires: compat-libf2c-34(x86-64) >= 3.4.6-19.el6

@@ -117,6 +117,7 @@ stop() {
           return
        fi
     done
+    pkill -f pypies
     success
     echo
 }
@@ -140,6 +141,7 @@ forcestop() {
           return
        fi
     done
+    pkill -f pypies
     success
     echo
 }
