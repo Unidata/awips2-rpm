@@ -2,14 +2,13 @@
 %define _build_arch %(uname -i)
 %define _python_pkgs_dir "%{_baseline_workspace}/pythonPackages"
 %define _python_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-%define _installed_python %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c 'import sys; print(".".join(map(str, sys.version_info[:3])))'; else echo 0; fi)
 
 #
 # AWIPS II Python numpy Spec File
 #
 Name: awips2-python-numpy
 Summary: AWIPS II Python numpy Distribution
-Version: 1.11.2
+Version: 1.9.2
 Release: 1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
@@ -21,9 +20,9 @@ Vendor: Raytheon
 Packager: %{_build_site}
 
 AutoReq: no
-Requires: compat-libf2c-34(x86-64) >= 3.4.6-19.el6
-Requires: libgfortran(x86-64) >= 4.4.7-3.el6
-Requires: awips2-python = %{_installed_python}
+Requires: compat-libf2c-34(x86-64)
+Requires: libgfortran(x86-64)
+Requires: awips2-python
 Requires: awips2-python-nose
 Provides: awips2-python-numpy = %{version}
 
@@ -31,7 +30,6 @@ BuildRequires: awips2-python
 BuildRequires: awips2-python-nose
 BuildRequires: compat-libf2c-34(x86-64) >= 3.4.6-19.el6
 BuildRequires: libgfortran(x86-64) >= 4.4.7-3.el6
-BuildRequires: atlas-devel
 
 %description
 AWIPS II Python numpy Site-Package
@@ -53,7 +51,7 @@ fi
 mkdir -p %{_python_build_loc}
 
 %build
-NUMPY_SRC_DIR="%{_baseline_workspace}/foss/numpy/packaged"
+NUMPY_SRC_DIR="%{_baseline_workspace}/foss/numpy-%{version}/packaged"
 NUMPY_TAR="numpy-%{version}.tar.gz"
 cp -v ${NUMPY_SRC_DIR}/${NUMPY_TAR} \
    %{_python_build_loc}
@@ -80,17 +78,17 @@ if [ ${RC} -ne 0 ]; then
    exit 1
 fi
 cd numpy-%{version}
-#/awips2/python/bin/python setup.py clean
-#RC=$?
-#if [ ${RC} -ne 0 ]; then
-#   exit 1
-#fi 
-#/awips2/python/bin/python setup.py build
-#RC=$?
-#if [ ${RC} -ne 0 ]; then
-#   exit 1
-#fi
-#popd > /dev/null
+/awips2/python/bin/python setup.py clean
+RC=$?
+if [ ${RC} -ne 0 ]; then
+   exit 1
+fi 
+/awips2/python/bin/python setup.py build
+RC=$?
+if [ ${RC} -ne 0 ]; then
+   exit 1
+fi
+popd > /dev/null
 
 %install
 NUMPY_SRC_DIR="%{_python_pkgs_dir}/numpy"
