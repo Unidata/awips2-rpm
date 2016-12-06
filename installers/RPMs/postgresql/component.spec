@@ -1,4 +1,8 @@
 %define _build_arch %(uname -i)
+%define _geos_version 3.6.0
+%define _proj_version 4.9.3
+%define _gdal_version 2.1.1
+%define _postgis_version 2.0.6
 %define _postgresql_version 9.3.10
 %define _postgres_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 %define _postgres_src_loc %{_baseline_workspace}/foss/postgresql-%{_postgresql_version}
@@ -150,16 +154,16 @@ if [ $? -ne 0 ]; then
 fi
 
 SRC_DIR="%{_postgres_src_loc}/packaged"
-PROJ_SRC="proj-4.9.3.zip"
-POSTGIS_SRC="postgis-2.0.6.tar.gz"
-GEOS_SRC="geos-3.5.0.tar.bz2"
+PROJ_SRC="proj-%{_proj_version}.zip"
+POSTGIS_SRC="postgis-%{_postgis_version}.tar.gz"
+GEOS_SRC="geos-%{_geos_version}.tar.bz2"
 GDAL_SRC="gdal211.zip"
 
 # The directory that the src will be in after the tars are unzipped.
-PROJ_SRC_DIR="proj-4.9.3"
-POSTGIS_SRC_DIR="postgis-2.0.6"
-GEOS_SRC_DIR="geos-3.5.0"
-GDAL_SRC_DIR="gdal-2.1.1"
+PROJ_SRC_DIR="proj-%{_proj_version}"
+POSTGIS_SRC_DIR="postgis-%{_postgis_version}"
+GEOS_SRC_DIR="geos-%{_geos_version}"
+GDAL_SRC_DIR="gdal-%{_gdal_version}"
 
 cp ${SRC_DIR}/${POSTGIS_SRC} %{_postgres_build_loc}
 cp ${SRC_DIR}/${PROJ_SRC} %{_postgres_build_loc}
