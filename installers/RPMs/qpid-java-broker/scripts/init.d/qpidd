@@ -107,6 +107,7 @@ stop() {
 }
 
 checkStatus() {
+   sleep 2
    getQPID_psCount
    if [ ${psCount_qpid} -eq 1 ]; then
       getQPID_pid
