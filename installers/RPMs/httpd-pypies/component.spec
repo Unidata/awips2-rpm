@@ -14,7 +14,7 @@
 Summary: Apache HTTP Server
 Name: awips2-httpd-pypies
 Version: 2.4.23
-Release: 1%{?dist}
+Release: 2%{?dist}
 URL: http://httpd.apache.org/
 License: Apache License, Version 2.0
 Group: AWIPSII
@@ -29,7 +29,7 @@ Requires(post): chkconfig
 Provides: webserver
 Provides: mod_dav = %{version}-%{release}, httpd-suexec = %{version}-%{release}
 Provides: %name-mmn = %{mmn}
-Requires: %name-tools >= %{version}-%{release}
+Requires: %name-tools
 Requires: awips2-pypies
 Requires: awips2-tools, awips2-python, awips2-python-h5py
 Requires: awips2-python-numpy, awips2-python-awips, awips2-python-werkzeug
@@ -501,6 +501,9 @@ if [ $1 = 0 ]; then
         /sbin/chkconfig --del htcacheclean-pypies
 fi
 
+%post -n %name-tools
+chown -R awips:fxalpha /awips2/httpd_pypies
+
 %post -n %name-mod_ssl
 umask 077
 
@@ -536,7 +539,7 @@ fi
 rm -rf $RPM_BUILD_ROOT
 
 %files
-%defattr(-,awips,awips)
+%defattr(-,awips,fxalpha)
 /awips2/httpd_pypies/etc/
 /awips2/httpd_pypies/etc/httpd/conf/extra/
 /awips2/httpd_pypies/etc/httpd/conf/original/extra/
@@ -593,10 +596,10 @@ rm -rf $RPM_BUILD_ROOT
 /etc/rc.d/init.d/htcacheclean-pypies
 /awips2/httpd_pypies%{_sbindir}/htcacheclean
 /etc/rc.d/init.d/httpd-pypies
-%attr(0700,awips,awips) %dir /awips2/httpd_pypies/var/lock/subsys
+%attr(0700,awips,fxalpha) %dir /awips2/httpd_pypies/var/lock/subsys
 /awips2/httpd_pypies%{_sbindir}/httpd
 /awips2/httpd_pypies%{_sbindir}/apachectl
-%attr(4510,awips,awips) /awips2/httpd_pypies%{_sbindir}/suexec
+%attr(4510,awips,fxalpha) /awips2/httpd_pypies%{_sbindir}/suexec
 %dir /awips2/httpd_pypies%{_libdir}/httpd
 %dir /awips2/httpd_pypies%{_libdir}/httpd/modules
 /awips2/httpd_pypies%{_libdir}/httpd/modules/mod_access_compat.so
@@ -724,9 +727,9 @@ rm -rf $RPM_BUILD_ROOT
 /awips2/httpd_pypies%{contentdir}/html/index.html
 %config(noreplace) /awips2/httpd_pypies%{contentdir}/error/*.var
 %config(noreplace) /awips2/httpd_pypies%{contentdir}/error/include/*.html
-%attr(0755,awips,awips) %dir /awips2/httpd_pypies/%{_localstatedir}/log/httpd
-%attr(0700,awips,awips) %dir /awips2/httpd_pypies%{_localstatedir}/lib/dav
-%attr(0700,awips,awips) %dir /awips2/httpd_pypies%{_localstatedir}/cache/httpd/cache-root
+%attr(0755,awips,fxalpha) %dir /awips2/httpd_pypies/%{_localstatedir}/log/httpd
+%attr(0700,awips,fxalpha) %dir /awips2/httpd_pypies%{_localstatedir}/lib/dav
+%attr(0700,awips,fxalpha) %dir /awips2/httpd_pypies%{_localstatedir}/cache/httpd/cache-root
 /awips2/httpd_pypies%{_mandir}/man1/*
 /awips2/httpd_pypies%{_mandir}/man8/suexec*
 /awips2/httpd_pypies%{_mandir}/man8/apachectl.8*
@@ -735,23 +738,26 @@ rm -rf $RPM_BUILD_ROOT
 /awips2/httpd_pypies%{_mandir}/man8/fcgistarter.8*
 
 %files -n %name-manual
-%defattr(-,awips,awips)
+%defattr(-,awips,fxalpha)
 /awips2/httpd_pypies/var/www/error/
 /awips2/httpd_pypies/var/www/
 /awips2/httpd_pypies%{contentdir}/manual
 /awips2/httpd_pypies%{contentdir}/error/README
 
 %files -n %name-tools
-%defattr(-,awips,awips)
-/awips2/httpd_pypies%{_bindir}/ab
-/awips2/httpd_pypies%{_bindir}/htdbm
-/awips2/httpd_pypies%{_bindir}/htdigest
-/awips2/httpd_pypies%{_bindir}/htpasswd
-/awips2/httpd_pypies%{_bindir}/logresolve
-/awips2/httpd_pypies%{_bindir}/httxt2dbm
-/awips2/httpd_pypies%{_sbindir}/rotatelogs
+%defattr(-,awips,fxalpha)
+/awips2/httpd_pypies/usr/bin/ab
+/awips2/httpd_pypies/usr/bin/htdbm
+/awips2/httpd_pypies/usr/bin/htdigest
+/awips2/httpd_pypies/usr/bin/htpasswd
+/awips2/httpd_pypies/usr/bin/logresolve
+/awips2/httpd_pypies/usr/bin/httxt2dbm
+%dir /awips2/httpd_pypies/usr/bin
+%dir /awips2/httpd_pypies/usr/sbin
+%dir /awips2/httpd_pypies/usr/include
+/awips2/httpd_pypies/usr/sbin/rotatelogs
 /awips2/httpd_pypies/usr/distcache*
-/awips2/httpd_pypies/usr/include/httpd*
+/awips2/httpd_pypies/usr/include/httpd/
 /awips2/httpd_pypies/usr/share
 /awips2/httpd_pypies/usr/share/doc
 /awips2/httpd_pypies/usr/share/man
@@ -764,29 +770,29 @@ rm -rf $RPM_BUILD_ROOT
 /awips2/httpd_pypies%{_mandir}/man8/rotatelogs.8*
 
 %files -n %name-mod_authnz_ldap
-%defattr(-,awips,awips)
+%defattr(-,awips,fxalpha)
 /awips2/httpd_pypies/usr/lib64/httpd/modules/
 /awips2/httpd_pypies%{_libdir}/httpd/modules/mod_ldap.so
 /awips2/httpd_pypies%{_libdir}/httpd/modules/mod_authnz_ldap.so
 
 %files -n %name-mod_lua
-%defattr(-,awips,awips)
+%defattr(-,awips,fxalpha)
 /awips2/httpd_pypies/usr/lib64/httpd/modules/
 /awips2/httpd_pypies%{_libdir}/httpd/modules/mod_lua.so
 
 %files -n %name-mod_proxy_html
-%defattr(-,awips,awips)
+%defattr(-,awips,fxalpha)
 /awips2/httpd_pypies/usr/lib64/httpd/modules/
 /awips2/httpd_pypies%{_libdir}/httpd/modules/mod_proxy_html.so
 /awips2/httpd_pypies%{_libdir}/httpd/modules/mod_xml2enc.so
 
 %files -n %name-mod_socache_dc
-%defattr(-,awips,awips)
+%defattr(-,awips,fxalpha)
 /awips2/httpd_pypies/usr/lib64/httpd/modules/
 /awips2/httpd_pypies%{_libdir}/httpd/modules/mod_socache_dc.so
 
 %files -n %name-mod_ssl
-%defattr(-,awips,awips)
+%defattr(-,awips,fxalpha)
 /awips2/httpd_pypies/etc/httpd/conf/extra/
 /awips2/httpd_pypies/etc/httpd/conf/original/extra/
 /awips2/httpd_pypies/usr/lib64/httpd/modules/
@@ -794,13 +800,13 @@ rm -rf $RPM_BUILD_ROOT
 /awips2/httpd_pypies%{_libdir}/httpd/modules/mod_ssl.so
 %config(noreplace) /awips2/httpd_pypies%{_sysconfdir}/httpd/conf/original/extra/httpd-ssl.conf
 %config(noreplace) /awips2/httpd_pypies%{_sysconfdir}/httpd/conf/extra/httpd-ssl.conf
-%attr(0700,awips,awips) %dir /awips2/httpd_pypies%{_localstatedir}/cache/mod_ssl
-%attr(0600,awips,awips) %ghost /awips2/httpd_pypies%{_localstatedir}/cache/mod_ssl/scache.dir
-%attr(0600,awips,awips) %ghost /awips2/httpd_pypies%{_localstatedir}/cache/mod_ssl/scache.pag
-%attr(0600,awips,awips) %ghost /awips2/httpd_pypies%{_localstatedir}/cache/mod_ssl/scache.sem
+%attr(0700,awips,fxalpha) %dir /awips2/httpd_pypies%{_localstatedir}/cache/mod_ssl
+%attr(0600,awips,fxalpha) %ghost /awips2/httpd_pypies%{_localstatedir}/cache/mod_ssl/scache.dir
+%attr(0600,awips,fxalpha) %ghost /awips2/httpd_pypies%{_localstatedir}/cache/mod_ssl/scache.pag
+%attr(0600,awips,fxalpha) %ghost /awips2/httpd_pypies%{_localstatedir}/cache/mod_ssl/scache.sem
 
 %files -n %name-devel
-%defattr(-,awips,awips)
+%defattr(-,awips,fxalpha)
 /awips2/httpd_pypies/usr/bin/
 /awips2/httpd_pypies/usr/include/
 /awips2/httpd_pypies/usr/lib64/httpd/

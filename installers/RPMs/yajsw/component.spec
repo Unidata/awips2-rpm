@@ -1,20 +1,20 @@
 %define _yajsw_version 11.11
 
 #
-# AWIPS II YAJSW Spec File
+# AWIPS YAJSW Spec File
 #
 
 Name: awips2-yajsw
-Summary: AWIPS II yajsw Distribution
+Summary: AWIPS yajsw Distribution
 Version: %{_yajsw_version}
-Release: 1%{?dist}
+Release: 2%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: noarch
 URL: N/A
 License: N/A
 Distribution: N/A
-Vendor: Raytheon
+Vendor: %{_build_vendor}
 Packager: %{_build_site}
 
 AutoReq: no
@@ -23,8 +23,8 @@ provides: awips2-yajsw
 requires: awips2-java
 
 %description
-AWIPS II yajsw Distribution - A custom compilation of yajsw %{_yajsw_version} used
-by several AWIPS II components.
+AWIPS yajsw Distribution - A custom compilation of yajsw %{_yajsw_version} used
+by several AWIPS components.
 
 # disable jar repacking
 %global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-java-repack-jars[[:space:]].*$!!g')
