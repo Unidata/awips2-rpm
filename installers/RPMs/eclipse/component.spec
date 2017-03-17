@@ -134,6 +134,8 @@ if [ $? -ne 0 ]; then
 fi
 rm -rf ${REPOSITORY}/shelled
 
+cp ${ECLIPSE_BIN_DIR}/eclipse.sh ${TMP_BUILD_DIR}/awips2/eclipse/
+
 # Move the complete application and remove the temp folder.
 mv ${TMP_BUILD_DIR}/awips2 %{_build_root}
 rm -rf ${TMP_BUILD_DIR}
@@ -172,6 +174,7 @@ rm -rf ${RPM_BUILD_ROOT}
 /awips2/eclipse/artifacts.xml
 /awips2/eclipse/eclipse
 /awips2/eclipse/eclipse.ini
+/awips2/eclipse/eclipse.sh
 /awips2/eclipse/.eclipseproduct
 /awips2/eclipse/icon.xpm
 /awips2/eclipse/notice.html
