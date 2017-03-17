@@ -4,12 +4,12 @@
 %define _lapack_version 3.4.2
 
 #
-# AWIPS II Python Spec File
+# AWIPS Python Spec File
 #
 Name: awips2-python
-Summary: AWIPS II Python Distribution
-Version: 2.7.10
-Release: %{_component_version}.%{_component_release}%{?dist}
+Summary: AWIPS Python Distribution
+Version: 2.7.11
+Release: 1
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
@@ -27,8 +27,8 @@ BuildRequires: tk-devel
 BuildRequires: tcl-devel
 
 %description
-AWIPS II Python Distribution - Contains Python V2.7.10 plus modules
-required for AWIPS II.
+AWIPS Python Distribution - Contains Python modules required for AWIPS
+required for AWIPS.
 
 %prep
 # Verify That The User Has Specified A BuildRoot.

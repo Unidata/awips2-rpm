@@ -95,23 +95,7 @@ mkdir -p %{buildroot}/etc/init.d
 # logs directory
 mkdir -p %{buildroot}/awips2/qpid/log
 
-/bin/cp -v ${WORKSPACE}/installers/Linux/.global %{buildroot}/awips2/qpid
-
 %post
-source /awips2/qpid/.global 2>/dev/null
-if [ -e /data/fxa/INSTALL/awips2/scripts/.global ]; then
-    source /data/fxa/INSTALL/awips2/scripts/.global
-fi
-case $SITE_IDENTIFIER in
-    ${centralCaseArray} )
-        rm -f /awips2/qpid/etc/wrapper.conf
-        cp /awips2/qpid/etc/wrapper.conf.centralRegistry /awips2/qpid/etc/wrapper.conf
-        ;;
-    *)  ;;
-esac
-
-rm -f /awips2/qpid/etc/wrapper.conf.centralRegistry
-rm -f /awips2/qpid/.global
 
 %clean
 rm -rf %{buildroot}
@@ -126,7 +110,6 @@ rm -rf %{buildroot}
 %dir /awips2/qpid/lib
 %dir /awips2/qpid/edex
 %dir /awips2/qpid/edex/config
-/awips2/qpid/.global
 /awips2/qpid/bin
 /awips2/qpid/etc
 /awips2/qpid/lib/*.jar

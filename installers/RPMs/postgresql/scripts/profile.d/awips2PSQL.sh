@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [ $(id -u) -eq 0 -a ! -v A2LIBS ]; then
+   return;
+fi
+
 if [ -d /awips2/psql ]; then
    # Determine Where awips2-psql Has Been Installed.
    PSQL_INSTALL="/awips2/psql"

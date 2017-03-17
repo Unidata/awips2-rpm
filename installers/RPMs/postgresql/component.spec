@@ -1,5 +1,5 @@
 %define _build_arch %(uname -i)
-%define _postgresql_version 9.3.10
+%define _postgresql_version 9.3.16
 %define _postgres_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 %define _postgres_src_loc %{_baseline_workspace}/foss/postgresql-%{_postgresql_version}
 %define _postgres_script_loc %{_baseline_workspace}/installers/RPMs/postgresql/scripts
@@ -11,7 +11,7 @@
 Name: awips2-postgresql
 Summary: AWIPS II PostgreSQL Distribution
 Version: %{_postgresql_version}
-Release: %{_component_version}.%{_component_release}%{?dist}
+Release: 1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
@@ -154,13 +154,13 @@ PROJ_SRC="proj-4.8.0.zip"
 POSTGIS_SRC="postgis-2.0.6.tar.gz"
 GEOS_BASE="geos-3.4.2"
 GEOS_SRC="geos-3.4.2.tar.bz2"
-GDAL_SRC="gdal192.zip"
+GDAL_SRC="gdal213.zip"
 
 # The directory that the src will be in after the tars are unzipped.
 PROJ_SRC_DIR="proj-4.8.0"
 POSTGIS_SRC_DIR="postgis-2.0.6"
 GEOS_SRC_DIR="geos-3.4.2"
-GDAL_SRC_DIR="gdal-1.9.2"
+GDAL_SRC_DIR="gdal-2.1.3"
 
 cp ${SRC_DIR}/${POSTGIS_SRC} %{_postgres_build_loc}
 cp ${SRC_DIR}/${PROJ_SRC} %{_postgres_build_loc}
