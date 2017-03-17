@@ -1,6 +1,6 @@
 %define _build_arch %(uname -i)
 %define _postgresql_version 9.3.10
-%define _geos_version 3.4.2
+%define _geos_version 3.5.0
 %define _postgres_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 %define _postgres_src_loc %{_baseline_workspace}/foss/postgresql-%{_postgresql_version}
 %define _postgres_script_loc %{_baseline_workspace}/installers/RPMs/postgresql/scripts
@@ -23,8 +23,8 @@ Vendor: Raytheon
 Packager: %{_build_site}
 
 AutoReq: no
-BuildRequires: bison, readline-devel, gcc-c++
-requires: netcdf
+BuildRequires: bison, readline-devel, gcc-c++, json-c
+Requires: netcdf, json-c
 provides: awips2-postgresql
 provides: awips2-base-component
 
@@ -152,21 +152,21 @@ if [ $? -ne 0 ]; then
 fi
 
 SRC_DIR="%{_postgres_src_loc}/packaged"
-PROJ_SRC="proj-4.8.0.zip"
+PROJ_SRC="proj-4.9.3.zip"
 POSTGIS_SRC="postgis-2.0.6.tar.gz"
 GEOS_BASE="geos-%{_geos_version}"
 GEOS_SRC="geos-%{_geos_version}.tar.bz2"
-GDAL_SRC="gdal192.zip"
+GDAL_SRC="gdal211.zip"
 
 # The directory that the src will be in after the tars are unzipped.
-PROJ_SRC_DIR="proj-4.8.0"
+PROJ_SRC_DIR="proj-4.9.3"
 POSTGIS_SRC_DIR="postgis-2.0.6"
 GEOS_SRC_DIR="geos-%{_geos_version}"
-GDAL_SRC_DIR="gdal-1.9.2"
+GDAL_SRC_DIR="gdal-2.1.1"
 
 cp ${SRC_DIR}/${POSTGIS_SRC} %{_postgres_build_loc}
 cp ${SRC_DIR}/${PROJ_SRC} %{_postgres_build_loc}
-cp %{_baseline_workspace}/foss/${GEOS_BASE}/packaged/${GEOS_SRC} %{_postgres_build_loc}
+cp %{_baseline_workspace}/foss/geos/packaged/${GEOS_SRC} %{_postgres_build_loc}
 cp ${SRC_DIR}/${GDAL_SRC} %{_postgres_build_loc}
 
 cd %{_postgres_build_loc}
@@ -217,7 +217,7 @@ fi
 
 cd ../${GDAL_SRC_DIR}
 ./configure --prefix=%{_postgres_build_loc}/awips2/postgresql \
-   --with-expat-lib=%{_usr}/%{_lib}
+   --with-expat-lib=%{_usr}/%{_lib} 
 if [ $? -ne 0 ]; then
    exit 1
 fi
@@ -234,6 +234,7 @@ cd ../${POSTGIS_SRC_DIR}
 _POSTGRESQL_ROOT=%{_postgres_build_loc}/awips2/postgresql
 _POSTGRESQL_BIN=${_POSTGRESQL_ROOT}/bin
 ./configure \
+   --with-jsonc=/usr/include
    --with-pgconfig=${_POSTGRESQL_BIN}/pg_config \
    --with-geosconfig=${_POSTGRESQL_BIN}/geos-config \
    --with-projdir=${_POSTGRESQL_ROOT} \

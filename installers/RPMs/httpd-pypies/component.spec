@@ -746,21 +746,16 @@ rm -rf $RPM_BUILD_ROOT
 
 %files -n %name-tools
 %defattr(-,awips,fxalpha)
-/awips2/httpd_pypies/usr/bin/ab
-/awips2/httpd_pypies/usr/bin/htdbm
-/awips2/httpd_pypies/usr/bin/htdigest
-/awips2/httpd_pypies/usr/bin/htpasswd
-/awips2/httpd_pypies/usr/bin/logresolve
-/awips2/httpd_pypies/usr/bin/httxt2dbm
-%dir /awips2/httpd_pypies/usr/bin
-%dir /awips2/httpd_pypies/usr/sbin
-%dir /awips2/httpd_pypies/usr/include
-/awips2/httpd_pypies/usr/sbin/rotatelogs
-/awips2/httpd_pypies/usr/distcache*
-/awips2/httpd_pypies/usr/include/httpd/
-/awips2/httpd_pypies/usr/share
-/awips2/httpd_pypies/usr/share/doc
-/awips2/httpd_pypies/usr/share/man
+/awips2/httpd_pypies/usr/bin/
+/awips2/httpd_pypies/usr/share/man/man1/
+/awips2/httpd_pypies/usr/share/man/man8/
+/awips2/httpd_pypies/usr/distcache
+/awips2/httpd_pypies%{_bindir}/ab
+/awips2/httpd_pypies%{_bindir}/htdbm
+/awips2/httpd_pypies%{_bindir}/htdigest
+/awips2/httpd_pypies%{_bindir}/htpasswd
+/awips2/httpd_pypies%{_bindir}/logresolve
+/awips2/httpd_pypies%{_bindir}/httxt2dbm
 /awips2/httpd_pypies%{_mandir}/man1/htdbm.1*
 /awips2/httpd_pypies%{_mandir}/man1/htdigest.1*
 /awips2/httpd_pypies%{_mandir}/man1/htpasswd.1*
