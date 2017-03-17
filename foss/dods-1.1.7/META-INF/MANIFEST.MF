@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: 7
+Bundle-SymbolicName: dods-1.1.7
+Bundle-Version: 1.1.7.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ClassPath: gnu-getopt-1.0.6.jar,
+ gnu-regexp-1.1.4.jar,
+ .
+Require-Bundle: javax.servlet;bundle-version="3.0.0",
+ org.apache.http;bundle-version="4.3.5"
+Export-Package: com.raytheon.dods,
+ dods.dap

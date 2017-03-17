@@ -1,0 +1,63 @@
+#!/bin/bash
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+# this version of the qpid start script will utilize the yajsw wrapper
+
+CONF_FILE="wrapper.conf"
+
+WHEREAMI=`dirname $0`
+if [ -z "$QPID_HOME" ]; then
+    export QPID_HOME=`cd $WHEREAMI/../ && pwd`
+fi
+
+if [ -z "$QPID_WORK" ]; then
+    export QPID_WORK=$QPID_HOME
+fi
+
+if [ -z "${QPID_PID_FILENAME}" ]; then
+   export QPID_PID_FILENAME="qpid-server.pid"
+fi
+
+# Set other variables used by the wrapper
+export JAVA=/awips2/java/bin/java \
+       JAVA_VM=-server \
+       AMQJ_LOGGING_LEVEL=info \
+       QPID_PNAME=" -DPNAME=QPBRKR" \
+       CONSOLE_LOGLEVEL=DEBUG \
+       YAJSW_HOME=/awips2/yajsw
+
+if [ ! -f ${JAVA} ]; then
+   echo "ERROR: the specified Java does not exist - ${JAVA}."
+   echo "Unable to Continue ... Terminating."
+   exit 1
+fi
+
+QPID_TEMP=${QPID_HOME}/tmp
+if [ ! -d ${QPID_TEMP} ]; then
+   mkdir -p ${QPID_TEMP}
+   if [ $? -ne 0 ]; then
+      echo "ERROR: Failed to create temp directory ${QPID_TEMP}."
+      echo "Unable to Continue ... Terminating."
+   fi
+fi
+
+YAJSW_JVM_ARGS="-Xmx32m -XX:MaxPermSize=12m -XX:ReservedCodeCacheSize=4m -Djava.io.tmpdir=${QPID_TEMP}"
+
+$JAVA ${YAJSW_JVM_ARGS} -jar ${YAJSW_HOME}/wrapper.jar -c ${QPID_HOME}/etc/${CONF_FILE}

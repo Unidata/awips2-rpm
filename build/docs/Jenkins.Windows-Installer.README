@@ -1,0 +1,63 @@
+The Windows-Installer job just needs to be setup once for all versions to use. If already configured these steps are not required.
+
+Set up a new Jenkins job with the name "Windows-Installer"
+Description:
+This Jenkins build will create an AWIPS II CAVE setup package. 
+
+This is a common build between versions, the application needs to be compiled with a version specific build then build information passed in using:
+
+AWIPSII_BRANCH=${AWIPSII_BRANCH}
+BUILD_FILE=${JOB_NAME}-${BUILD_NUMBER}
+BUILD_VERSION=${AWIPSII_VERSION}
+
+Select the checkbox "This build is parameterized"
+
+Add the following String Parameters:
+Name: AWIPSII_BRANCH
+Default Value:
+Description: The branch name to use for AWIPS2_build git repository.
+
+Name: BUILD_VERSION
+Default Value:
+Description: The version associated with this build of AWIPS II CAVE.
+
+Name: BUILD_FILE
+Default Value:
+Description: The build file name addition. 
+Template: ${JOB_NAME}-${BUILD_NUMBER}
+
+Restrict the project to only run on the Windows build slave.
+Label Expression: Windows
+
+Set up the Git repositories using the template below for just AWIPS2_build:
+
+Repository URL: ssh://...../AWIPS2_build
+Branches to build: $AWIPS2_BRANCH
+
+Under Build setup a Windows PowerShell with the following script:
+
+## See AWIPS2_build/installers/Windows/x86_64/Scripts/Win64Build_CAVE.ps1 for more information
+
+# Required:
+Set-Variable -name JENKINS_BUILD_VERSION -value $ENV:BUILD_VERSION
+Set-Variable -name JENKINS_BUILD_FILE -value $ENV:BUILD_FILE
+Set-Variable -name JENKINS_BUILD_JAVA_JDK_LOC -value $ENV:JAVA_HOME 
+Set-Variable -name JENKINS_WORKSAPCE_DIR -value $ENV:WORKSPACE
+
+# Only use one of the following sets:
+#Set-Variable -name JENKINS_BUILD_NO_SSH -value "true"
+#OR
+Set-Variable -name JENKINS_BUILD_SSH_SERVER_GET -value "jenkins@halfmaen:/home/jenkins/staging/win32-nightly"
+Set-Variable -name JENKINS_BUILD_SSH_SERVER_PUT -value "root@awipscm:/var/www/html/thinclient/x64"
+Set-Variable -name JENKINS_BUILD_PRIVATE_KEY_LOC -value "C:\SSHKeys\Private.ppk"
+
+# Set the path for the build script
+$buildScript = Join-Path $JENKINS_WORKSAPCE_DIR "Installers\Windows\x86_64\Scripts\Win64Build_CAVE.ps1"
+
+# Start the build.
+. $buildScript
+if ($? -ne $true) { EXIT 1; }
+
+EXIT 0
+
+Add a E-mail notification under Post-build Actions if required.

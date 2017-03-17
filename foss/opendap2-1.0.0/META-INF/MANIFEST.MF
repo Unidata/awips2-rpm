@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: 0
+Bundle-SymbolicName: opendap2-1.0.0
+Bundle-Version: 1.0.1.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Import-Package: org.jdom,
+ org.jdom.input
+Require-Bundle: javax.servlet;bundle-version="3.0.0",
+ org.apache.http;bundle-version="4.3.5"
+Export-Package: com.raytheon.opendap,
+ opendap,
+ opendap.dap,
+ opendap.dap.parser
