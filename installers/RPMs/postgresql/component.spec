@@ -279,14 +279,10 @@ cp -r %{_postgres_script_loc}/start_postgres.sh ${RPM_BUILD_ROOT}/awips2/postgre
 
 copyLegal "awips2/postgresql"
 
-mkdir -p %{_build_root}/etc/profile.d
 mkdir -p %{_build_root}/etc/ld.so.conf.d
 mkdir -p %{_build_root}/etc/init.d
 touch %{_build_root}/etc/ld.so.conf.d/awips2-postgresql-%{_build_arch}.conf
 echo "/awips2/postgresql/lib" >> %{_build_root}/etc/ld.so.conf.d/awips2-postgresql-%{_build_arch}.conf
-
-PROFILE_D_DIR="%{_postgres_script_loc}/profile.d"
-cp ${PROFILE_D_DIR}/* %{_build_root}/etc/profile.d 
 
 # Include the postgresql service script
 cp %{_postgres_script_loc}/init.d/edex_postgres \
@@ -327,8 +323,6 @@ and populate the AWIPS II databases.
 
 %files
 %defattr(644,awips,fxalpha,755)
-%attr(755,root,root) /etc/profile.d/awips2Postgres.csh
-%attr(755,root,root) /etc/profile.d/awips2Postgres.sh
 %attr(755,root,root) /etc/ld.so.conf.d/awips2-postgresql-%{_build_arch}.conf
 %attr(744,root,root) /etc/init.d/edex_postgres
 %attr(700,awips,fxalpha) /awips2/data
@@ -349,8 +343,6 @@ and populate the AWIPS II databases.
 
 %files -n awips2-psql
 %defattr(755,awips,fxalpha,755)
-%attr(755,root,root) /etc/profile.d/awips2PSQL.csh
-%attr(755,root,root) /etc/profile.d/awips2PSQL.sh
 %dir /awips2
 %dir /awips2/psql
 %dir /awips2/psql/bin
