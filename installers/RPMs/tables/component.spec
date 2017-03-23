@@ -9,7 +9,7 @@
 #
 Name: awips2-python-tables
 Summary: AWIPS II Python tables Distribution
-Version: 2.1.2
+Version: 3.3.0
 Release: 1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
@@ -85,7 +85,7 @@ else
    export HDF5_DIR="%{_python_build_loc}/hdf5-%{_hdf5_version}-patch1-linux-x86_64-shared"
 fi
 
-TABLES_SRC_DIR="%{_baseline_workspace}/foss/tables-%{version}/packaged"
+TABLES_SRC_DIR="%{_baseline_workspace}/foss/tables/packaged"
 TABLES_TAR="tables-%{version}.tar.gz"
 cp -v ${TABLES_SRC_DIR}/${TABLES_TAR} \
    %{_python_build_loc}
@@ -107,6 +107,7 @@ if [ ! -d tables-%{version} ]; then
    exit 1
 fi
 cd tables-%{version}
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/lib64
 /awips2/python/bin/python setup.py build_ext --inplace
 RC=$?
 if [ ${RC} -ne 0 ]; then
