@@ -9,7 +9,7 @@
 Name: awips2-python
 Summary: AWIPS Python Distribution
 Version: 2.7.11
-Release: 1
+Release: 1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
@@ -126,6 +126,9 @@ if [ ${RC} -ne 0 ]; then
    exit 1
 fi
 
+PYTHON_PROJECT_DIR="%{_baseline_workspace}/installers/RPMs/python"
+PYTHON_PROJECT_SRC_DIR="${PYTHON_PROJECT_DIR}/src"
+
 # The external libraries (hdf5, netcdf, ...) and headers
 # we include with python.
 
@@ -161,8 +164,6 @@ fi
 
 popd > /dev/null
 
-PYTHON_PROJECT_DIR="%{_baseline_workspace}/installers/RPMs/python"
-PYTHON_PROJECT_SRC_DIR="${PYTHON_PROJECT_DIR}/src"
 PYTHON_PROJECT_NATIVE_DIR="${PYTHON_PROJECT_DIR}/nativeLib"
 FOSS_LAPACK_DIR="%{_baseline_workspace}/foss/lapack-%{_lapack_version}/packaged/"
 LAPACK_TAR="lapack-%{_lapack_version}.tgz"

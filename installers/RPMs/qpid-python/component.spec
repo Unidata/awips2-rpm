@@ -9,7 +9,7 @@
 Name: awips2-python-qpid
 Summary: AWIPS II Python qpid Distribution
 Version: 0.32
-Release: 1%{?dist}
+Release: 3%{?dist}
 BuildArch: noarch
 Group: AWIPSII
 BuildRoot: %{_build_root}
