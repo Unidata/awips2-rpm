@@ -8,7 +8,7 @@
 #
 Name: awips2-python-six
 Summary: AWIPS II Python six Distribution
-Version: 1.9.0
+Version: 1.10.0
 Release: 1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
@@ -48,7 +48,7 @@ fi
 mkdir -p %{_python_build_loc}
 
 %build
-SIX_SRC_DIR="%{_baseline_workspace}/foss/six-%{version}/packaged"
+SIX_SRC_DIR="%{_baseline_workspace}/foss/six/packaged"
 
 cp -rv ${SIX_SRC_DIR}/six-%{version}.tar.gz %{_python_build_loc}
 pushd . > /dev/null
