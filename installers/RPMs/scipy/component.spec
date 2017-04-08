@@ -1,5 +1,6 @@
 %global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')
 %define _build_arch %(uname -i)
+%define _scipy 0.15.1
 %define _python_pkgs_dir "%{_baseline_workspace}/pythonPackages"
 %define _python_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -8,8 +9,8 @@
 #
 Name: awips2-python-scipy
 Summary: AWIPS II Python scipy Distribution
-Version: 0.15.1
-Release: 1%{?dist}
+Version: %{_component_version}
+Release: %{_scipy}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
@@ -22,7 +23,7 @@ Packager: %{_build_site}
 AutoReq: no
 Requires: awips2-python
 Requires: awips2-python-numpy
-provides: awips2-python-scipy = %{version}
+provides: awips2-python-scipy = %{_scipy}
 
 BuildRequires: awips2-python
 BuildRequires: awips2-python-numpy
@@ -47,7 +48,7 @@ fi
 mkdir -p %{_python_build_loc}
 
 %build
-SCIPY_SRC_DIR="%{_baseline_workspace}/foss/scipy-%{version}/packaged"
+SCIPY_SRC_DIR="%{_baseline_workspace}/foss/scipy/packaged"
 
 cp -v ${SCIPY_SRC_DIR}/* \
    %{_python_build_loc}
@@ -66,8 +67,8 @@ fi
 
 pushd . > /dev/null
 cd %{_python_build_loc}
-tar xvf scipy-%{version}.tar.gz
-cd scipy-%{version}
+tar xvf scipy-%{_scipy}.tar.gz
+cd scipy-%{_scipy}
 export LD_LIBRARY_PATH=/awips2/python/lib
 /awips2/python/bin/python setup.py build
 RC=$?
@@ -88,7 +89,7 @@ export BLAS=/awips2/python/lib
 export LAPACK=/awips2/python/lib
 
 pushd . > /dev/null
-cd %{_python_build_loc}/scipy-%{version}
+cd %{_python_build_loc}/scipy-%{_scipy}
 export LD_LIBRARY_PATH=/awips2/python/lib
 /awips2/python/bin/python setup.py install \
    --root=%{_build_root} \
