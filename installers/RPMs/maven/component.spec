@@ -4,7 +4,7 @@
 Name: awips2-maven
 Summary: AWIPS II Maven Distribution
 Version: 3.2.3
-Release: %{_component_version}.%{_component_release}
+Release: 1
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: noarch
