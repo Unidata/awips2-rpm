@@ -8,7 +8,7 @@
 %define HTTP_FOSS_DIR "%{_baseline_workspace}/foss/%{HTTP_PACKAGE_NAME}/packaged/"
 %define HTTP_PACKAGE_NAME "httpd-%{version}"
 %define HTTP_PATCHES_TAR "%{HTTP_PACKAGE_NAME}-SOURCES.tar"
-%define HTTP_PATCHES_RPM "httpd-%{version}-%{release}_7.src.rpm"
+%define HTTP_PATCHES_RPM "httpd-%{version}-%{release}.src.rpm"
 %define HTTP_SOURCE_TAR "%{HTTP_PACKAGE_NAME}.tar.gz"
 %define RPMBUILD_PYPIES_DIR "%{_baseline_workspace}/rpmbuild/BUILD/httpd-pypies"
 %define RPMBUILD_HTTP_DIR %RPMBUILD_PYPIES_DIR/%HTTP_PACKAGE_NAME
@@ -16,7 +16,7 @@
 Summary: Pypies Apache HTTP Server
 Name: awips2-httpd-pypies
 Version: 2.2.15
-Release: 47%{?dist}
+Release: 59%{?dist}
 URL: http://httpd.apache.org/
 License: ASL 2.0
 Group: AWIPSII

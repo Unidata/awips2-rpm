@@ -13,7 +13,6 @@ for day in ${_COUNT_DAYS[*]}; do
    for logPrefix in ${_LOG_NAME_PREFIXES[*]}; do
       _log_file="${logPrefix}.${_log_date}"
 
-      echo "${_PYPIES_LOG_DIRECTORY}/${_log_file}"
       rm -f ${_PYPIES_LOG_DIRECTORY}/${_log_file}
    done
 done
