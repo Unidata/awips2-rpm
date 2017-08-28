@@ -9,7 +9,7 @@
 
 Name: awips2-python-shapely
 Summary: AWIPS II Python shapely Distribution
-Version: 1.5.17
+Version: 1.6.0
 Release: 1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
@@ -17,10 +17,11 @@ BuildArch: %{_build_arch}
 URL: N/A
 License: N/A
 Distribution: N/A
-Vendor: Raytheon
+Vendor: %{_build_vender}
 Packager: %{_build_site}
 
 AutoReq: no
+BuildRequires: awips2-python, geos
 Requires: awips2-python
 Provides: awips2-python-shapely = %{version}
 
@@ -146,5 +147,3 @@ rm -rf %{_python_build_loc}
 /awips2/python/lib/*
 %dir /awips2/python/include
 /awips2/python/include/*
-%dir /awips2/python/shapely
-/awips2/python/shapely/*
