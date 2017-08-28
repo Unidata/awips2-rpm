@@ -11,7 +11,7 @@
 Name: awips2-postgresql
 Summary: AWIPS II PostgreSQL Distribution
 Version: %{_postgresql_version}
-Release: 1%{?dist}
+Release: 2%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
@@ -22,7 +22,7 @@ Vendor: %{_build_vendor}
 Packager: %{_build_site}
 
 AutoReq: no
-BuildRequires: openssl-devel
+BuildRequires: openssl-devel, geos
 Requires: openssl
 requires: netcdf
 provides: awips2-postgresql
