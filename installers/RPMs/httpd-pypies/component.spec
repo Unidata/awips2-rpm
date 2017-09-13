@@ -3,12 +3,13 @@
 %define mmn 20051115
 %define vstring Red Hat
 %define mpms worker event
+%define release_vers 59%{?dist}
 
 
 %define HTTP_FOSS_DIR "%{_baseline_workspace}/foss/%{HTTP_PACKAGE_NAME}/packaged/"
 %define HTTP_PACKAGE_NAME "httpd-%{version}"
 %define HTTP_PATCHES_TAR "%{HTTP_PACKAGE_NAME}-SOURCES.tar"
-%define HTTP_PATCHES_RPM "httpd-%{version}-%{release}.src.rpm"
+%define HTTP_PATCHES_RPM "httpd-%{version}-59.el6.src.rpm"
 %define HTTP_SOURCE_TAR "%{HTTP_PACKAGE_NAME}.tar.gz"
 %define RPMBUILD_PYPIES_DIR "%{_baseline_workspace}/rpmbuild/BUILD/httpd-pypies"
 %define RPMBUILD_HTTP_DIR %RPMBUILD_PYPIES_DIR/%HTTP_PACKAGE_NAME
@@ -16,11 +17,11 @@
 Summary: Pypies Apache HTTP Server
 Name: awips2-httpd-pypies
 Version: 2.2.15
-Release: 59%{?dist}
+Release: 60%{?dist}
 URL: http://httpd.apache.org/
 License: ASL 2.0
 Group: AWIPSII
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release_vers}-root
 BuildRequires: autoconf, perl, pkgconfig, findutils, awips2-python
 BuildRequires: zlib-devel, libselinux-devel
 BuildRequires: apr-devel >= 1.2.0, apr-util-devel >= 1.2.0, pcre-devel >= 5.0
@@ -36,7 +37,7 @@ Provides: httpd-mmn = %{mmn}
 Obsoletes: apache, secureweb, mod_dav, mod_gzip, stronghold-apache
 Obsoletes: stronghold-htdocs, mod_put, mod_roaming
 Conflicts: pcre < 4.0
-Requires: httpd-tools >= %{version}-%{release}, apr-util-ldap
+Requires: httpd-tools >= %{version}-%{release_vers}, apr-util-ldap
 Requires: awips2-pypies
 Packager: %{_build_site}
 
@@ -50,7 +51,7 @@ Group: AWIPSII
 Summary: Development interfaces for the Apache HTTP server
 Obsoletes: secureweb-devel, apache-devel, stronghold-apache-devel
 Requires: apr-devel, apr-util-devel, pkgconfig
-Requires: httpd >= %{version}-%{release}
+Requires: httpd >= %{version}-%{release_vers}
 
 %description devel
 The httpd-devel package contains the APXS binary and other files
@@ -64,7 +65,7 @@ to install this package.
 %package manual
 Group: AWIPSII
 Summary: Documentation for the Apache HTTP server
-Requires: httpd >= %{version}-%{release}
+Requires: httpd >= %{version}-%{release_vers}
 Obsoletes: secureweb-manual, apache-manual
 BuildArch: noarch
 
@@ -88,7 +89,7 @@ Epoch: 1
 BuildRequires: openssl-devel
 Requires(post): openssl >= 0.9.7f-4, /bin/cat
 Requires(pre): httpd
-Requires: httpd = 0:%{version}-%{release}, httpd-mmn = %{mmn}
+Requires: httpd = 0:%{version}-%{release_vers}, httpd-mmn = %{mmn}
 Obsoletes: stronghold-mod_ssl
 
 %description -n mod_ssl
@@ -258,7 +259,7 @@ patch -p1 -s < %RPMBUILD_PYPIES_DIR/httpd-2.2.15-CVE-2013-5704.patch
 patch -p1 -s < %RPMBUILD_PYPIES_DIR/httpd-2.2.15-CVE-2015-3183.patch
 
 # Patch in vendor/release string
-sed -i "s/@VENDOR@/%{vstring}/;s/@RELEASE@/%{release}/" %RPMBUILD_PYPIES_DIR/httpd-2.2.14-release.patch 
+sed -i "s/@VENDOR@/%{vstring}/;s/@RELEASE@/%{release_vers}/" %RPMBUILD_PYPIES_DIR/httpd-2.2.14-release.patch 
 patch -p1 -s < %RPMBUILD_PYPIES_DIR/httpd-2.2.14-release.patch
 
 # Safety check: prevent build if defined MMN does not equal upstream MMN.
@@ -648,8 +649,8 @@ rm -rf $RPM_BUILD_ROOT
 /awips2/httpd_pypies%{_sysconfdir}/httpd/logs
 /awips2/httpd_pypies%{_sysconfdir}/httpd/run
 %dir /awips2/httpd_pypies%{_sysconfdir}/httpd/conf
-%config(noreplace) /awips2/httpd_pypies%{_sysconfdir}/httpd/conf/httpd.conf
-%config(noreplace) /awips2/httpd_pypies%{_sysconfdir}/httpd/conf.d/pypies.conf
+/awips2/httpd_pypies%{_sysconfdir}/httpd/conf/httpd.conf
+/awips2/httpd_pypies%{_sysconfdir}/httpd/conf.d/pypies.conf
 %config(noreplace) /awips2/httpd_pypies%{_sysconfdir}/httpd/conf.d/welcome.conf
 %config(noreplace) /awips2/httpd_pypies%{_sysconfdir}/httpd/conf/magic
 
