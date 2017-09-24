@@ -40,7 +40,9 @@ PGUSER=awips
 PGLOG="$PGDATA/serverlog"
 # The path that is to be used for the script
 PATH=${JAVA_INSTALL}/bin:${PYTHON_INSTALL}/bin:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-export LD_LIBRARY_PATH=${JAVA_INSTALL}/lib:${PYTHON_INSTALL}/lib:${PSQL_INSTALL}/lib:/usr/local/netcdf/lib64
+# Unsure if this is intended to use the netcdf-AWIPS package libnetcdf.a which is in /usr/local/netcdf/lib/ (not lib64/)
+#export LD_LIBRARY_PATH=${JAVA_INSTALL}/lib:${PYTHON_INSTALL}/lib:${PSQL_INSTALL}/lib:/usr/local/netcdf/lib64
+export LD_LIBRARY_PATH=${JAVA_INSTALL}/lib:${PYTHON_INSTALL}/lib:${PSQL_INSTALL}/lib
 # What to use to start up the postmaster (we do NOT use pg_ctl for this,
 # as it adds no value and can cause the postmaster to misrecognize a stale
 # lock file)
