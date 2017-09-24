@@ -1,5 +1,5 @@
 %define _build_arch %(uname -i)
-%define _postgresql_version 9.5.3
+%define _postgresql_version 9.5.8
 %define _postgres_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 %define _postgres_src_loc %{_baseline_workspace}/foss/postgresql-%{_postgresql_version}
 %define _postgres_script_loc %{_baseline_workspace}/installers/RPMs/postgresql/scripts
@@ -11,7 +11,7 @@
 Name: awips2-postgresql
 Summary: AWIPS II PostgreSQL Distribution
 Version: %{_postgresql_version}
-Release: 2%{?dist}
+Release: %{_component_version}.%{_component_release}%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
@@ -22,9 +22,9 @@ Vendor: %{_build_vendor}
 Packager: %{_build_site}
 
 AutoReq: no
-BuildRequires: openssl-devel, geos
-Requires: openssl
-requires: netcdf
+BuildRequires: openssl-devel >= 1.0.1e
+Requires: openssl >= 1.0.1e
+Requires: netcdf, geos
 provides: awips2-postgresql
 provides: awips2-base-component
 
@@ -74,7 +74,8 @@ tar -xvf ${POSTGRESQL_TAR_FILE}
 %build
 cd %{_postgres_build_loc}/postgresql-%{_postgresql_version}
 
-./configure --prefix=%{_postgres_build_loc}/awips2/postgresql \
+LDFLAGS='-Wl,-rpath,/awips2/postgresql/lib,-rpath,/awips2/psql/lib' ./configure \
+   --prefix=%{_postgres_build_loc}/awips2/postgresql \
    --with-openssl \
    --with-libxml
 if [ $? -ne 0 ]; then
@@ -85,13 +86,19 @@ if [ $? -ne 0 ]; then
    exit 1
 fi
 
+make %{?_smp_mflags}
+if [ $? -ne 0 ]; then
+   exit 1
+fi
+
+cd %{_postgres_build_loc}/postgresql-%{_postgresql_version}/contrib/pg_freespacemap
 make
 if [ $? -ne 0 ]; then
    exit 1
 fi
 
 cd %{_postgres_build_loc}/postgresql-%{_postgresql_version}/contrib/xml2
-make
+make %{?_smp_mflags}
 if [ $? -ne 0 ]; then
    exit 1
 fi
@@ -204,11 +211,12 @@ if [ $? -ne 0 ]; then
 fi
 
 cd ${GEOS_SRC_DIR}
-./configure --prefix=%{_postgres_build_loc}/awips2/postgresql
+LDFLAGS='-Wl,-rpath,/awips2/postgresql/lib,-rpath,/awips2/psql/lib' ./configure \
+   --prefix=%{_postgres_build_loc}/awips2/postgresql
 if [ $? -ne 0 ]; then
    exit 1
 fi
-make
+make %{?_smp_mflags}
 if [ $? -ne 0 ]; then
    exit 1
 fi
@@ -218,11 +226,13 @@ if [ $? -ne 0 ]; then
 fi
 
 cd ../${PROJ_SRC_DIR}
-./configure --prefix=%{_postgres_build_loc}/awips2/postgresql --without-jni
+LDFLAGS='-Wl,-rpath,/awips2/postgresql/lib,-rpath,/awips2/psql/lib' ./configure \
+   --prefix=%{_postgres_build_loc}/awips2/postgresql \
+   --without-jni
 if [ $? -ne 0 ]; then
    exit 1
 fi
-make
+make %{?_smp_mflags}
 if [ $? -ne 0 ]; then
    exit 1
 fi
@@ -232,12 +242,13 @@ if [ $? -ne 0 ]; then
 fi
 
 cd ../${GDAL_SRC_DIR}
-./configure --prefix=%{_postgres_build_loc}/awips2/postgresql \
-   --with-expat-lib=%{_usr}/%{_lib} --without-mysql
+LDFLAGS='-Wl,-rpath,/awips2/postgresql/lib,-rpath,/awips2/psql/lib' ./configure \
+   --prefix=%{_postgres_build_loc}/awips2/postgresql \
+   --with-expat-lib=%{_usr}/%{_lib}
 if [ $? -ne 0 ]; then
    exit 1
 fi
-make
+make %{?_smp_mflags}
 if [ $? -ne 0 ]; then
    exit 1
 fi
@@ -251,7 +262,7 @@ for THIS_POSTGIS_SRC_DIR in "${POSTGIS_OLD_SRC_DIR}" "${POSTGIS_SRC_DIR}"; do
     cd ../${THIS_POSTGIS_SRC_DIR}
     _POSTGRESQL_ROOT=%{_postgres_build_loc}/awips2/postgresql
     _POSTGRESQL_BIN=${_POSTGRESQL_ROOT}/bin
-    ./configure \
+    LDFLAGS='-Wl,-rpath,/awips2/postgresql/lib,-rpath,/awips2/psql/lib' ./configure \
        --with-pgconfig=${_POSTGRESQL_BIN}/pg_config \
        --with-geosconfig=${_POSTGRESQL_BIN}/geos-config \
        --with-projdir=${_POSTGRESQL_ROOT} \
@@ -304,21 +315,11 @@ cp -r %{_postgres_script_loc}/start_postgres.sh ${RPM_BUILD_ROOT}/awips2/postgre
 
 copyLegal "awips2/postgresql"
 
-mkdir -p %{_build_root}/etc/ld.so.conf.d
 mkdir -p %{_build_root}/etc/init.d
-touch %{_build_root}/etc/ld.so.conf.d/awips2-postgresql-%{_build_arch}.conf
-echo "/awips2/postgresql/lib" >> %{_build_root}/etc/ld.so.conf.d/awips2-postgresql-%{_build_arch}.conf
 
 # Include the postgresql service script
 cp %{_postgres_script_loc}/init.d/edex_postgres \
    %{_build_root}/etc/init.d
-
-%pre
-
-%post
-
-# Run ldconfig
-/sbin/ldconfig
 
 %preun
 if [ "${1}" = "1" ]; then
@@ -327,8 +328,6 @@ fi
 if [ -f /etc/init.d/edex_postgres ]; then
    /sbin/chkconfig --del edex_postgres
 fi
-
-%postun
 
 %clean
 rm -rf ${RPM_BUILD_ROOT}
@@ -348,7 +347,6 @@ and populate the AWIPS II databases.
 
 %files
 %defattr(644,awips,fxalpha,755)
-%attr(755,root,root) /etc/ld.so.conf.d/awips2-postgresql-%{_build_arch}.conf
 %attr(744,root,root) /etc/init.d/edex_postgres
 %attr(700,awips,fxalpha) /awips2/data
 %dir /awips2/postgresql
@@ -368,7 +366,6 @@ and populate the AWIPS II databases.
 
 %files -n awips2-psql
 %defattr(755,awips,fxalpha,755)
-%dir /awips2
 %dir /awips2/psql
 %dir /awips2/psql/bin
 /awips2/psql/bin/*
