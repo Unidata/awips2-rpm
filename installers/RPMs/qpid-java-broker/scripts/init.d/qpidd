@@ -85,10 +85,13 @@ stop() {
       
       # stop the wrapper
       kill ${pid_wrapper}
+      kill ${pid_qpid}
    else
       # stop qpid
       kill ${pid_qpid}
    fi
+   pkill -f qpid-wrapper
+   pkill -f "qpid/etc/wrapper.conf"
    
    # wait for and verify that qpid has stopped running
    savepid=${pid_qpid}

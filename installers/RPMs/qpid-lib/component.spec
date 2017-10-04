@@ -1,5 +1,5 @@
 %define _build_arch %(uname -i)
-%define _qpid_version 0.32
+%define _qpid_version 1.36.0
 %define _qpid_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 #
@@ -48,17 +48,17 @@ if [ $? -ne 0 ]; then
    exit 1
 fi
 
-QPID_SOURCE_DIR="%{_baseline_workspace}/foss/qpid-lib-%{version}/"
-QPID_SOURCE_FILE="qpid-cpp-%{version}.tar.gz"
+QPID_SOURCE_DIR="%{_baseline_workspace}/foss/qpid-lib/"
+QPID_SOURCE_FILE="qpid-cpp-%{version}"
 
-cp -v ${QPID_SOURCE_DIR}${QPID_SOURCE_FILE} %{_qpid_build_loc}
+cp -R ${QPID_SOURCE_DIR}${QPID_SOURCE_FILE} %{_qpid_build_loc}
 if [ $? -ne 0 ]; then
    exit 1
 fi
 
 pushd . > /dev/null 2>&1
 cd %{_qpid_build_loc}
-tar -xvf ${QPID_SOURCE_FILE}
+#tar -xvf ${QPID_SOURCE_FILE}
 if [ $? -ne 0 ]; then
    exit 1
 fi
@@ -74,7 +74,7 @@ fi
 
 cd %{_qpid_build_loc}/build
 
-cmake %{_qpid_build_loc}/qpid-cpp-%{version} -DCMAKE_INSTALL_PREFIX:PATH=%{_qpid_build_loc}/awips2/qpid -DPYTHON_EXECUTABLE:FILEPATH=/awips2/python/bin/python -DPYTHON_INCLUDE_DIR:PATH=/awips2/python/include/python2.7 -DPYTHON_LIBRARY:FILEPATH=/awips2/python/lib/libpython2.7.so
+cmake %{_qpid_build_loc}/qpid-cpp-%{version} -DCMAKE_INSTALL_PREFIX:PATH=%{_qpid_build_loc}/awips2/qpid -DPYTHON_EXECUTABLE:FILEPATH=/awips2/python/bin/python -DPYTHON_INCLUDE_DIR:PATH=/awips2/python/include/python2.7 -DPYTHON_LIBRARY:FILEPATH=/awips2/python/lib/libpython2.7.so -DCMAKE_CXX_FLAGS="-fPIC"
 if [ $? -ne 0 ]; then
    exit 1
 fi

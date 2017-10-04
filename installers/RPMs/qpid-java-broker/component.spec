@@ -1,8 +1,8 @@
 %define _qpid_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 Name:           awips2-qpid-java-broker
-Version:        0.32
-Release:        4%{?dist}
+Version:        6.1.4
+Release:        1%{?dist}
 Summary:        Java implementation of Apache Qpid Broker
 License:        Apache Software License
 Group:          Development/Java
@@ -36,7 +36,7 @@ if [ $? -ne 0 ]; then
    exit 1
 fi
 
-QPID_SOURCE_DIR="%{_baseline_workspace}/foss/qpid-java-broker-%{version}/packaged"
+QPID_SOURCE_DIR="%{_baseline_workspace}/foss/qpid-java-broker/packaged"
 QPID_SOURCE_FILE="qpid-broker-%{version}-bin.tar.gz"
 
 cp -v ${QPID_SOURCE_DIR}/${QPID_SOURCE_FILE} %{_qpid_build_loc}
@@ -51,7 +51,8 @@ if [ $? -ne 0 ]; then
    exit 1
 fi
 
-/usr/bin/patch -p1 -i ${QPID_SOURCE_DIR}/awips.patch
+cp ${QPID_SOURCE_DIR}/qpid-run %{_qpid_build_loc}/qpid-broker/%{version}/bin/
+cp ${QPID_SOURCE_DIR}/qpid-server %{_qpid_build_loc}/qpid-broker/%{version}/bin/
 
 popd > /dev/null 2>&1
 
@@ -68,7 +69,7 @@ fi
 pushd . > /dev/null 2>&1
 cd %{_qpid_build_loc}/qpid-broker/%{version}
 
-QPID_PATCH_DIR=%{_baseline_workspace}/foss/qpid-java-broker-%{version}/src/patch/qpid-java-broker-%{version}
+QPID_PATCH_DIR=%{_baseline_workspace}/foss/qpid-java-broker/src/patch/qpid-java-broker
 
 /bin/cp -rv bin/* %{buildroot}/awips2/qpid/bin
 

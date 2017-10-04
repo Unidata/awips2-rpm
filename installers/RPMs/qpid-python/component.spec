@@ -8,8 +8,8 @@
 #
 Name: awips2-python-qpid
 Summary: AWIPS II Python qpid Distribution
-Version: 0.32
-Release: 3%{?dist}
+Version: 1.36.0
+Release: 1%{?dist}
 BuildArch: noarch
 Group: AWIPSII
 BuildRoot: %{_build_root}
@@ -45,7 +45,8 @@ fi
 mkdir -p %{_python_build_loc}
 
 %build
-QPID_SRC_DIR="%{_baseline_workspace}/foss/qpid-python-%{version}"
+#qpid-python-1.36.0.tar.gz
+QPID_SRC_DIR="%{_baseline_workspace}/foss/qpid-python"
 QPID_TAR="qpid-python-%{version}.tar.gz"
 
 cp -rv ${QPID_SRC_DIR}/${QPID_TAR} \
@@ -61,7 +62,7 @@ rm -f ${QPID_TAR}
 popd > /dev/null
 
 %install
-QPID_SRC_DIR="%{_baseline_workspace}/foss/qpid-python-%{version}"
+QPID_SRC_DIR="%{_baseline_workspace}/foss/qpid-python"
 QPID_SRC="qpid-python-%{version}"
 QPID_STAT_SCRIPT="qpid-stat"
 QPID_QUEUE_COUNT_SCRIPT="qpid-queue-count"

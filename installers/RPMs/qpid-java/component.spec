@@ -1,7 +1,7 @@
 %define _qpid_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 Name:           awips2-qpid-java
-Version:        0.32
+Version:        6.1.4
 Release:        1%{?dist}
 Summary:        Java implementation of Apache Qpid
 License:        Apache Software License
@@ -52,7 +52,7 @@ if [ $? -ne 0 ]; then
    exit 1
 fi
 
-QPID_SOURCE_DIR="%{_baseline_workspace}/foss/qpid-lib-%{version}/"
+QPID_SOURCE_DIR="%{_baseline_workspace}/foss/qpid-lib/"
 QPID_SOURCE_FILE="qpid-client-%{version}-bin.tar.gz"
 
 cp -v ${QPID_SOURCE_DIR}${QPID_SOURCE_FILE} %{_qpid_build_loc}
@@ -91,7 +91,7 @@ install -dm 755 %{buildroot}/awips2/qpid/lib/opt
     %{buildroot}/awips2/qpid/lib/opt
 /bin/cp -rv lib/geronimo-jms_1.1_spec-1.1.1.jar \
     %{buildroot}/awips2/qpid/lib/opt
-/bin/cp -rv lib/slf4j-api-1.6.4.jar \
+/bin/cp -rv lib/slf4j-api-1.7.25.jar \
     %{buildroot}/awips2/qpid/lib/opt
 
 # license & notice
@@ -111,7 +111,7 @@ rm -rf %{buildroot}
 %dir /awips2/qpid/lib/opt
 /awips2/qpid/lib/opt/qpid-common-%{version}.jar
 /awips2/qpid/lib/opt/geronimo-jms_1.1_spec-1.1.1.jar
-/awips2/qpid/lib/opt/slf4j-api-1.6.4.jar 
+/awips2/qpid/lib/opt/slf4j-api-1.7.25.jar 
 
 
 %files client
