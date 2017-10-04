@@ -5,7 +5,7 @@
 #
 # chkconfig: - 99 10
 # description: Qpid messaging broker used by the AWIPS 2 instance
-# processname: qpid-server
+# processname: qpid-wrapper/qpid-server
 # config: /awips2/qpid/etc/config.json
 
 
@@ -90,7 +90,7 @@ stop() {
       # stop qpid
       kill ${pid_qpid}
    fi
-   pkill -f qpid-wrapper
+   pkill -f ${prog}
    pkill -f "qpid/etc/wrapper.conf"
    
    # wait for and verify that qpid has stopped running
