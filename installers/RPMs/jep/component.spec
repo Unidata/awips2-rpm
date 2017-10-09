@@ -9,7 +9,7 @@
 Name: awips2-python-jep
 Summary: AWIPS II Python Jep Distribution
 Version: 3.5.3
-Release: 1.el6
+Release: 2.el6
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
@@ -22,6 +22,7 @@ Packager: %{_build_site}
 AutoReq: no
 Requires: awips2-python
 Requires: awips2-python-numpy
+Requires: atlas
 Provides: awips2-python-jep = %{version}
 
 BuildRequires: awips2-python
