@@ -22,7 +22,7 @@ AutoReq: no
 Provides: awips2-qpid-lib = %{_qpid_version}
 
 BuildRequires: awips2-python
-BuildRequires: make
+BuildRequires: make, ruby
 BuildRequires: cmake >= 2.8.12.2
 
 %description
