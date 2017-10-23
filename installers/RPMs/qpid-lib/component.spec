@@ -23,7 +23,7 @@ Provides: awips2-qpid-lib = %{_qpid_version}
 
 BuildRequires: awips2-python
 BuildRequires: cmake >= 2.8.12.2
-BuildRequires: boost-devel, make, ruby
+BuildRequires: boost-devel, make, ruby, uuid-devel
 
 
 %description
