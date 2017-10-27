@@ -70,7 +70,7 @@ if [ ! -d jep-%{version} ]; then
    echo "Directory jep-%{version} not found!"
    exit 1
 fi
-source /etc/profile.d/awips2.sh
+. /etc/profile.d/awips2.sh
 RC=$?
 if [ ${RC} -ne 0 ]; then
    exit 1
