@@ -59,11 +59,6 @@ fi
 
 export BLAS=/awips2/python/lib
 export LAPACK=/awips2/python/lib
-. /etc/profile.d/awips2.sh
-RC=$?
-if [ ${RC} -ne 0 ]; then
-   exit 1
-fi
 
 pushd . > /dev/null
 cd %{_python_build_loc}
