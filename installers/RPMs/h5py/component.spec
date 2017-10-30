@@ -3,13 +3,14 @@
 %define _python_pkgs_dir "%{_baseline_workspace}/pythonPackages"
 %define _python_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 %define _hdf5_version 1.8.4
+%define _szip_version 2.1
 
 #
 # AWIPS II Python h5py Spec File
 #
 Name: awips2-python-h5py
 Summary: AWIPS II Python h5py Distribution
-Version: 1.3.0
+Version: 2.7.1
 Release: 1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
@@ -97,10 +98,9 @@ else
    HDF5_PATH="%{_python_build_loc}/hdf5-%{_hdf5_version}-patch1-linux-x86_64-shared"
 fi
 
-SZIP_VERSION=2.1
-H5PY_SRC_DIR="%{_baseline_workspace}/foss/h5py-%{version}/packaged/"
-SZIP_SRC_DIR="%{_baseline_workspace}/foss/szip-$SZIP_VERSION/packaged"
-SZIP_TAR="szip-2.1.tar"
+H5PY_SRC_DIR="%{_baseline_workspace}/foss/h5py"
+SZIP_SRC_DIR="%{_baseline_workspace}/foss/szip"
+SZIP_TAR="szip-%{_szip_version}.tar"
 
 # Copy the h5py source.
 cp -rv ${H5PY_SRC_DIR}/* \
@@ -121,8 +121,8 @@ cd %{_python_build_loc}
 pushd . > /dev/null
 tar xvzf h5py-%{version}.tar.gz
 cd h5py-%{version}
-export LD_LIBRARY_PATH=/awips2/python/lib
-/awips2/python/bin/python setup.py build \
+export LD_LIBRARY_PATH=/awips2/python/lib:/usr/lib64
+/awips2/python/bin/python setup.py configure \
    --hdf5=${HDF5_PATH}
 if [ $? -ne 0 ]; then
    exit 1
@@ -134,7 +134,7 @@ popd > /dev/null
 if [ $? -ne 0 ]; then
    exit 1
 fi
-cd szip-$SZIP_VERSION
+cd szip-%{_szip_version}
 ./configure
 if [ $? -ne 0 ]; then
    exit 1
@@ -170,14 +170,14 @@ export LD_LIBRARY_PATH=/awips2/python/lib
 popd > /dev/null
 
 pushd . > /dev/null
-cd %{_python_build_loc}/szip-2.1
+cd %{_python_build_loc}/szip-%{_szip_version}
 cp -P src/.libs/libsz.so* \
    %{_build_root}/awips2/python/lib
 if [ $? -ne 0 ]; then
    exit 1
 fi
 cd ..
-/bin/rm -rf szip-2.1
+/bin/rm -rf szip-%{_szip_version}
 if [ $? -ne 0 ]; then
    exit 1
 fi
