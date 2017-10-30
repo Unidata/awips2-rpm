@@ -8,8 +8,8 @@
 #
 Name: awips2-python-matplotlib
 Summary: AWIPS II Python matplotlib Distribution
-Version: 1.5.1
-Release: 2
+Version: 2.1.0
+Release: 1
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
@@ -61,7 +61,7 @@ fi
 mkdir -p %{_python_build_loc}
 
 %build
-MATPLOTLIB_SRC_DIR="%{_baseline_workspace}/foss/matplotlib/packaged"
+MATPLOTLIB_SRC_DIR="%{_baseline_workspace}/foss/matplotlib"
 
 cp -rv ${MATPLOTLIB_SRC_DIR}/matplotlib-%{version}.tar.gz %{_python_build_loc}
 pushd . > /dev/null
