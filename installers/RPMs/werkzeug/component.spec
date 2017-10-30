@@ -1,7 +1,6 @@
 %global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')
 %define _build_arch %(uname -i)
 %define _version 0.12.1
-%define _python_pkgs_dir "%{_baseline_workspace}/pythonPackages"
 %define _python_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 #
@@ -46,7 +45,7 @@ fi
 mkdir -p %{_python_build_loc}
 
 %build
-WERKZEUG_SRC_DIR="%{_python_pkgs_dir}/Werkzeug-%{_version}"
+WERKZEUG_SRC_DIR="%{_baseline_workspace}/foss/werkzeug"
 cp -rv ${WERKZEUG_SRC_DIR}/* \
    %{_python_build_loc}
 RC=$?
