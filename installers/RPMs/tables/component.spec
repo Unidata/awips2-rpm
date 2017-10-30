@@ -9,7 +9,7 @@
 #
 Name: awips2-python-tables
 Summary: AWIPS II Python tables Distribution
-Version: 3.3.0
+Version: 3.4.2
 Release: 1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
@@ -85,8 +85,8 @@ else
    export HDF5_DIR="%{_python_build_loc}/hdf5-%{_hdf5_version}-patch1-linux-x86_64-shared"
 fi
 
-TABLES_SRC_DIR="%{_baseline_workspace}/foss/tables/packaged"
-TABLES_TAR="tables-%{version}.tar.gz"
+TABLES_SRC_DIR="%{_baseline_workspace}/foss/tables"
+TABLES_TAR="v%{version}.tar.gz"
 cp -v ${TABLES_SRC_DIR}/${TABLES_TAR} \
    %{_python_build_loc}
 RC=$?
@@ -96,19 +96,15 @@ fi
 
 pushd . > /dev/null
 cd %{_python_build_loc}
-tar -xvf ${TABLES_TAR}
+tar -xvzf ${TABLES_TAR}
 RC=$?
 if [ ${RC} -ne 0 ]; then
    exit 1
 fi
 rm -fv ${TABLES_TAR}
-if [ ! -d tables-%{version} ]; then
-   echo "Directory tables-%{version} not found!"
-   exit 1
-fi
-cd tables-%{version}
-export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/lib64
-/awips2/python/bin/python setup.py build_ext --inplace
+cd PyTables-%{version}
+export LD_LIBRARY_PATH=/awips2/python/lib:/usr/lib64
+/awips2/python/bin/python setup.py build
 RC=$?
 if [ ${RC} -ne 0 ]; then
    exit 1
@@ -124,7 +120,7 @@ else
 fi
 
 pushd . > /dev/null
-cd %{_python_build_loc}/tables-%{version}
+cd %{_python_build_loc}/PyTables-%{version}
 /awips2/python/bin/python setup.py install \
    --root=%{_build_root} \
    --prefix=/awips2/python
