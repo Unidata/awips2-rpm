@@ -1,6 +1,5 @@
 %global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')
 %define _build_arch %(uname -i)
-%define _python_pkgs_dir "%{_baseline_workspace}/pythonPackages"
 %define _python_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 #
@@ -73,7 +72,7 @@ if [ ! -d numpy-%{version} ]; then
 fi
 
 %install
-NUMPY_SRC_DIR="%{_python_pkgs_dir}/numpy"
+NUMPY_SRC_DIR="%{_baseline_workspace}/foss/numpy"
 
 pushd . > /dev/null
 cd %{_python_build_loc}/numpy-%{version}
