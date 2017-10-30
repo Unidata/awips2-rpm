@@ -2,7 +2,7 @@
 %define suexec_caller apache
 %define mmn 20120211
 
-%define HTTP_FOSS_DIR "%{_baseline_workspace}/foss/%{HTTP_PACKAGE_NAME}"
+%define HTTP_FOSS_DIR "%{_baseline_workspace}/foss/httpd"
 %define HTTP_PACKAGE_NAME "httpd-%{version}"
 %define HTTP_SOURCE_TAR "%{HTTP_PACKAGE_NAME}.tar.gz"
 %define HTTP_DEPS_TAR "%{HTTP_PACKAGE_NAME}-deps.tar.gz"
@@ -185,7 +185,7 @@ cd %RPMBUILD_HTTP_DIR
 
 echo -e "\n***Building %{DISTCACHE}***\n\n"
 ## Not installing dc client or server init.d
-/bin/cp %{_baseline_workspace}/foss/%{DISTCACHE}/%{DISTCACHE}-21.src.rpm .
+/bin/cp %{_baseline_workspace}/foss/distcache/%{DISTCACHE}-21.src.rpm .
 rpm2cpio %{DISTCACHE}-21.src.rpm | cpio -id
 tar xjf %{DISTCACHE}.tar.bz2 
 cp -v *patch* %{DISTCACHE}
@@ -278,7 +278,7 @@ fi
 ###########
 
 # build mod_wsgi.so
-/bin/cp %{_baseline_workspace}/foss/mod_wsgi-%{MOD_WSGI_VERSION}/mod_wsgi-%{MOD_WSGI_VERSION}.tar.gz \
+/bin/cp %{_baseline_workspace}/foss/mod_wsgi/mod_wsgi-%{MOD_WSGI_VERSION}.tar.gz \
    %{_topdir}/BUILD
 if [ $? -ne 0 ]; then
    exit 1
