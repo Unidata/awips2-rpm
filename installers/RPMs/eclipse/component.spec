@@ -58,7 +58,8 @@ fi
 TMP_BUILD_DIR="/tmp/eclipse-build/"
 
 CORE_PROJECT_DIR="%{_baseline_workspace}/foss"
-ECLIPSE_BIN_DIR="${CORE_PROJECT_DIR}/eclipse-%{version}/packaged"
+ECLIPSE_BIN_DIR="${CORE_PROJECT_DIR}/eclipse"
+ECLIPSE_STATIC_DIR="/awips2/repo/awips2-static/eclipse"
 ECLIPSE_TAR_FILE="eclipse-rcp-mars-1-linux-gtk-x86_64.tar.gz"
 ECLIPSE_DELTA_FILE="eclipse-I201506032000-delta-pack.zip"
 
@@ -79,7 +80,7 @@ fi
 mkdir -p ${TMP_BUILD_DIR}/awips2/eclipse
 
 # Extract Eclipse
-tar -xf ${ECLIPSE_BIN_DIR}/${ECLIPSE_TAR_FILE} \
+tar -xf ${ECLIPSE_STATIC_DIR}/${ECLIPSE_TAR_FILE} \
    -C ${TMP_BUILD_DIR}/awips2
 
 # Extract the Eclipse Delta Pack
