@@ -113,7 +113,7 @@ fi
 rm -rf ${REPOSITORY}/pydev
 
 #WTP_ZIP_FILE
-unzip  ${ECLIPSE_BIN_DIR}/%{WTP_ZIP_FILE} -d ${REPOSITORY}/wtp
+unzip  ${ECLIPSE_STATIC_DIR}/%{WTP_ZIP_FILE} -d ${REPOSITORY}/wtp
 ${COMMON_CMD} ${INSTALL_ARG} org.eclipse.wst.xml_ui.feature.feature.group ${REPO}/wtp/
 if [ $? -ne 0 ]; then
    exit 1
