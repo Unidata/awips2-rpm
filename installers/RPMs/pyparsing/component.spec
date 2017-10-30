@@ -8,7 +8,7 @@
 #
 Name: awips2-python-pyparsing
 Summary: AWIPS II Python pyparsing Distribution
-Version: 2.0.3
+Version: 2.2.0
 Release: 1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
@@ -48,7 +48,7 @@ fi
 mkdir -p %{_python_build_loc}
 
 %build
-PYPARSING_SRC_DIR="%{_baseline_workspace}/foss/pyparsing-%{version}/packaged"
+PYPARSING_SRC_DIR="%{_baseline_workspace}/foss/pyparsing/"
 
 cp -rv ${PYPARSING_SRC_DIR}/pyparsing-%{version}.tar.gz %{_python_build_loc}
 pushd . > /dev/null
