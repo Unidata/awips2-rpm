@@ -8,7 +8,7 @@
 #
 Name: awips2-python-dateutil
 Summary: AWIPS II Python dateutil Distribution
-Version: 2.4.2
+Version: 2.6.1
 Release: 1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
@@ -50,7 +50,7 @@ fi
 mkdir -p %{_python_build_loc}
 
 %build
-DATEUTIL_SRC_DIR="%{_baseline_workspace}/foss/python-dateutil-%{version}/packaged"
+DATEUTIL_SRC_DIR="%{_baseline_workspace}/foss/python-dateutil"
 
 cp -rv ${DATEUTIL_SRC_DIR}/python-dateutil-%{version}.tar.gz %{_python_build_loc}
 pushd . > /dev/null
