@@ -80,7 +80,7 @@ dod_cert="dod.pem"
 # locate the java src.
 CORE_PROJECT_DIR="%{_baseline_workspace}/foss"
 INSTALLER_JAVA="${CORE_PROJECT_DIR}/java-%{_java_major_version}"
-JAVA_SRC_DIR="${INSTALLER_JAVA}/src"
+JAVA_SRC_DIR="${INSTALLER_JAVA}/common/src"
 JAVA_COMMON_DIR="${INSTALLER_JAVA}/common"
 JAVA_SCRIPTS_DIR="%{_baseline_workspace}/installers/RPMs/java/scripts"
 JAVA_COMMON_SRC_DIR="${JAVA_COMMON_DIR}/src/${arch_directory}"
@@ -88,6 +88,7 @@ JAVA_ARCH_SRC_DIR="${JAVA_SRC_DIR}/${arch_directory}"
 
 pushd . > /dev/null
 cd ${JAVA_ARCH_SRC_DIR}
+cp %{_static_files}/java/${jdk_tar} .
 /bin/tar -xvf ${jdk_tar} -C %{_java_build_loc}
 if [ $? -ne 0 ]; then
    exit 1
