@@ -20,11 +20,11 @@ Vendor: %{_build_vender}
 Packager: %{_build_site}
 
 AutoReq: no
-BuildRequires: awips2-python, geos
+BuildRequires: awips2-python
+BuildRequires: geos
 Requires: awips2-python
 Provides: awips2-python-shapely = %{version}
 
-BuildRequires: awips2-python
 
 %description
 AWIPS II Python shapely Site-Package
