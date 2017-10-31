@@ -8,7 +8,7 @@
 Name: awips2-python-scientific
 Summary: AWIPS II Python scientific Distribution
 Version: 2.8
-Release: 1%{?dist}
+Release: 3%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
@@ -20,7 +20,7 @@ Packager: %{_build_site}
 
 AutoReq: no
 Requires: awips2-python
-Requires: netcdf >= 3.0.0
+Requires: netcdf
 Provides: awips2-python-scientific = %{version}
 
 BuildRequires: awips2-python

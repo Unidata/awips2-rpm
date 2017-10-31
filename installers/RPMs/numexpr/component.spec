@@ -25,7 +25,6 @@ Provides: awips2-python-numexpr = %{version}
 
 BuildRequires: awips2-python
 BuildRequires: awips2-python-numpy
-BuildRequires: awips2-java
 
 %description
 AWIPS II Python numexpr Site-Package
