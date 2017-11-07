@@ -7,8 +7,8 @@
 #
 Name: awips2-python-matplotlib
 Summary: AWIPS II Python matplotlib Distribution
-Version: 2.1.0
-Release: 1
+Version: 1.5.1
+Release: 2
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
