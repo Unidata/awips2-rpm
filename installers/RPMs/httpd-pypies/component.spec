@@ -40,33 +40,6 @@ Apache is a powerful, full-featured, efficient, and freely-available
 Web server. Apache is also the most popular Web server on the
 Internet.
 
-%package -n %name-devel
-Group: AWIPSII
-Summary: Development tools for the Apache HTTP server.
-Obsoletes: secureweb-devel, apache-devel
-Requires: pkgconfig, libtool
-Requires: awips2-httpd-pypies = %{version}-%{release}
-
-%description -n %name-devel
-The httpd-devel package contains the APXS binary and other files
-that you need to build Dynamic Shared Objects (DSOs) for the
-Apache HTTP Server.
-
-If you are installing the Apache HTTP server and you want to be
-able to compile or develop additional modules for Apache, you need
-to install this package.
-
-%package -n %name-manual
-Group: Documentation
-Summary: Documentation for the Apache HTTP server.
-Requires: awips2-httpd-pypies = :%{version}-%{release}
-Obsoletes: secureweb-manual, apache-manual
-
-%description -n %name-manual
-The httpd-manual package contains the complete manual and
-reference guide for the Apache HTTP server. The information can
-also be found at http://httpd.apache.org/docs/.
-
 %package -n %name-tools
 Group: AWIPSII
 Summary: Tools for use with the Apache HTTP Server
@@ -74,63 +47,7 @@ Summary: Tools for use with the Apache HTTP Server
 %description -n %name-tools
 The httpd-tools package contains tools which can be used with 
 the Apache HTTP Server.
-
-%package -n %name-mod_authnz_ldap
-Group: AWIPSII
-Summary: LDAP modules for the Apache HTTP server
-BuildRequires: openldap-devel
-Requires: %name = %{version}-%{release}
-
-%description -n %name-mod_authnz_ldap
-The mod_authnz_ldap module for the Apache HTTP server provides
-authentication and authorization against an LDAP server, while
-mod_ldap provides an LDAP cache.
-
-%package -n %name-mod_lua
-Group: AWIPSII
-Summary: Lua language module for the Apache HTTP server
-BuildRequires: lua-devel
-Requires: %name = %{version}-%{release}
-
-%description -n %name-mod_lua
-The mod_lua module for the Apache HTTP server allows the server to be
-extended with scripts written in the Lua programming language.
-
-%package -n %name-mod_proxy_html
-Group: AWIPSII
-Summary: Proxy HTML filter modules for the Apache HTTP server
-Epoch: 1
-BuildRequires: libxml2-devel
-Requires: %name = 0:%{version}-%{release}
-
-%description -n %name-mod_proxy_html
-The mod_proxy_html module for the Apache HTTP server provides
-a filter to rewrite HTML links within web content when used within
-a reverse proxy environment. The mod_xml2enc module provides
-enhanced charset/internationalisation support for mod_proxy_html.
-
-%package -n %name-mod_socache_dc
-Group: AWIPSII
-Summary: Distcache shared object cache module for the Apache HTTP server
-Requires: %name = %{version}-%{release}
-
-%description -n %name-mod_socache_dc
-The mod_socache_dc module for the Apache HTTP server allows the shared
-object cache to use the distcache shared caching mechanism.
-
-%package -n %name-mod_ssl
-Group: AWIPSII
-Summary: SSL/TLS module for the Apache HTTP server
-Epoch: 1
-BuildRequires: openssl-devel
-Requires(post): openssl, /bin/cat
-Requires(pre): %name
-Requires: %name = 0:%{version}-%{release}
-
-%description -n %name-mod_ssl
-The mod_ssl module provides strong cryptography for the Apache Web
-server via the Secure Sockets Layer (SSL) and Transport Layer
-Security (TLS) protocols.
+# rm -rf awips2-httpd-pypies-devel*.rpm awips2-httpd-pypies-manual*.rpm awips2-httpd-pypies-mod*.rpm
 
 %prep
 
@@ -436,7 +353,7 @@ install -m644 ./build/rpm/httpd.logrotate \
 rm -rf $RPM_BUILD_ROOT/awips2/httpd_pypies%{_libdir}/httpd/modules/*.exp \
        $RPM_BUILD_ROOT/awips2/httpd_pypies%{contentdir}/cgi-bin/* 
 
-# Make suexec a+rw so it can be stripped.  %%files lists real permissions
+# Make suexec a+rw so it can be stripped. 
 chmod 755 $RPM_BUILD_ROOT/awips2/httpd_pypies%{_sbindir}/suexec
 
 ###########
@@ -504,30 +421,6 @@ fi
 %post -n %name-tools
 chown -R awips:fxalpha /awips2/httpd_pypies
 
-%post -n %name-mod_ssl
-umask 077
-
-if [ ! -f/awips2/httpd_pypies%{_sysconfdir}/httpd/conf/server.key ] ; then
-%{_bindir}/openssl genrsa -rand /proc/apm:/proc/cpuinfo:/proc/dma:/proc/filesystems:/proc/interrupts:/proc/ioports:/proc/pci:/proc/rtc:/proc/uptime 1024 >/awips2/httpd_pypies%{_sysconfdir}/httpd/conf/server.key 2> /dev/null
-fi
-
-FQDN=`hostname`
-if [ "x${FQDN}" = "x" ]; then
-   FQDN=localhost.localdomain
-fi
-
-if [ ! -f/awips2/httpd_pypies%{_sysconfdir}/httpd/conf/server.crt ] ; then
-cat << EOF | %{_bindir}/openssl req -new -key/awips2/httpd_pypies%{_sysconfdir}/httpd/conf/server.key -x509 -days 365 -out/awips2/httpd_pypies%{_sysconfdir}/httpd/conf/server.crt 2>/dev/null
---
-SomeState
-SomeCity
-SomeOrganization
-SomeOrganizationalUnit
-${FQDN}
-root@${FQDN}
-EOF
-fi
-
 %check
 # Check the built modules are all PIC
 if readelf -d $RPM_BUILD_ROOT/awips2/httpd_pypies%{_libdir}/httpd/modules/*.so | grep TEXTREL; then
@@ -547,6 +440,7 @@ rm -rf $RPM_BUILD_ROOT
 /awips2/httpd_pypies/etc/rc.d/init.d/
 /awips2/httpd_pypies/usr/lib64/
 /awips2/httpd_pypies/usr/sbin/
+/awips2/httpd_pypies/usr/include/httpd
 /awips2/httpd_pypies/usr/share/doc/awips2-httpd-pypies-2.4.23/
 /awips2/httpd_pypies/usr/share/man/man1/
 /awips2/httpd_pypies/usr/share/man/man8/
@@ -737,13 +631,6 @@ rm -rf $RPM_BUILD_ROOT
 /awips2/httpd_pypies%{_mandir}/man8/htcacheclean.8*
 /awips2/httpd_pypies%{_mandir}/man8/fcgistarter.8*
 
-%files -n %name-manual
-%defattr(-,awips,fxalpha)
-/awips2/httpd_pypies/var/www/error/
-/awips2/httpd_pypies/var/www/
-/awips2/httpd_pypies%{contentdir}/manual
-/awips2/httpd_pypies%{contentdir}/error/README
-
 %files -n %name-tools
 %defattr(-,awips,fxalpha)
 /awips2/httpd_pypies/usr/bin/
@@ -763,59 +650,3 @@ rm -rf $RPM_BUILD_ROOT
 /awips2/httpd_pypies%{_mandir}/man1/ab.1*
 /awips2/httpd_pypies%{_mandir}/man1/logresolve.1*
 /awips2/httpd_pypies%{_mandir}/man8/rotatelogs.8*
-
-%files -n %name-mod_authnz_ldap
-%defattr(-,awips,fxalpha)
-/awips2/httpd_pypies/usr/lib64/httpd/modules/
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_ldap.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_authnz_ldap.so
-
-%files -n %name-mod_lua
-%defattr(-,awips,fxalpha)
-/awips2/httpd_pypies/usr/lib64/httpd/modules/
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_lua.so
-
-%files -n %name-mod_proxy_html
-%defattr(-,awips,fxalpha)
-/awips2/httpd_pypies/usr/lib64/httpd/modules/
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_proxy_html.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_xml2enc.so
-
-%files -n %name-mod_socache_dc
-%defattr(-,awips,fxalpha)
-/awips2/httpd_pypies/usr/lib64/httpd/modules/
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_socache_dc.so
-
-%files -n %name-mod_ssl
-%defattr(-,awips,fxalpha)
-/awips2/httpd_pypies/etc/httpd/conf/extra/
-/awips2/httpd_pypies/etc/httpd/conf/original/extra/
-/awips2/httpd_pypies/usr/lib64/httpd/modules/
-/awips2/httpd_pypies/var/cache/
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_ssl.so
-%config(noreplace) /awips2/httpd_pypies%{_sysconfdir}/httpd/conf/original/extra/httpd-ssl.conf
-%config(noreplace) /awips2/httpd_pypies%{_sysconfdir}/httpd/conf/extra/httpd-ssl.conf
-%attr(0700,awips,fxalpha) %dir /awips2/httpd_pypies%{_localstatedir}/cache/mod_ssl
-%attr(0600,awips,fxalpha) %ghost /awips2/httpd_pypies%{_localstatedir}/cache/mod_ssl/scache.dir
-%attr(0600,awips,fxalpha) %ghost /awips2/httpd_pypies%{_localstatedir}/cache/mod_ssl/scache.pag
-%attr(0600,awips,fxalpha) %ghost /awips2/httpd_pypies%{_localstatedir}/cache/mod_ssl/scache.sem
-
-%files -n %name-devel
-%defattr(-,awips,fxalpha)
-/awips2/httpd_pypies/usr/bin/
-/awips2/httpd_pypies/usr/include/
-/awips2/httpd_pypies/usr/lib64/httpd/
-/awips2/httpd_pypies/usr/sbin/
-/awips2/httpd_pypies/usr/share/man/man1/
-/awips2/httpd_pypies%{_includedir}/httpd
-/awips2/httpd_pypies%{_bindir}/apxs
-/awips2/httpd_pypies%{_sbindir}/checkgid
-/awips2/httpd_pypies%{_bindir}/dbmmanage
-/awips2/httpd_pypies%{_sbindir}/envvars*
-/awips2/httpd_pypies%{_mandir}/man1/dbmmanage.1*
-/awips2/httpd_pypies%{_mandir}/man1/apxs.1*
-%dir /awips2/httpd_pypies%{_libdir}/httpd/build
-/awips2/httpd_pypies%{_libdir}/httpd/build/*.mk
-/awips2/httpd_pypies%{_libdir}/httpd/build/instdso.sh
-/awips2/httpd_pypies%{_libdir}/httpd/build/config.nice
-/awips2/httpd_pypies%{_libdir}/httpd/build/mkdir.sh
