@@ -7,7 +7,7 @@
 #
 Name: awips2-python-numpy
 Summary: AWIPS II Python numpy Distribution
-Version: 1.9.2
+Version: 1.9.3
 Release: 1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
@@ -22,12 +22,10 @@ AutoReq: no
 Requires: compat-libf2c-34(x86-64) >= 3.4.6
 Requires: libgfortran(x86-64) >= 4.4.7
 Requires: awips2-python
-Requires: awips2-python-nose
 Provides: awips2-python-numpy = %{version}
 
 BuildRequires: atlas-devel
 BuildRequires: awips2-python
-BuildRequires: awips2-python-nose
 BuildRequires: compat-libf2c-34(x86-64) >= 3.4.6
 BuildRequires: libgfortran(x86-64) >= 4.4.7
 
