@@ -1,9 +1,9 @@
 %define _qpid_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-Name:           awips2-qpid-java
+Name:           awips2-qpid-java-client
 Version:        6.1.4
 Release:        1%{?dist}
-Summary:        Java implementation of Apache Qpid
+Summary:	Java implementation of Apache Qpid
 License:        Apache Software License
 Group:          Development/Java
 URL:            http://qpid.apache.org/
@@ -11,27 +11,11 @@ Packager: %{_build_site}
 
 BuildRoot:      %{_build_root}
 BuildArch:      noarch
+Requires:	log4j >= 1.2.12
+Obsoletes:      awips2-qpid-java-common
 
 %description
 Java implementation of Apache Qpid.
-
-%package common
-Summary:	Java implementation of Apache Qpid - common files
-Group: 		Development/Java
-BuildArch:	noarch
-
-%description common
-Java implementation of Apache Qpid - common files
-
-%package client
-Summary:	Java implementation of Apache Qpid - client
-Group: 		Development/Java
-BuildArch:	noarch
-Requires:	awips2-qpid-java-common = %{version}-%{release}
-Requires:	log4j >= 1.2.12
-
-%description client
-Java implementation of Apache Qpid - client
 
 %prep
 # Ensure that a "buildroot" has been specified.
@@ -52,7 +36,7 @@ if [ $? -ne 0 ]; then
    exit 1
 fi
 
-QPID_SOURCE_DIR="%{_baseline_workspace}/foss/qpid-lib/"
+QPID_SOURCE_DIR="%{_baseline_workspace}/foss/qpid-java-client/"
 QPID_SOURCE_FILE="qpid-client-%{version}-bin.tar.gz"
 
 cp -v ${QPID_SOURCE_DIR}${QPID_SOURCE_FILE} %{_qpid_build_loc}
@@ -101,23 +85,13 @@ install -dm 755 %{buildroot}/awips2/qpid/lib/opt
 %clean
 rm -rf %{buildroot}
 
-%files common
+%files
 %defattr(644,awips,fxalpha,644)
-%dir /awips2/qpid
-%dir /awips2/qpid/lib
 %doc /awips2/qpid/LICENSE
 %doc /awips2/qpid/NOTICE
 %defattr(644,awips,fxalpha,755)
 %dir /awips2/qpid/lib/opt
+/awips2/qpid/lib/opt/qpid-client-%{version}.jar
 /awips2/qpid/lib/opt/qpid-common-%{version}.jar
 /awips2/qpid/lib/opt/geronimo-jms_1.1_spec-1.1.1.jar
 /awips2/qpid/lib/opt/slf4j-api-1.7.25.jar 
-
-
-%files client
-%defattr(644,awips,fxalpha,755)
-%dir /awips2/qpid
-%dir /awips2/qpid/lib
-%dir /awips2/qpid/lib/opt
-/awips2/qpid/lib/opt/qpid-client-%{version}.jar
-

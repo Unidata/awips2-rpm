@@ -124,8 +124,6 @@ rm -rf %{_qpid_build_loc}
 
 %files
 %defattr(644,awips,fxalpha,755)
-%dir /awips2/qpid
-%dir /awips2/qpid/lib
 /awips2/qpid/lib/*
 %dir /awips2/qpid/include
 /awips2/qpid/include/*
