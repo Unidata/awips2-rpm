@@ -22,10 +22,12 @@ Packager: %{_build_site}
 AutoReq: no
 Requires: awips2-python
 Requires: awips2-python-numpy
+Requires: awips2-python-cython
 Provides: awips2-python-tables = %{version}
 
 BuildRequires: awips2-python
 BuildRequires: awips2-python-numpy
+BuildRequires: awips2-python-cython
 
 %description
 AWIPS II Python tables Site-Package - 64-bit.
