@@ -72,17 +72,6 @@ if [ ! -d jep-%{version} ]; then
    echo "Directory jep-%{version} not found!"
    exit 1
 fi
-cd jep-%{version}
-/awips2/python/bin/python setup.py clean
-RC=$?
-if [ ${RC} -ne 0 ]; then
-   exit 1
-fi 
-/awips2/python/bin/python setup.py build
-RC=$?
-if [ ${RC} -ne 0 ]; then
-   exit 1
-fi
 popd > /dev/null
 
 %install
