@@ -21,11 +21,11 @@ Packager: %{_build_site}
 
 AutoReq: no
 provides: awips2-python = %{version}
-Requires: tk
 
-# Required for  Tkinter
 BuildRequires: tk-devel
 BuildRequires: tcl-devel
+# for lapack
+BuildRequires: libgfortran
 
 %description
 AWIPS II Python Distribution - Contains Python V%{version} plus modules

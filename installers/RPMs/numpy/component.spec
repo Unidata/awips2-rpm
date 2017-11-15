@@ -19,15 +19,16 @@ Vendor: Raytheon
 Packager: %{_build_site}
 
 AutoReq: no
-Requires: compat-libf2c-34(x86-64) >= 3.4.6
-Requires: libgfortran(x86-64) >= 4.4.7
+#Requires: compat-libf2c-34
+#Requires: libgfortran
+Requires: atlas
 Requires: awips2-python
 Provides: awips2-python-numpy = %{version}
 
 BuildRequires: atlas-devel
 BuildRequires: awips2-python
-BuildRequires: compat-libf2c-34(x86-64) >= 3.4.6
-BuildRequires: libgfortran(x86-64) >= 4.4.7
+BuildRequires: compat-libf2c-34
+BuildRequires: libgfortran
 
 %description
 AWIPS II Python numpy Site-Package
