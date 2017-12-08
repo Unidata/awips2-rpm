@@ -19,7 +19,10 @@ Vendor: %{_build_vendor}
 Packager: %{_build_site}
 
 AutoReq: no
-requires: awips2-python
+Requires: awips2-python
+Requires: awips2-python-numpy
+Requires: awips2-python-six
+Requires: awips2-python-shapely
 Obsoletes: awips2-python-ufpy < 15.1.3-1
 Obsoletes: awips2-python-dynamicserialize < 15.1.3-1
 Obsoletes: awips2-python-thrift < 20080411p1-4
