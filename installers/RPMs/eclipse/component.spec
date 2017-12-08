@@ -2,11 +2,12 @@
 # AWIPS II Eclipse Spec File
 #
 
-%define CDT_ZIP_FILE cdt-8.8.0.zip
-%define MEMORY_ANALYZER_ZIP_FILE MemoryAnalyzer-1.5.0.201505271423.zip
+%define CDT_ZIP_FILE cdt-9.1.0.zip
+%define CDT_RCP_ZIP_FILE cdt-rcp-9.1.0.zip
+%define MEMORY_ANALYZER_ZIP_FILE MemoryAnalyzer-1.6.0.201605311117.zip
 %define SHELLED_ZIP_FILE net.sourceforge.shelled-site-2.0.3.zip
-%define PYDEV_ZIP_FILE PyDev-4.4.0.zip
-%define WTP_ZIP_FILE wtp-repo-R-3.7.1-20150915020029.zip
+%define PYDEV_ZIP_FILE PyDev-5.3.1.zip
+%define WTP_ZIP_FILE wtp-repo-R-3.8.1-20160912100321.zip
 %define DLTK_ZIP_FILE dltk-core-R-5.3-201509040407.zip
 
 # --define arguments:
@@ -15,8 +16,8 @@
 
 Name: awips2-eclipse
 Summary: AWIPS II Eclipse Distribution
-Version: 4.5.1
-Release: 1
+Version: 4.6.1
+Release: 1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 URL: N/A
@@ -37,6 +38,7 @@ AWIPS II Eclipse Distribution - Contains the AWIPS II Eclipse Distribution.
 
 # Turn off the brp-python-bytecompile script
 %global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')
+# disable jar repacking
 %global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-java-repack-jars[[:space:]].*$!!g')
 
 %prep
@@ -57,11 +59,10 @@ fi
 %install
 TMP_BUILD_DIR="/tmp/eclipse-build/"
 
-CORE_PROJECT_DIR="%{_baseline_workspace}/foss"
-ECLIPSE_BIN_DIR="${CORE_PROJECT_DIR}/eclipse"
-ECLIPSE_STATIC_DIR="/awips2/repo/awips2-static/eclipse"
-ECLIPSE_TAR_FILE="eclipse-rcp-mars-1-linux-gtk-x86_64.tar.gz"
-ECLIPSE_DELTA_FILE="eclipse-I201506032000-delta-pack.zip"
+ECLIPSE_BIN_DIR="%{_static_files}/eclipse"
+ECLIPSE_STATIC_DIR="$REPO/awips2-static/eclipse"
+ECLIPSE_TAR_FILE="eclipse-rcp-neon-1a-linux-gtk-x86_64.tar.gz"
+ECLIPSE_DELTA_FILE="eclipse-I201609071200-delta-pack.zip"
 
 ECLIPSE_EXE="${TMP_BUILD_DIR}/awips2/eclipse/eclipse"
 NOSPLASH_ARG="-nosplash"
@@ -89,6 +90,13 @@ unzip -o ${ECLIPSE_BIN_DIR}/${ECLIPSE_DELTA_FILE} \
 
 
 #CDT_ZIP_FILE
+unzip  ${ECLIPSE_BIN_DIR}/%{CDT_RCP_ZIP_FILE} -d ${REPOSITORY}/cdt-rcp
+${COMMON_CMD} ${INSTALL_ARG} org.eclipse.launchbar.core ${REPO}/cdt-rcp/
+if [ $? -ne 0 ]; then
+   exit 1
+fi
+rm -rf ${REPOSITORY}/cdt-rcp
+
 unzip  ${ECLIPSE_BIN_DIR}/%{CDT_ZIP_FILE} -d ${REPOSITORY}/cdt
 ${COMMON_CMD} ${INSTALL_ARG} org.eclipse.cdt.feature.group ${REPO}/cdt/
 if [ $? -ne 0 ]; then
@@ -135,8 +143,6 @@ if [ $? -ne 0 ]; then
 fi
 rm -rf ${REPOSITORY}/shelled
 
-cp ${ECLIPSE_BIN_DIR}/eclipse.sh ${TMP_BUILD_DIR}/awips2/eclipse/
-
 # Move the complete application and remove the temp folder.
 mv ${TMP_BUILD_DIR}/awips2 %{_build_root}
 rm -rf ${TMP_BUILD_DIR}
@@ -175,7 +181,6 @@ rm -rf ${RPM_BUILD_ROOT}
 /awips2/eclipse/artifacts.xml
 /awips2/eclipse/eclipse
 /awips2/eclipse/eclipse.ini
-/awips2/eclipse/eclipse.sh
 /awips2/eclipse/.eclipseproduct
 /awips2/eclipse/icon.xpm
 /awips2/eclipse/notice.html

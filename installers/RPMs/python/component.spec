@@ -8,7 +8,7 @@
 #
 Name: awips2-python
 Summary: AWIPS Python Distribution
-Version: 2.7.11
+Version: 2.7.13
 Release: 1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
@@ -21,14 +21,15 @@ Packager: %{_build_site}
 
 AutoReq: no
 provides: awips2-python = %{version}
+Requires: tk
 
 # Required for  Tkinter
 BuildRequires: tk-devel
 BuildRequires: tcl-devel
 
 %description
-AWIPS Python Distribution - Contains Python modules required for AWIPS
-required for AWIPS.
+AWIPS II Python Distribution - Contains Python V%{version} plus modules
+required for AWIPS II.
 
 %prep
 # Verify That The User Has Specified A BuildRoot.
@@ -48,8 +49,8 @@ mkdir -p %{_python_build_loc}
 
 %build
 PYTHON_TAR="Python-%{version}.tgz"
-PYTHON_PROJECT_SRC_DIR="%{_baseline_workspace}/foss/python-%{version}/packaged/"
-FOSS_PYTHON_DIR="%{_baseline_workspace}/foss/python-%{version}/packaged/"
+PYTHON_PROJECT_SRC_DIR="%{_baseline_workspace}/foss/python-%{version}"
+FOSS_PYTHON_DIR=$PYTHON_PROJECT_SRC_DIR
 
 cp -v ${FOSS_PYTHON_DIR}/${PYTHON_TAR} %{_python_build_loc}
 
@@ -78,7 +79,8 @@ if [ $? -ne 0 ]; then
    exit 1
 fi
 
-./configure --prefix=/awips2/python \
+LDFLAGS='-Wl,-rpath,/awips2/python/lib' ./configure \
+   --prefix=/awips2/python \
    --enable-shared --enable-unicode=ucs2
 RC=$?
 if [ ${RC} -ne 0 ]; then
@@ -90,7 +92,7 @@ RC=$?
 if [ ${RC} -ne 0 ]; then
    exit 1
 fi
-make
+make %{?_smp_mflags}
 if [ ${RC} -ne 0 ]; then
    exit 1
 fi
@@ -164,8 +166,10 @@ fi
 
 popd > /dev/null
 
+PYTHON_PROJECT_DIR="%{_baseline_workspace}/installers/RPMs/python"
+PYTHON_PROJECT_SRC_DIR="${PYTHON_PROJECT_DIR}/src"
 PYTHON_PROJECT_NATIVE_DIR="${PYTHON_PROJECT_DIR}/nativeLib"
-FOSS_LAPACK_DIR="%{_baseline_workspace}/foss/lapack-%{_lapack_version}/packaged/"
+FOSS_LAPACK_DIR="%{_baseline_workspace}/foss/lapack-%{_lapack_version}/packaged"
 LAPACK_TAR="lapack-%{_lapack_version}.tgz"
 LAPACK_PATCH="lapack.patch1"
 
@@ -230,13 +234,13 @@ if [ $? -ne 0 ]; then
    exit 1
 fi
 sed -i 's/-lg2c//g'  BLAS/SRC/Makefile
-make blaslib
+make %{?_smp_mflags} blaslib
 RC=$?
 if [ ${RC} -ne 0 ]; then
    exit 1
 fi
 sed -i 's/-lg2c//g'  SRC/Makefile
-make lapacklib
+make %{?_smp_mflags} lapacklib
 RC=$?
 if [ ${RC} -ne 0 ]; then
    exit 1

@@ -1,6 +1,6 @@
 %global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')
 %define _build_arch %(uname -i)
-%define _scipy 0.15.1
+%define _scipy 1.0.0
 %define _python_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 #
@@ -47,7 +47,7 @@ fi
 mkdir -p %{_python_build_loc}
 
 %build
-SCIPY_SRC_DIR="%{_baseline_workspace}/foss/scipy/packaged"
+SCIPY_SRC_DIR="%{_baseline_workspace}/foss/scipy"
 
 cp -v ${SCIPY_SRC_DIR}/* \
    %{_python_build_loc}
@@ -63,17 +63,12 @@ pushd . > /dev/null
 cd %{_python_build_loc}
 tar xvf scipy-%{_scipy}.tar.gz
 cd scipy-%{_scipy}
+source /etc/profile.d/awips2.sh
 export LD_LIBRARY_PATH=/awips2/python/lib
 /awips2/python/bin/python setup.py build
 RC=$?
 if [ ${RC} -ne 0 ]; then
-   # Try to build a second time. It seems to work
-   # for some reason.
-   /awips2/python/bin/python setup.py build
-   RC=$?
-   if [ ${RC} -ne 0 ]; then
-      exit 1
-   fi
+   exit 1
 fi
 popd > /dev/null
 
@@ -100,5 +95,5 @@ rm -rf %{_python_build_loc}
 
 %files
 %defattr(644,awips,fxalpha,755)
-%dir /awips2/python/lib/python2.7/site-packages
-/awips2/python/lib/python2.7/site-packages/*
+%dir /awips2/python/lib/python2.7/site-packages/scipy
+/awips2/python/lib/python2.7/site-packages/scipy*

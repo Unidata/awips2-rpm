@@ -43,6 +43,10 @@ fi
 mkdir -p %{_python_build_loc}
 
 %build
+export LD_LIBRARY_PATH=/awips2/tools/lib:/awips2/python/lib:$LD_LIBRARY_PATH
+export PATH=/awips2/ant/bin:/awips2/java/bin:/awips2/python/bin:/awips2/groovy/bin:/awips2/tools/bin:$PATH
+
+#source /etc/profile.d/awips2.sh
 CYTHON_SRC_DIR="%{_baseline_workspace}/foss/cython"
 CYTHON_TAR="Cython-%{_version}.tar.gz"
 cp -v ${CYTHON_SRC_DIR}/${CYTHON_TAR} \

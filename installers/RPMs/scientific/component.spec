@@ -7,8 +7,8 @@
 #
 Name: awips2-python-scientific
 Summary: AWIPS II Python scientific Distribution
-Version: 2.8
-Release: 3%{?dist}
+Version: 2.8.1
+Release: 1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
@@ -20,7 +20,7 @@ Packager: %{_build_site}
 
 AutoReq: no
 Requires: awips2-python
-Requires: netcdf
+Requires: netcdf >= 3.0.0
 Provides: awips2-python-scientific = %{version}
 
 BuildRequires: awips2-python
@@ -46,7 +46,8 @@ fi
 mkdir -p %{_python_build_loc}
 
 %build
-SCIENTIFIC_SRC_DIR="%{_baseline_workspace}/foss/scientific-%{version}/packaged"
+SCIENTIFIC_SRC_DIR="%{_baseline_workspace}/foss/scientific"
+PACKAGE_NAME="ScientificPython-%{version}"
 
 cp -rv ${SCIENTIFIC_SRC_DIR}/* \
    %{_python_build_loc}
@@ -57,8 +58,8 @@ fi
 
 pushd . > /dev/null
 cd %{_python_build_loc}
-tar xvzf scientific-%{version}.tar.gz
-cd scientific-%{version}
+tar -xvzf ${PACKAGE_NAME}.tar.gz
+cd ${PACKAGE_NAME}
 export LD_LIBRARY_PATH=/awips2/python/lib
 /awips2/python/bin/python setup.py build
 RC=$?
@@ -68,10 +69,11 @@ fi
 popd > /dev/null
 
 %install
+PACKAGE_NAME="ScientificPython-%{version}"
 
 pushd . > /dev/null
 cd %{_python_build_loc}
-cd scientific-%{version}
+cd ${PACKAGE_NAME}
 export LD_LIBRARY_PATH=/awips2/python/lib
 /awips2/python/bin/python setup.py install \
    --root=%{_build_root} \

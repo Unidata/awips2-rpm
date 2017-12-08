@@ -1,5 +1,6 @@
 %define _build_arch %(uname -i)
 %define _postgresql_version 9.5.8
+%define _geos 3.4.2
 %define _postgres_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 %define _postgres_src_loc %{_baseline_workspace}/foss/postgresql-%{_postgresql_version}
 %define _postgres_script_loc %{_baseline_workspace}/installers/RPMs/postgresql/scripts
@@ -11,7 +12,7 @@
 Name: awips2-postgresql
 Summary: AWIPS II PostgreSQL Distribution
 Version: %{_postgresql_version}
-Release: %{_component_version}.%{_component_release}%{?dist}
+Release: 1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
@@ -163,21 +164,21 @@ SRC_DIR="%{_postgres_src_loc}/packaged"
 PROJ_SRC="proj-4.8.0.zip"
 POSTGIS_OLD_SRC="postgis-2.0.6.tar.gz"
 POSTGIS_SRC="postgis-2.2.2.tar.gz"
-GEOS_BASE="geos-3.4.2"
-GEOS_SRC="geos-3.4.2.tar.bz2"
+GEOS_BASE="geos-"%{_geos}
+GEOS_SRC="geos-%{_geos}.tar.bz2"
 GDAL_SRC="gdal192.zip"
 
 # The directory that the src will be in after the tars are unzipped.
 PROJ_SRC_DIR="proj-4.8.0"
 POSTGIS_OLD_SRC_DIR="postgis-2.0.6"
 POSTGIS_SRC_DIR="postgis-2.2.2"
-GEOS_SRC_DIR="geos-3.4.2"
+GEOS_SRC_DIR="geos-%{_geos}"
 GDAL_SRC_DIR="gdal-1.9.2"
 
 cp ${SRC_DIR}/${POSTGIS_SRC} %{_postgres_build_loc}
 cp ${SRC_DIR}/${POSTGIS_OLD_SRC} %{_postgres_build_loc}
 cp ${SRC_DIR}/${PROJ_SRC} %{_postgres_build_loc}
-cp %{_baseline_workspace}/foss/${GEOS_BASE}/packaged/${GEOS_SRC} %{_postgres_build_loc}
+cp %{_baseline_workspace}/foss/geos/${GEOS_SRC} %{_postgres_build_loc}
 cp ${SRC_DIR}/${GDAL_SRC} %{_postgres_build_loc}
 
 cd %{_postgres_build_loc}

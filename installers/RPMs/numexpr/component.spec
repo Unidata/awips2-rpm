@@ -46,6 +46,9 @@ fi
 mkdir -p %{_python_build_loc}
 
 %build
+export LD_LIBRARY_PATH=/awips2/python/lib
+export PATH=/awips2/python/bin:$PATH
+
 SRC_DIR="%{_baseline_workspace}/foss/numexpr"
 ZIP="v%{version}.zip"
 cp -v ${SRC_DIR}/${ZIP} \

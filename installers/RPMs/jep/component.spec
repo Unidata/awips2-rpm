@@ -48,6 +48,9 @@ fi
 mkdir -p %{_python_build_loc}
 
 %build
+export LD_LIBRARY_PATH=/awips2/tools/lib:/awips2/python/lib:$LD_LIBRARY_PATH
+export PATH=/awips2/ant/bin:/awips2/java/bin:/awips2/python/bin:/awips2/groovy/bin:/awips2/tools/bin:$PATH
+
 JEP_SRC_DIR="%{_baseline_workspace}/foss/jep"
 JEP_ZIP="v%{version}.zip"
 cp -v ${JEP_SRC_DIR}/${JEP_ZIP} \

@@ -43,6 +43,7 @@ fi
 mkdir -p %{_python_build_loc}
 
 %build
+
 CYCLER_SRC_DIR="%{_baseline_workspace}/foss/cycler"
 CYCLER_TAR="cycler-%{_version}.tar.gz"
 cp -v ${CYCLER_SRC_DIR}/${CYCLER_TAR} \

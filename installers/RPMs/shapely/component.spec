@@ -1,6 +1,7 @@
 %global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')
 %define _build_arch %(uname -i)
 %define _python_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+%define geos_version 3.6.2
 
 #
 # AWIPS II Python shapely Spec File
@@ -8,7 +9,7 @@
 
 Name: awips2-python-shapely
 Summary: AWIPS II Python shapely Distribution
-Version: 1.6.0
+Version: 1.6.2
 Release: 1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
@@ -63,11 +64,10 @@ _python_staging=%{_python_build_loc}/awips2/python
 
 mkdir -p ${_python_staging}
 # build geos
-__GEOS_TAR=geos-3.4.2.tar.bz2
-__GEOS_UNTARRED=geos-3.4.2
-__GEOS_VERSION=3.4.2
+__GEOS_TAR=geos-%{geos_version}.tar.bz2
+__GEOS_UNTARRED=geos-%{geos_version}
 PYTHON_RPM_DIR="%{_baseline_workspace}/rpms/python.site-packages"
-INSTALLER_SHAPELY_DIR="%{_baseline_workspace}/foss/geos-${__GEOS_VERSION}/packaged"
+INSTALLER_SHAPELY_DIR="%{_baseline_workspace}/foss/geos"
 
 cp ${INSTALLER_SHAPELY_DIR}/${__GEOS_TAR} \
    %{_python_build_loc}
@@ -95,9 +95,9 @@ if [ $? -ne 0 ]; then
 fi
 
 # build the shapely python site-package
-__SHAPELY_TAR=Shapely-%{version}.tar.gz
-__SHAPELY_UNTARRED=Shapely-%{version}
-SHAPELY_SRC_DIR="%{_baseline_workspace}/foss/shapely/packaged"
+__SHAPELY_TAR=Shapely-%{version}.post1.tar.gz
+__SHAPELY_UNTARRED=Shapely-%{version}.post1
+SHAPELY_SRC_DIR="%{_baseline_workspace}/foss/shapely"
 
 cp ${SHAPELY_SRC_DIR}/${__SHAPELY_TAR} \
    %{_python_build_loc}

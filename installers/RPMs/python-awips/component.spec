@@ -45,7 +45,7 @@ fi
 %build
 
 %install
-PYTHON_AWIPS=/home/${USER}/python-awips
+PYTHON_AWIPS=/awips2/repo/python-awips
 
 mkdir -p %{_build_root}/awips2/python/lib/python2.7/site-packages/awips
 if [ $? -ne 0 ]; then

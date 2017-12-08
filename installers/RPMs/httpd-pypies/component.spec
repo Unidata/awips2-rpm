@@ -2,7 +2,7 @@
 %define suexec_caller apache
 %define mmn 20120211
 
-%define HTTP_FOSS_DIR "%{_baseline_workspace}/foss/httpd"
+%define HTTP_FOSS_DIR "%{_baseline_workspace}/foss/%{HTTP_PACKAGE_NAME}/packaged/"
 %define HTTP_PACKAGE_NAME "httpd-%{version}"
 %define HTTP_SOURCE_TAR "%{HTTP_PACKAGE_NAME}.tar.gz"
 %define HTTP_DEPS_TAR "%{HTTP_PACKAGE_NAME}-deps.tar.gz"
@@ -29,7 +29,7 @@ Requires(post): chkconfig
 Provides: webserver
 Provides: mod_dav = %{version}-%{release}, httpd-suexec = %{version}-%{release}
 Provides: %name-mmn = %{mmn}
-Requires: %name-tools >= %{version}-%{release}
+Requires: %name-tools
 Requires: awips2-pypies
 Requires: awips2-tools, awips2-python, awips2-python-h5py
 Requires: awips2-python-numpy, awips2-python-awips, awips2-python-werkzeug
@@ -46,7 +46,6 @@ Summary: Development tools for the Apache HTTP server.
 Obsoletes: secureweb-devel, apache-devel
 Requires: pkgconfig, libtool
 Requires: awips2-httpd-pypies = %{version}-%{release}
-Requires: awips2-httpd-pypies-tools
 
 %description -n %name-devel
 The httpd-devel package contains the APXS binary and other files
@@ -71,7 +70,6 @@ also be found at http://httpd.apache.org/docs/.
 %package -n %name-tools
 Group: AWIPSII
 Summary: Tools for use with the Apache HTTP Server
-Requires: %name = %{version}-%{release}
 
 %description -n %name-tools
 The httpd-tools package contains tools which can be used with 
@@ -350,7 +348,7 @@ if [ $? -ne 0 ]; then
    exit 1
 fi
 
-LD_PRELOAD=%RPMBUILD_PYPIES_DIR/awips2/httpd_pypies/usr/lib64/libapr-1.so \
+LD_LIBRARY_PATH=%RPMBUILD_PYPIES_DIR/awips2/httpd_pypies/usr/lib64/:/awips2/python/lib:$LD_LIBRARY_PATH \
 ./configure --with-python=/awips2/python/bin/python --with-apxs=./apxs
 
 if [ $? -ne 0 ]; then
@@ -408,14 +406,10 @@ mkdir -p $RPM_BUILD_ROOT/etc/rc.d/init.d
 install -m755 %{_baseline_workspace}/installers/RPMs/httpd-pypies/configuration/etc/init.d/httpd-pypies \
 	$RPM_BUILD_ROOT/awips2/httpd_pypies/etc/rc.d/init.d/httpd
 
-install -m755 %{_baseline_workspace}/installers/RPMs/httpd-pypies/configuration/etc/init.d/httpd-pypies \
-        $RPM_BUILD_ROOT/etc/rc.d/init.d/httpd-pypies
-
+ln -sf /awips2/httpd_pypies/etc/rc.d/init.d/httpd $RPM_BUILD_ROOT/etc/rc.d/init.d/httpd-pypies
 install -m755 ./build/rpm/htcacheclean.init \
         $RPM_BUILD_ROOT/awips2/httpd_pypies/etc/rc.d/init.d/htcacheclean
-
-install -m755 ./build/rpm/htcacheclean.init \
-        $RPM_BUILD_ROOT/etc/rc.d/init.d/htcacheclean-pypies
+ln -sf /awips2/httpd_pypies/etc/rc.d/init.d/htcacheclean $RPM_BUILD_ROOT/etc/rc.d/init.d/htcacheclean-pypies
 
 # install cron job
 mkdir -p ${RPM_BUILD_ROOT}/etc/cron.daily
@@ -507,6 +501,9 @@ if [ $1 = 0 ]; then
         /sbin/chkconfig --del htcacheclean-pypies
 fi
 
+%post -n %name-tools
+chown -R awips:fxalpha /awips2/httpd_pypies
+
 %post -n %name-mod_ssl
 umask 077
 
@@ -543,27 +540,21 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,awips,fxalpha)
-%dir /awips2/httpd_pypies
 /awips2/httpd_pypies/etc/
 /awips2/httpd_pypies/etc/httpd/conf/extra/
 /awips2/httpd_pypies/etc/httpd/conf/original/extra/
 /awips2/httpd_pypies/etc/httpd/conf/original/
 /awips2/httpd_pypies/etc/rc.d/init.d/
-%dir /awips2/httpd_pypies/usr
 /awips2/httpd_pypies/usr/lib64/
 /awips2/httpd_pypies/usr/sbin/
-%dir /awips2/httpd_pypies/usr/share
-%dir /awips2/httpd_pypies/usr/share/doc
 /awips2/httpd_pypies/usr/share/doc/awips2-httpd-pypies-2.4.23/
-%dir /awips2/httpd_pypies/usr/share/man
 /awips2/httpd_pypies/usr/share/man/man1/
 /awips2/httpd_pypies/usr/share/man/man8/
-%dir /awips2/httpd_pypies/var
-%dir /awips2/httpd_pypies/var/cache
 /awips2/httpd_pypies/var/cache/httpd/
 /awips2/httpd_pypies/var/lib/
 /awips2/httpd_pypies/var/lock/
 /awips2/httpd_pypies/var/log/
+/awips2/httpd_pypies/var/
 /awips2/httpd_pypies/var/www/wsgi/
 %dir /awips2/httpd_pypies%{_sysconfdir}/httpd
 /awips2/httpd_pypies%{_sysconfdir}/httpd/modules
@@ -745,55 +736,6 @@ rm -rf $RPM_BUILD_ROOT
 /awips2/httpd_pypies%{_mandir}/man8/httpd.8*
 /awips2/httpd_pypies%{_mandir}/man8/htcacheclean.8*
 /awips2/httpd_pypies%{_mandir}/man8/fcgistarter.8*
-%dir /awips2/httpd_pypies/usr/bin
-/awips2/httpd_pypies/usr/bin/apr-1-config
-/awips2/httpd_pypies/usr/bin/apu-1-config
-%dir /awips2/httpd_pypies/usr/distcache
-%dir /awips2/httpd_pypies/usr/distcache/bin
-/awips2/httpd_pypies/usr/distcache/bin/dc_client
-/awips2/httpd_pypies/usr/distcache/bin/dc_server
-/awips2/httpd_pypies/usr/distcache/bin/dc_snoop
-/awips2/httpd_pypies/usr/distcache/bin/dc_test
-/awips2/httpd_pypies/usr/distcache/bin/nal_test
-/awips2/httpd_pypies/usr/distcache/bin/piper
-/awips2/httpd_pypies/usr/distcache/bin/sslswamp
-%dir /awips2/httpd_pypies/usr/distcache/lib
-/awips2/httpd_pypies/usr/distcache/lib/libdistcache.la
-/awips2/httpd_pypies/usr/distcache/lib/libdistcache.so
-/awips2/httpd_pypies/usr/distcache/lib/libdistcache.so.1
-/awips2/httpd_pypies/usr/distcache/lib/libdistcache.so.1.0.1
-/awips2/httpd_pypies/usr/distcache/lib/libdistcacheserver.la
-/awips2/httpd_pypies/usr/distcache/lib/libdistcacheserver.so
-/awips2/httpd_pypies/usr/distcache/lib/libdistcacheserver.so.1
-/awips2/httpd_pypies/usr/distcache/lib/libdistcacheserver.so.1.0.1
-/awips2/httpd_pypies/usr/distcache/lib/libnal.la
-/awips2/httpd_pypies/usr/distcache/lib/libnal.so
-/awips2/httpd_pypies/usr/distcache/lib/libnal.so.1
-/awips2/httpd_pypies/usr/distcache/lib/libnal.so.1.0.1
-%dir /awips2/httpd_pypies/usr/distcache/man
-%dir /awips2/httpd_pypies/usr/distcache/man/man1
-/awips2/httpd_pypies/usr/distcache/man/man1/dc_client.1
-/awips2/httpd_pypies/usr/distcache/man/man1/dc_server.1
-/awips2/httpd_pypies/usr/distcache/man/man1/dc_snoop.1
-/awips2/httpd_pypies/usr/distcache/man/man1/dc_test.1
-/awips2/httpd_pypies/usr/distcache/man/man1/sslswamp.1
-%dir /awips2/httpd_pypies/usr/distcache/man/man2
-/awips2/httpd_pypies/usr/distcache/man/man2/DC_CTX_new.2
-/awips2/httpd_pypies/usr/distcache/man/man2/DC_PLUG_new.2
-/awips2/httpd_pypies/usr/distcache/man/man2/DC_PLUG_read.2
-/awips2/httpd_pypies/usr/distcache/man/man2/DC_SERVER_new.2
-/awips2/httpd_pypies/usr/distcache/man/man2/NAL_ADDRESS_new.2
-/awips2/httpd_pypies/usr/distcache/man/man2/NAL_BUFFER_new.2
-/awips2/httpd_pypies/usr/distcache/man/man2/NAL_CONNECTION_new.2
-/awips2/httpd_pypies/usr/distcache/man/man2/NAL_LISTENER_new.2
-/awips2/httpd_pypies/usr/distcache/man/man2/NAL_SELECTOR_new.2
-/awips2/httpd_pypies/usr/distcache/man/man2/NAL_decode_uint32.2
-%dir /awips2/httpd_pypies/usr/distcache/man/man8
-/awips2/httpd_pypies/usr/distcache/man/man8/distcache.8
-%dir /awips2/httpd_pypies/usr/distcache/share
-%dir /awips2/httpd_pypies/usr/distcache/share/swamp
-/awips2/httpd_pypies/usr/distcache/share/swamp/A-client.pem
-/awips2/httpd_pypies/usr/distcache/share/swamp/CA.pem
 
 %files -n %name-manual
 %defattr(-,awips,fxalpha)
@@ -804,13 +746,16 @@ rm -rf $RPM_BUILD_ROOT
 
 %files -n %name-tools
 %defattr(-,awips,fxalpha)
+/awips2/httpd_pypies/usr/bin/
+/awips2/httpd_pypies/usr/share/man/man1/
+/awips2/httpd_pypies/usr/share/man/man8/
+/awips2/httpd_pypies/usr/distcache
 /awips2/httpd_pypies%{_bindir}/ab
 /awips2/httpd_pypies%{_bindir}/htdbm
 /awips2/httpd_pypies%{_bindir}/htdigest
 /awips2/httpd_pypies%{_bindir}/htpasswd
 /awips2/httpd_pypies%{_bindir}/logresolve
 /awips2/httpd_pypies%{_bindir}/httxt2dbm
-/awips2/httpd_pypies%{_sbindir}/rotatelogs
 /awips2/httpd_pypies%{_mandir}/man1/htdbm.1*
 /awips2/httpd_pypies%{_mandir}/man1/htdigest.1*
 /awips2/httpd_pypies%{_mandir}/man1/htpasswd.1*
@@ -821,26 +766,32 @@ rm -rf $RPM_BUILD_ROOT
 
 %files -n %name-mod_authnz_ldap
 %defattr(-,awips,fxalpha)
+/awips2/httpd_pypies/usr/lib64/httpd/modules/
 /awips2/httpd_pypies%{_libdir}/httpd/modules/mod_ldap.so
 /awips2/httpd_pypies%{_libdir}/httpd/modules/mod_authnz_ldap.so
 
 %files -n %name-mod_lua
 %defattr(-,awips,fxalpha)
+/awips2/httpd_pypies/usr/lib64/httpd/modules/
 /awips2/httpd_pypies%{_libdir}/httpd/modules/mod_lua.so
 
 %files -n %name-mod_proxy_html
 %defattr(-,awips,fxalpha)
+/awips2/httpd_pypies/usr/lib64/httpd/modules/
 /awips2/httpd_pypies%{_libdir}/httpd/modules/mod_proxy_html.so
 /awips2/httpd_pypies%{_libdir}/httpd/modules/mod_xml2enc.so
 
 %files -n %name-mod_socache_dc
 %defattr(-,awips,fxalpha)
+/awips2/httpd_pypies/usr/lib64/httpd/modules/
 /awips2/httpd_pypies%{_libdir}/httpd/modules/mod_socache_dc.so
 
 %files -n %name-mod_ssl
 %defattr(-,awips,fxalpha)
 /awips2/httpd_pypies/etc/httpd/conf/extra/
 /awips2/httpd_pypies/etc/httpd/conf/original/extra/
+/awips2/httpd_pypies/usr/lib64/httpd/modules/
+/awips2/httpd_pypies/var/cache/
 /awips2/httpd_pypies%{_libdir}/httpd/modules/mod_ssl.so
 %config(noreplace) /awips2/httpd_pypies%{_sysconfdir}/httpd/conf/original/extra/httpd-ssl.conf
 %config(noreplace) /awips2/httpd_pypies%{_sysconfdir}/httpd/conf/extra/httpd-ssl.conf
@@ -851,9 +802,11 @@ rm -rf $RPM_BUILD_ROOT
 
 %files -n %name-devel
 %defattr(-,awips,fxalpha)
+/awips2/httpd_pypies/usr/bin/
 /awips2/httpd_pypies/usr/include/
 /awips2/httpd_pypies/usr/lib64/httpd/
-/awips2/httpd_pypies/usr/distcache/include/
+/awips2/httpd_pypies/usr/sbin/
+/awips2/httpd_pypies/usr/share/man/man1/
 /awips2/httpd_pypies%{_includedir}/httpd
 /awips2/httpd_pypies%{_bindir}/apxs
 /awips2/httpd_pypies%{_sbindir}/checkgid

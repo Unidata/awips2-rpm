@@ -102,7 +102,7 @@ if [ ${RC} -ne 0 ]; then
 fi
 rm -fv ${TABLES_TAR}
 cd PyTables-%{version}
-export LD_LIBRARY_PATH=/awips2/python/lib:/usr/lib64
+
 /awips2/python/bin/python setup.py build
 RC=$?
 if [ ${RC} -ne 0 ]; then
