@@ -8,7 +8,7 @@
 #
 Name: awips2-python-jep
 Summary: AWIPS II Python Jep Distribution
-Version: 3.7.0
+Version: 3.7.1
 Release: 1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
@@ -48,7 +48,7 @@ mkdir -p %{_python_build_loc}
 %build
 source /etc/profile.d/awips2.sh
 JEP_SRC_DIR="%{_baseline_workspace}/foss/jep"
-JEP_ZIP="v%{version}.zip"
+JEP_ZIP="jep-%{version}.zip"
 cp -v ${JEP_SRC_DIR}/${JEP_ZIP} \
    %{_python_build_loc}
 RC=$?
