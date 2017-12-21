@@ -2,12 +2,11 @@
 # AWIPS II Eclipse Spec File
 #
 
-%define CDT_ZIP_FILE cdt-9.1.0.zip
-%define CDT_RCP_ZIP_FILE cdt-rcp-9.1.0.zip
-%define MEMORY_ANALYZER_ZIP_FILE MemoryAnalyzer-1.6.0.201605311117.zip
+%define CDT_ZIP_FILE cdt-8.8.0.zip
+%define MEMORY_ANALYZER_ZIP_FILE MemoryAnalyzer-1.5.0.201505271423.zip
 %define SHELLED_ZIP_FILE net.sourceforge.shelled-site-2.0.3.zip
-%define PYDEV_ZIP_FILE PyDev-5.3.1.zip
-%define WTP_ZIP_FILE wtp-repo-R-3.8.1-20160912100321.zip
+%define PYDEV_ZIP_FILE PyDev-4.4.0.zip
+%define WTP_ZIP_FILE wtp-repo-R-3.7.1-20150915020029.zip
 %define DLTK_ZIP_FILE dltk-core-R-5.3-201509040407.zip
 
 # --define arguments:
@@ -16,14 +15,14 @@
 
 Name: awips2-eclipse
 Summary: AWIPS II Eclipse Distribution
-Version: 4.6.1
+Version: 4.5.1
 Release: 1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 URL: N/A
 License: N/A
 Distribution: N/A
-Vendor: Raytheon
+Vendor: %{_build_vendor}
 Packager: %{_build_site}
 
 AutoReq: no
@@ -38,7 +37,6 @@ AWIPS II Eclipse Distribution - Contains the AWIPS II Eclipse Distribution.
 
 # Turn off the brp-python-bytecompile script
 %global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')
-# disable jar repacking
 %global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-java-repack-jars[[:space:]].*$!!g')
 
 %prep
@@ -59,10 +57,10 @@ fi
 %install
 TMP_BUILD_DIR="/tmp/eclipse-build/"
 
+CORE_PROJECT_DIR="%{_baseline_workspace}/foss"
 ECLIPSE_BIN_DIR="%{_static_files}/eclipse"
-ECLIPSE_STATIC_DIR="$REPO/awips2-static/eclipse"
-ECLIPSE_TAR_FILE="eclipse-rcp-neon-1a-linux-gtk-x86_64.tar.gz"
-ECLIPSE_DELTA_FILE="eclipse-I201609071200-delta-pack.zip"
+ECLIPSE_TAR_FILE="eclipse-rcp-mars-1-linux-gtk-x86_64.tar.gz"
+ECLIPSE_DELTA_FILE="eclipse-I201506032000-delta-pack.zip"
 
 ECLIPSE_EXE="${TMP_BUILD_DIR}/awips2/eclipse/eclipse"
 NOSPLASH_ARG="-nosplash"
@@ -81,7 +79,7 @@ fi
 mkdir -p ${TMP_BUILD_DIR}/awips2/eclipse
 
 # Extract Eclipse
-tar -xf ${ECLIPSE_STATIC_DIR}/${ECLIPSE_TAR_FILE} \
+tar -xf ${ECLIPSE_BIN_DIR}/${ECLIPSE_TAR_FILE} \
    -C ${TMP_BUILD_DIR}/awips2
 
 # Extract the Eclipse Delta Pack
@@ -90,13 +88,6 @@ unzip -o ${ECLIPSE_BIN_DIR}/${ECLIPSE_DELTA_FILE} \
 
 
 #CDT_ZIP_FILE
-unzip  ${ECLIPSE_BIN_DIR}/%{CDT_RCP_ZIP_FILE} -d ${REPOSITORY}/cdt-rcp
-${COMMON_CMD} ${INSTALL_ARG} org.eclipse.launchbar.core ${REPO}/cdt-rcp/
-if [ $? -ne 0 ]; then
-   exit 1
-fi
-rm -rf ${REPOSITORY}/cdt-rcp
-
 unzip  ${ECLIPSE_BIN_DIR}/%{CDT_ZIP_FILE} -d ${REPOSITORY}/cdt
 ${COMMON_CMD} ${INSTALL_ARG} org.eclipse.cdt.feature.group ${REPO}/cdt/
 if [ $? -ne 0 ]; then
@@ -121,7 +112,7 @@ fi
 rm -rf ${REPOSITORY}/pydev
 
 #WTP_ZIP_FILE
-unzip  ${ECLIPSE_STATIC_DIR}/%{WTP_ZIP_FILE} -d ${REPOSITORY}/wtp
+unzip  ${ECLIPSE_BIN_DIR}/%{WTP_ZIP_FILE} -d ${REPOSITORY}/wtp
 ${COMMON_CMD} ${INSTALL_ARG} org.eclipse.wst.xml_ui.feature.feature.group ${REPO}/wtp/
 if [ $? -ne 0 ]; then
    exit 1
