@@ -4,7 +4,7 @@
 
 _PYPIES_LOG_DIRECTORY="/awips2/httpd_pypies/var/log/httpd"
 
-_LOG_NAME_PREFIXES=( 'access_log' 'error_log' )
+_LOG_NAME_PREFIXES=( 'compression_log' 'error_log' )
 _COUNT_DAYS=( 7 8 9 10 11 12 13 14 )
 
 for day in ${_COUNT_DAYS[*]}; do
@@ -13,7 +13,6 @@ for day in ${_COUNT_DAYS[*]}; do
    for logPrefix in ${_LOG_NAME_PREFIXES[*]}; do
       _log_file="${logPrefix}.${_log_date}"
 
-      echo "${_PYPIES_LOG_DIRECTORY}/${_log_file}"
       rm -f ${_PYPIES_LOG_DIRECTORY}/${_log_file}
    done
 done
