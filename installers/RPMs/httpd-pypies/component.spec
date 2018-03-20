@@ -14,7 +14,7 @@
 Summary: Apache HTTP Server
 Name: awips2-httpd-pypies
 Version: 2.4.23
-Release: 2%{?dist}
+Release: 3%{?dist}
 URL: http://httpd.apache.org/
 License: Apache License, Version 2.0
 Group: AWIPSII
