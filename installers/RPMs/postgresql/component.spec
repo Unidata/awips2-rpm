@@ -1,10 +1,12 @@
 %define _build_arch %(uname -i)
-%define _postgresql_version 9.5.8
-%define _geos 3.4.2
+%define _postgresql_version 9.5.13
 %define _postgres_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-%define _postgres_src_loc %{_baseline_workspace}/foss/postgresql-%{_postgresql_version}
+%define _postgres_src_loc %{_baseline_workspace}/foss/postgresql
 %define _postgres_script_loc %{_baseline_workspace}/installers/RPMs/postgresql/scripts
-
+%define _gdal 2.2.4
+%define _geos 3.6.2
+%define _postgis 2.4.4
+%define _proj 5.1.0
 #
 # AWIPS II PostgreSQL Spec File
 #
@@ -25,7 +27,7 @@ Packager: %{_build_site}
 AutoReq: no
 BuildRequires: openssl-devel >= 1.0.1e
 Requires: openssl >= 1.0.1e
-Requires: netcdf, geos
+Requires: netcdf
 provides: awips2-postgresql
 provides: awips2-base-component
 
@@ -161,28 +163,28 @@ if [ $? -ne 0 ]; then
 fi
 
 SRC_DIR="%{_postgres_src_loc}/packaged"
-PROJ_SRC="proj-4.8.0.zip"
-POSTGIS_OLD_SRC="postgis-2.0.6.tar.gz"
-POSTGIS_SRC="postgis-2.2.2.tar.gz"
+PROJ_SRC="proj-%{_proj}.tar.gz"
+POSTGIS_SRC="postgis-%{_postgis}.tar.gz"
 GEOS_BASE="geos-"%{_geos}
 GEOS_SRC="geos-%{_geos}.tar.bz2"
-GDAL_SRC="gdal192.zip"
+GDAL_SRC="gdal-%{_gdal}.tar.gz"
+POSTGIS_OLD_SRC="postgis-2.0.6.tar.gz"
 
 # The directory that the src will be in after the tars are unzipped.
-PROJ_SRC_DIR="proj-4.8.0"
-POSTGIS_OLD_SRC_DIR="postgis-2.0.6"
-POSTGIS_SRC_DIR="postgis-2.2.2"
+PROJ_SRC_DIR="proj-%{_proj}"
+POSTGIS_SRC_DIR="postgis-%{_postgis}"
 GEOS_SRC_DIR="geos-%{_geos}"
-GDAL_SRC_DIR="gdal-1.9.2"
+GDAL_SRC_DIR="gdal-%{_gdal}"
+POSTGIS_OLD_SRC_DIR="postgis-2.0.6"
 
 cp ${SRC_DIR}/${POSTGIS_SRC} %{_postgres_build_loc}
-cp ${SRC_DIR}/${POSTGIS_OLD_SRC} %{_postgres_build_loc}
 cp ${SRC_DIR}/${PROJ_SRC} %{_postgres_build_loc}
 cp %{_baseline_workspace}/foss/geos/${GEOS_SRC} %{_postgres_build_loc}
 cp ${SRC_DIR}/${GDAL_SRC} %{_postgres_build_loc}
+cp ${SRC_DIR}/${POSTGIS_OLD_SRC} %{_postgres_build_loc}
 
 cd %{_postgres_build_loc}
-unzip ${PROJ_SRC}
+tar -xvzf ${PROJ_SRC}
 if [ $? -ne 0 ]; then
    exit 1
 fi
@@ -206,12 +208,12 @@ tar -xvf ${GEOS_SRC}
 if [ $? -ne 0 ]; then
    exit 1
 fi
-unzip ${GDAL_SRC}
+tar -xvzf ${GDAL_SRC}
 if [ $? -ne 0 ]; then
    exit 1
 fi
 
-cd ${GEOS_SRC_DIR}
+pushd ${GEOS_SRC_DIR}
 LDFLAGS='-Wl,-rpath,/awips2/postgresql/lib,-rpath,/awips2/psql/lib' ./configure \
    --prefix=%{_postgres_build_loc}/awips2/postgresql
 if [ $? -ne 0 ]; then
@@ -225,8 +227,9 @@ make install
 if [ $? -ne 0 ]; then
    exit 1
 fi
+popd
 
-cd ../${PROJ_SRC_DIR}
+pushd ${PROJ_SRC_DIR}
 LDFLAGS='-Wl,-rpath,/awips2/postgresql/lib,-rpath,/awips2/psql/lib' ./configure \
    --prefix=%{_postgres_build_loc}/awips2/postgresql \
    --without-jni
@@ -241,8 +244,9 @@ make install
 if [ $? -ne 0 ]; then
    exit 1
 fi
+popd 
 
-cd ../${GDAL_SRC_DIR}
+pushd ${GDAL_SRC_DIR}
 LDFLAGS='-Wl,-rpath,/awips2/postgresql/lib,-rpath,/awips2/psql/lib' ./configure \
    --prefix=%{_postgres_build_loc}/awips2/postgresql \
    --with-expat-lib=%{_usr}/%{_lib}
@@ -257,51 +261,51 @@ make install
 if [ $? -ne 0 ]; then
    exit 1
 fi
+popd
 
-# The newer version of PostGIS must be installed last
-for THIS_POSTGIS_SRC_DIR in "${POSTGIS_OLD_SRC_DIR}" "${POSTGIS_SRC_DIR}"; do
-    cd ../${THIS_POSTGIS_SRC_DIR}
-    _POSTGRESQL_ROOT=%{_postgres_build_loc}/awips2/postgresql
-    _POSTGRESQL_BIN=${_POSTGRESQL_ROOT}/bin
-    LDFLAGS='-Wl,-rpath,/awips2/postgresql/lib,-rpath,/awips2/psql/lib' ./configure \
-       --with-pgconfig=${_POSTGRESQL_BIN}/pg_config \
-       --with-geosconfig=${_POSTGRESQL_BIN}/geos-config \
-       --with-projdir=${_POSTGRESQL_ROOT} \
-       --with-gdalconfig=${_POSTGRESQL_BIN}/gdal-config \
-       --prefix=%{_postgres_build_loc}/awips2/postgresql
-    if [ $? -ne 0 ]; then
-       exit 1
-    fi
-    # disable doc since it attempts to download files from
-    # the internet
-    echo "#Do Nothing" > doc/Makefile.in
-    echo "docs:" > doc/Makefile
-    echo "" >> doc/Makefile
-    echo "docs-install:" >> doc/Makefile
-    echo "" >> doc/Makefile
-    echo "docs-uninstall:" >> doc/Makefile
-    echo "" >> doc/Makefile
-    echo "comments-install:" >> doc/Makefile
-    echo "" >> doc/Makefile
-    echo "comments-uninstall:" >> doc/Makefile
-    echo "" >> doc/Makefile
-    echo "clean:" >> doc/Makefile
-    echo "" >> doc/Makefile
-    echo "all:" >> doc/Makefile
-    echo "" >> doc/Makefile
-    echo "install:" >> doc/Makefile
-    echo "" >> doc/Makefile
-    make
-    # run make twice - the first time may fail due to doc
-    make
-    if [ $? -ne 0 ]; then
-       exit 1
-    fi
-    make install
-    if [ $? -ne 0 ]; then
-       exit 1
-    fi
-done
+pushd ${POSTGIS_SRC_DIR}
+
+_POSTGRESQL_ROOT=%{_postgres_build_loc}/awips2/postgresql
+_POSTGRESQL_BIN=${_POSTGRESQL_ROOT}/bin
+LDFLAGS='-Wl,-rpath,/awips2/postgresql/lib,-rpath,/awips2/psql/lib' ./configure \
+   --with-pgconfig=${_POSTGRESQL_BIN}/pg_config \
+   --with-geosconfig=${_POSTGRESQL_BIN}/geos-config \
+   --with-projdir=${_POSTGRESQL_ROOT} \
+   --with-gdalconfig=${_POSTGRESQL_BIN}/gdal-config \
+   --prefix=%{_postgres_build_loc}/awips2/postgresql
+if [ $? -ne 0 ]; then
+   exit 1
+fi
+# disable doc since it attempts to download files from
+# the internet
+echo "#Do Nothing" > doc/Makefile.in
+echo "docs:" > doc/Makefile
+echo "" >> doc/Makefile
+echo "docs-install:" >> doc/Makefile
+echo "" >> doc/Makefile
+echo "docs-uninstall:" >> doc/Makefile
+echo "" >> doc/Makefile
+echo "comments-install:" >> doc/Makefile
+echo "" >> doc/Makefile
+echo "comments-uninstall:" >> doc/Makefile
+echo "" >> doc/Makefile
+echo "clean:" >> doc/Makefile
+echo "" >> doc/Makefile
+echo "all:" >> doc/Makefile
+echo "" >> doc/Makefile
+echo "install:" >> doc/Makefile
+echo "" >> doc/Makefile
+make
+# run make twice - the first time may fail due to doc
+make
+if [ $? -ne 0 ]; then
+   exit 1
+fi
+make install
+if [ $? -ne 0 ]; then
+   exit 1
+fi
+popd
 
 # Create The PostgreSQL Data Directory
 mkdir -p ${RPM_BUILD_ROOT}/awips2/data
