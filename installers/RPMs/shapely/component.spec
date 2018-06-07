@@ -9,7 +9,7 @@
 
 Name: awips2-python-shapely
 Summary: AWIPS II Python shapely Distribution
-Version: 1.6.2
+Version: 1.6.4
 Release: 1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
