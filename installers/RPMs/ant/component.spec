@@ -1,3 +1,6 @@
+# disable jar repacking
+%global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-java-repack-jars[[:space:]].*$!!g')
+# Turn off the brp-python-bytecompile script
 %global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')
 #
 # AWIPS II Ant Spec File
@@ -5,7 +8,7 @@
 Name: awips2-ant
 Summary: AWIPS II Ant Distribution
 Version: 1.9.6
-Release: 1
+Release: 2
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: noarch
@@ -13,7 +16,7 @@ Prefix: /awips2/ant
 URL: N/A
 License: N/A
 Distribution: N/A
-Vendor: Raytheon
+Vendor: %{_build_vender}
 Packager: %{_build_site}
 
 AutoReq: no
@@ -64,6 +67,7 @@ mkdir -p ${RPM_BUILD_ROOT}/awips2/ant
 CORE_PROJECT_DIR="%{_baseline_workspace}/foss"
 ANT_BIN_DIR="${CORE_PROJECT_DIR}/ant-%{version}/packaged"
 ANT_TAR_FILE="apache-ant-%{version}-bin.tar.gz"
+ANT_LIB_DIR="%{_baseline_workspace}/installers/RPMs/ant/lib"
 ANT_SCRIPTS_DIR="%{_baseline_workspace}/installers/RPMs/ant/scripts"
 
 # Will Be Extracted Into apache-ant-%{version}
@@ -73,6 +77,8 @@ tar -xf ${ANT_BIN_DIR}/${ANT_TAR_FILE} \
 cp -r %{_build_root}/awips2/apache-ant-%{version}/* \
    %{_build_root}/awips2/ant 
 rm -rf %{_build_root}/awips2/apache-ant-%{version}
+
+cp ${ANT_LIB_DIR}/* %{_build_root}/awips2/ant/lib
 
 copyLegal "awips2/ant"
 
