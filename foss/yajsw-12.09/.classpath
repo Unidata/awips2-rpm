@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/ahessian/src/main/java"/>
+	<classpathentry kind="src" path="src/test/src/test/java"/>
+	<classpathentry kind="src" path="src/yajsw/src/main/java"/>
+	<classpathentry kind="src" path="src/ws/src/main/java"/>
+	<classpathentry kind="src" path="src/srvmgr/src/main/java"/>
+	<classpathentry kind="src" path="src/keystore/src/main/java"/>
+	<classpathentry kind="src" path="src/hessian/src/main/java"/>
+	<classpathentry kind="src" path="src/build/src/main/java"/>
+	<classpathentry kind="src" path="src/groovy-patch/src/main/java"/>
+	<classpathentry kind="src" path="src/app/src/main/java"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
+		<accessrules>
+			<accessrule kind="accessible" pattern="**"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/core/netty/netty-all-4.0.47.Final.jar"/>
+	<classpathentry kind="lib" path="lib/core/jna/jna-4.4.0.jar"/>
+	<classpathentry kind="lib" path="lib/core/jna/jna-platform-4.4.0.jar"/>
+	<classpathentry kind="lib" path="lib/core/commons/commons-vfs2-2.0.jar"/>
+	<classpathentry kind="lib" path="lib/core/commons/commons-logging-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/core/commons/commons-cli-1.3.1.jar"/>
+	<classpathentry kind="lib" path="lib/core/commons/commons-configuration2-2.0.jar"/>
+	<classpathentry kind="lib" path="lib/extended/groovy/groovy-all-2.4.11.jar"/>
+	<classpathentry kind="lib" path="lib/core/commons/commons-collections-3.2.2.jar"/>
+	<classpathentry kind="lib" path="lib/core/commons/commons-lang3-3.4.jar"/>
+	<classpathentry kind="lib" path="lib/extended/velocity/velocity-1.7.jar"/>
+	<classpathentry kind="lib" path="lib/core/commons/commons-io-1.3.1.jar"/>
+	<classpathentry kind="lib" path="lib/extended/cron/yacron4j-00.03.jar"/>
+	<classpathentry kind="lib" path="lib/extended/jgoodies/forms-1.2.0.jar"/>
+	<classpathentry kind="lib" path="lib/extended/abeille/formsrt.jar"/>
+	<classpathentry kind="lib" path="lib/extended/regex/automaton-1.11.jar"/>
+	<classpathentry kind="lib" path="lib/extended/glazedlists/glazedlists-1.10.0_java16.jar"/>
+	<classpathentry kind="lib" path="lib/extended/glazedlists/commons-beanutils-1.9.3.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

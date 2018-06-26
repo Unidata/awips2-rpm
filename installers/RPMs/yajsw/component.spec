@@ -1,4 +1,4 @@
-%define _yajsw_version 11.12
+%define _yajsw_version 12.09
 
 #
 # AWIPS II YAJSW Spec File
@@ -14,12 +14,13 @@ BuildArch: noarch
 URL: N/A
 License: N/A
 Distribution: N/A
-Vendor: Raytheon
+Vendor: %{_build_vendor}
 Packager: %{_build_site}
 
 AutoReq: no
 
 provides: awips2-yajsw
+requires: awips2
 requires: awips2-java
 
 %description
@@ -56,20 +57,11 @@ if [ $? -ne 0 ]; then
    exit 1
 fi
 
-mkdir -p %{_build_root}/etc
-if [ $? -ne 0 ]; then
-   exit 1
-fi
-
 %pre
 # cleanup the unzip of jna-3.4.1.jar from any previous installs.
 if [ -d /awips2/yajsw/lib/core/jna/com ]; then
    rm -rf /awips2/yajsw/lib/core/jna/com/
 fi
-
-%post
-
-%preun
 
 %clean
 rm -rf ${RPM_BUILD_ROOT}

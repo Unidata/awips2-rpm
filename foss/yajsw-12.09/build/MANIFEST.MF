@@ -1,0 +1,59 @@
+Manifest-Version: 1.0
+Class-Path-Wrapper-Core: 
+ ./wrapperApp.jar 
+ ./lib/core/yajsw/ahessian.jar 
+ ./lib/core/netty/netty-all-4.0.47.Final.jar 
+ ./lib/core/jna/jna-4.4.0.jar 
+ ./lib/core/jna/jna-platform-4.4.0.jar 
+ ./lib/core/commons/commons-configuration2-2.0.jar 
+ ./lib/core/commons/commons-vfs2-2.0.jar 
+ ./lib/core/commons/commons-collections-3.2.2.jar 
+ ./lib/core/commons/commons-io-1.3.1.jar 
+ ./lib/core/commons/commons-lang3-3.4.jar 
+ ./lib/core/commons/commons-lang-2.4.jar 
+ ./lib/core/commons/commons-logging-1.1.jar 
+ ./lib/core/commons/commons-cli-1.3.1.jar
+  
+Class-Path-Wrapper-Extended: 
+ ./lib/extended/groovy/groovy-patch.jar 
+ ./lib/extended/groovy/groovy-all-2.4.11.jar 
+ ./lib/extended/commons/commons-codec-1.3.jar 
+ ./lib/extended/commons/commons-net-3.2.jar 
+ ./lib/extended/regex/automaton-1.11.jar 
+ ./lib/extended/yajsw/hessian4.jar 
+ ./lib/extended/yajsw/srvmgr.jar 
+ ./lib/extended/glazedlists/glazedlists-1.8.0_java15.jar 
+ ./lib/extended/glazedlists/commons-beanutils-1.8.2.jar 
+ ./lib/extended/cron/joda-time-2.7.jar 
+ ./lib/extended/cron/yacron4j-00.03.jar 
+ ./lib/extended/velocity/velocity-1.7.jar 
+ ./lib/extended/jgoodies/forms-1.2.0.jar 
+ ./lib/extended/vfs-webdav/jackrabbit-webdav-1.5.6.jar 
+ ./lib/extended/vfs-webdav/xercesImpl.jar 
+ ./lib/extended/vfs-webdav/slf4j-jdk14-1.5.0.jar 
+ ./lib/extended/vfs-webdav/slf4j-api-1.5.0.jar 
+ ./lib/extended/vfs-dbx/vfs-dbx-00.02.jar 
+ ./lib/extended/vfs-dbx/dropbox-core-sdk-1.7.7.jar 
+ ./lib/extended/vfs-dbx/jackson-core-2.2.4.jar 
+ ./lib/extended/glazedlists/commons-beanutils-1.8.2.jar 
+ ./lib/extended/glazedlists/glazedlists-1.8.0_java15.jar 
+ ./lib/extended/keystore/keystore.jar 
+ ./lib/extended/abeille/formsrt.jar
+  
+Class-Path-App: 
+ ./wrapper.jar 
+ ./lib/core/yajsw/ahessian.jar 
+ ./lib/core/netty/netty-all-4.0.47.Final.jar 
+ ./lib/core/commons/commons-configuration2-2.0.jar  
+ ./lib/core/commons/commons-vfs2-2.0.jar 
+ ./lib/core/commons/commons-collections-3.2.2.jar 
+ ./lib/core/commons/commons-io-1.3.1.jar 
+ ./lib/core/commons/commons-lang3-3.4.jar 
+ ./lib/core/commons/commons-logging-1.1.jar
+  
+Class-Path-App-Extended: 
+ ./lib/extended/groovy/groovy-patch.jar 
+ ./lib/extended/groovy/groovy-all-2.4.11.jar
+ 
+Main-Class: org.rzo.yajsw.boot.WrapperExeBooter
+
