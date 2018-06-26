@@ -6,8 +6,7 @@
     :copyright: (c) 2014 by the Werkzeug Team, see AUTHORS for more details.
     :license: BSD, see LICENSE for more details.
 """
-
-from __future__ import with_statement
+from __future__ import with_statement, print_function
 
 import os
 import signal
@@ -21,23 +20,31 @@ import pytest
 from werkzeug import serving
 from werkzeug.utils import cached_property
 from werkzeug._compat import to_bytes
+from itertools import count
 
 
 try:
     __import__('pytest_xprocess')
 except ImportError:
-    @pytest.fixture
+    @pytest.fixture(scope='session')
     def subprocess():
         pytest.skip('pytest-xprocess not installed.')
 else:
-    @pytest.fixture
+    @pytest.fixture(scope='session')
     def subprocess(xprocess):
         return xprocess
+
+
+port_generator = count(13220)
 
 
 def _patch_reloader_loop():
     def f(x):
         print('reloader loop finished')
+        # Need to flush for some reason even though xprocess opens the
+        # subprocess' stdout in unbuffered mode.
+        # flush=True makes the test fail on py2, so flush manually
+        sys.stdout.flush()
         return time.sleep(x)
 
     import werkzeug._reloader
@@ -60,9 +67,6 @@ def _dev_server():
     app = _get_pid_middleware(testsuite_app.app)
     serving.run_simple(hostname='localhost', application=app,
                        **testsuite_app.kwargs)
-
-if __name__ == '__main__':
-    _dev_server()
 
 
 class _ServerInfo(object):
@@ -92,7 +96,6 @@ class _ServerInfo(object):
             except Exception as e:  # urllib also raises socketerrors
                 print(self.url)
                 print(e)
-        return False
 
     def wait_for_reloader(self):
         old_pid = self.last_pid
@@ -124,8 +127,9 @@ def dev_server(tmpdir, subprocess, request, monkeypatch):
     def run_dev_server(application):
         app_pkg = tmpdir.mkdir('testsuite_app')
         appfile = app_pkg.join('__init__.py')
+        port = next(port_generator)
         appfile.write('\n\n'.join((
-            'kwargs = dict(port=5001)',
+            'kwargs = dict(port=%d)' % port,
             textwrap.dedent(application)
         )))
 
@@ -148,7 +152,7 @@ def dev_server(tmpdir, subprocess, request, monkeypatch):
 
         def preparefunc(cwd):
             args = [sys.executable, __file__, str(tmpdir)]
-            return info.request_pid, args
+            return lambda: 'pid=%s' % info.request_pid(), args
 
         subprocess.ensure('dev_server', preparefunc, restart=True)
 
@@ -156,10 +160,15 @@ def dev_server(tmpdir, subprocess, request, monkeypatch):
             # Killing the process group that runs the server, not just the
             # parent process attached. xprocess is confused about Werkzeug's
             # reloader and won't help here.
-            pid = info.last_pid
-            os.killpg(os.getpgid(pid), signal.SIGTERM)
+            pid = info.request_pid()
+            if pid:
+                os.killpg(os.getpgid(pid), signal.SIGTERM)
         request.addfinalizer(teardown)
 
         return info
 
     return run_dev_server
+
+
+if __name__ == '__main__':
+    _dev_server()

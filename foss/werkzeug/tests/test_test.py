@@ -169,9 +169,9 @@ def test_environ_builder_data():
     assert b.form.getlist('foo') == ['bar1', 'bar2']
 
     def check_list_content(b, length):
-        l = b.files.getlist('foo')
-        assert len(l) == length
-        for obj in l:
+        foo = b.files.getlist('foo')
+        assert len(foo) == length
+        for obj in foo:
             assert isinstance(obj, FileStorage)
 
     b = EnvironBuilder(data={'foo': BytesIO()})
@@ -649,3 +649,16 @@ def test_post_with_file_descriptor(tmpdir):
     with open(f.strpath, mode='rb') as data:
         resp = c.post('/', data=data)
     strict_eq(resp.status_code, 200)
+
+
+def test_content_type():
+    @Request.application
+    def test_app(request):
+        return Response(request.content_type)
+    client = Client(test_app, Response)
+
+    resp = client.get('/', data=b'testing', mimetype='text/css')
+    strict_eq(resp.data, b'text/css; charset=utf-8')
+
+    resp = client.get('/', data=b'testing', mimetype='application/octet-stream')
+    strict_eq(resp.data, b'application/octet-stream')

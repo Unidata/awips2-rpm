@@ -8,19 +8,21 @@
     :copyright: (c) 2014 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
+import contextlib
 import os
 
 import pytest
 
 import pickle
 from io import BytesIO
-from datetime import datetime
+from datetime import datetime, timedelta
 from werkzeug._compat import iteritems
 
 from tests import strict_eq
 
 from werkzeug import wrappers
-from werkzeug.exceptions import SecurityError, RequestedRangeNotSatisfiable
+from werkzeug.exceptions import SecurityError, RequestedRangeNotSatisfiable, \
+    BadRequest
 from werkzeug.wsgi import LimitedStream, wrap_file
 from werkzeug.datastructures import MultiDict, ImmutableOrderedMultiDict, \
     ImmutableList, ImmutableTypeConversionDict, CharsetAccept, \
@@ -219,6 +221,24 @@ def test_stream_only_mixing():
     strict_eq(request.stream.read(), b'foo=blub+hehe')
 
 
+def test_request_application():
+    @wrappers.Request.application
+    def application(request):
+        return wrappers.Response('Hello World!')
+
+    @wrappers.Request.application
+    def failing_application(request):
+        raise BadRequest()
+
+    resp = wrappers.Response.from_app(application, create_environ())
+    assert resp.data == b'Hello World!'
+    assert resp.status_code == 200
+
+    resp = wrappers.Response.from_app(failing_application, create_environ())
+    assert b'Bad Request' in resp.data
+    assert resp.status_code == 400
+
+
 def test_base_response():
     # unicode
     response = wrappers.BaseResponse(u'öäü')
@@ -232,11 +252,12 @@ def test_base_response():
     # set cookie
     response = wrappers.BaseResponse()
     response.set_cookie('foo', value='bar', max_age=60, expires=0,
-                        path='/blub', domain='example.org')
+                        path='/blub', domain='example.org', samesite='Strict')
     strict_eq(response.headers.to_wsgi_list(), [
         ('Content-Type', 'text/plain; charset=utf-8'),
         ('Set-Cookie', 'foo=bar; Domain=example.org; Expires=Thu, '
-         '01-Jan-1970 00:00:00 GMT; Max-Age=60; Path=/blub')
+         '01-Jan-1970 00:00:00 GMT; Max-Age=60; Path=/blub; '
+         'SameSite=Strict')
     ])
 
     # delete cookie
@@ -292,6 +313,15 @@ def test_response_status_codes():
     response.status = 'wtf'
     strict_eq(response.status_code, 0)
     strict_eq(response.status, '0 wtf')
+
+    # invalid status codes
+    with pytest.raises(ValueError) as empty_string_error:
+        wrappers.BaseResponse(None, '')
+    assert 'Empty status argument' in str(empty_string_error)
+
+    with pytest.raises(TypeError) as invalid_type_error:
+        wrappers.BaseResponse(None, tuple())
+    assert 'Invalid status argument' in str(invalid_type_error)
 
 
 def test_type_forcing():
@@ -541,6 +571,48 @@ def test_etag_response_mixin():
     assert response.content_length == 999
 
 
+def test_etag_response_412():
+    response = wrappers.Response('Hello World')
+    assert response.get_etag() == (None, None)
+    response.add_etag()
+    assert response.get_etag() == ('b10a8db164e0754105b7a99be72e3fe5', False)
+    assert not response.cache_control
+    response.cache_control.must_revalidate = True
+    response.cache_control.max_age = 60
+    response.headers['Content-Length'] = len(response.get_data())
+    assert response.headers['Cache-Control'] in ('must-revalidate, max-age=60',
+                                                 'max-age=60, must-revalidate')
+
+    assert 'date' not in response.headers
+    env = create_environ()
+    env.update({
+        'REQUEST_METHOD': 'GET',
+        'HTTP_IF_MATCH': response.get_etag()[0] + "xyz"
+    })
+    response.make_conditional(env)
+    assert 'date' in response.headers
+
+    # after the thing is invoked by the server as wsgi application
+    # (we're emulating this here), there must not be any entity
+    # headers left and the status code would have to be 412
+    resp = wrappers.Response.from_app(response, env)
+    assert resp.status_code == 412
+    assert 'content-length' not in resp.headers
+
+    # make sure date is not overriden
+    response = wrappers.Response('Hello World')
+    response.date = 1337
+    d = response.date
+    response.make_conditional(env)
+    assert response.date == d
+
+    # make sure content length is only set if missing
+    response = wrappers.Response('Hello World')
+    response.content_length = 999
+    response.make_conditional(env)
+    assert response.content_length == 999
+
+
 def test_range_request_basic():
     env = create_environ()
     response = wrappers.Response('Hello World')
@@ -687,10 +759,17 @@ def test_common_response_descriptors_mixin():
     response.content_length = '42'
     assert response.content_length == 42
 
-    for attr in 'date', 'age', 'expires':
+    for attr in 'date', 'expires':
         assert getattr(response, attr) is None
         setattr(response, attr, now)
         assert getattr(response, attr) == now
+
+    assert response.age is None
+    age_td = timedelta(days=1, minutes=3, seconds=5)
+    response.age = age_td
+    assert response.age == age_td
+    response.age = 42
+    assert response.age == timedelta(seconds=42)
 
     assert response.retry_after is None
     response.retry_after = now
@@ -857,6 +936,11 @@ def test_response_freeze():
     resp.freeze()
     assert resp.response == [b'foo', b'bar']
     assert resp.headers['content-length'] == '6'
+
+
+def test_response_content_length_uses_encode():
+    r = wrappers.Response(u'你好')
+    assert r.calculate_content_length() == 6
 
 
 def test_other_method_payload():
@@ -1075,6 +1159,20 @@ def test_location_header_autocorrect():
     assert resp.get_wsgi_headers(env)['Location'] == 'http://localhost/test'
 
 
+def test_204_and_1XX_response_has_no_content_length():
+    response = wrappers.Response(status=204)
+    assert response.content_length is None
+
+    headers = response.get_wsgi_headers(create_environ())
+    assert 'Content-Length' not in headers
+
+    response = wrappers.Response(status=100)
+    assert response.content_length is None
+
+    headers = response.get_wsgi_headers(create_environ())
+    assert 'Content-Length' not in headers
+
+
 def test_modified_url_encoding():
     class ModifiedRequest(wrappers.Request):
         url_charset = 'euc-kr'
@@ -1088,13 +1186,43 @@ def test_request_method_case_sensitivity():
     assert req.method == 'GET'
 
 
+def test_is_xhr_warning():
+    req = wrappers.Request.from_values()
+
+    with pytest.warns(DeprecationWarning) as record:
+        req.is_xhr
+
+    assert len(record) == 1
+    assert 'Request.is_xhr is deprecated' in str(record[0].message)
+
+
+def test_write_length():
+    response = wrappers.Response()
+    length = response.stream.write(b'bar')
+    assert length == 3
+
+
+def test_stream_zip():
+    import zipfile
+
+    response = wrappers.Response()
+    with contextlib.closing(zipfile.ZipFile(response.stream, mode='w')) as z:
+        z.writestr("foo", b"bar")
+
+    buffer = BytesIO(response.get_data())
+    with contextlib.closing(zipfile.ZipFile(buffer, mode='r')) as z:
+        assert z.namelist() == ['foo']
+        assert z.read('foo') == b'bar'
+
+
 class TestSetCookie(object):
     """Tests for :meth:`werkzeug.wrappers.BaseResponse.set_cookie`."""
 
     def test_secure(self):
         response = wrappers.BaseResponse()
         response.set_cookie('foo', value='bar', max_age=60, expires=0,
-                            path='/blub', domain='example.org', secure=True)
+                            path='/blub', domain='example.org', secure=True,
+                            samesite=None)
         strict_eq(response.headers.to_wsgi_list(), [
             ('Content-Type', 'text/plain; charset=utf-8'),
             ('Set-Cookie', 'foo=bar; Domain=example.org; Expires=Thu, '
@@ -1105,7 +1233,7 @@ class TestSetCookie(object):
         response = wrappers.BaseResponse()
         response.set_cookie('foo', value='bar', max_age=60, expires=0,
                             path='/blub', domain='example.org', secure=False,
-                            httponly=True)
+                            httponly=True, samesite=None)
         strict_eq(response.headers.to_wsgi_list(), [
             ('Content-Type', 'text/plain; charset=utf-8'),
             ('Set-Cookie', 'foo=bar; Domain=example.org; Expires=Thu, '
@@ -1116,10 +1244,22 @@ class TestSetCookie(object):
         response = wrappers.BaseResponse()
         response.set_cookie('foo', value='bar', max_age=60, expires=0,
                             path='/blub', domain='example.org', secure=True,
-                            httponly=True)
+                            httponly=True, samesite=None)
         strict_eq(response.headers.to_wsgi_list(), [
             ('Content-Type', 'text/plain; charset=utf-8'),
             ('Set-Cookie', 'foo=bar; Domain=example.org; Expires=Thu, '
              '01-Jan-1970 00:00:00 GMT; Max-Age=60; Secure; HttpOnly; '
              'Path=/blub')
+        ])
+
+    def test_samesite(self):
+        response = wrappers.BaseResponse()
+        response.set_cookie('foo', value='bar', max_age=60, expires=0,
+                            path='/blub', domain='example.org', secure=False,
+                            samesite='strict')
+        strict_eq(response.headers.to_wsgi_list(), [
+            ('Content-Type', 'text/plain; charset=utf-8'),
+            ('Set-Cookie', 'foo=bar; Domain=example.org; Expires=Thu, '
+             '01-Jan-1970 00:00:00 GMT; Max-Age=60; Path=/blub; '
+             'SameSite=Strict')
         ])

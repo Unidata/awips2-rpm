@@ -545,6 +545,24 @@ class TestOrderedMultiDict(_MutableMultiDictTests):
         assert sorted(iterkeys(ab)) == ["key_a", "key_b"]
 
 
+class TestTypeConversionDict(object):
+    storage_class = datastructures.TypeConversionDict
+
+    def test_value_conversion(self):
+        d = self.storage_class(foo='1')
+        assert d.get('foo', type=int) == 1
+
+    def test_return_default_when_conversion_is_not_possible(self):
+        d = self.storage_class(foo='bar')
+        assert d.get('foo', default=-1, type=int) == -1
+
+    def test_propagate_exceptions_in_conversion(self):
+        d = self.storage_class(foo='bar')
+        switch = {'a': 1}
+        with pytest.raises(KeyError):
+            d.get('foo', type=lambda x: switch[x])
+
+
 class TestCombinedMultiDict(object):
     storage_class = datastructures.CombinedMultiDict
 
@@ -753,6 +771,24 @@ class TestEnvironHeaders(object):
         ]
         assert not self.storage_class({'wsgi.version': (1, 0)})
         assert len(self.storage_class({'wsgi.version': (1, 0)})) == 0
+        assert 42 not in headers
+
+    def test_skip_empty_special_vars(self):
+        env = {
+            'HTTP_X_FOO':               '42',
+            'CONTENT_TYPE':             '',
+            'CONTENT_LENGTH':           '',
+        }
+        headers = self.storage_class(env)
+        assert dict(headers) == {'X-Foo': '42'}
+
+        env = {
+            'HTTP_X_FOO':               '42',
+            'CONTENT_TYPE':             '',
+            'CONTENT_LENGTH':           '0',
+        }
+        headers = self.storage_class(env)
+        assert dict(headers) == {'X-Foo': '42', 'Content-Length': '0'}
 
     def test_return_type_is_unicode(self):
         # environ contains native strings; we return unicode
@@ -807,10 +843,10 @@ class TestImmutableList(object):
     storage_class = datastructures.ImmutableList
 
     def test_list_hashable(self):
-        t = (1, 2, 3, 4)
-        l = self.storage_class(t)
-        assert hash(t) == hash(l)
-        assert t != l
+        data = (1, 2, 3, 4)
+        store = self.storage_class(data)
+        assert hash(data) == hash(store)
+        assert data != store
 
 
 def make_call_asserter(func=None):
@@ -948,7 +984,14 @@ class TestAccept(object):
             'asterisk'
         assert accept.best_match(['star'], default=None) is None
 
-    @pytest.mark.skipif(True, reason='Werkzeug doesn\'t respect specificity.')
+    def test_accept_keep_order(self):
+        accept = self.storage_class([('*', 1)])
+        assert accept.best_match(["alice", "bob"]) == "alice"
+        assert accept.best_match(["bob", "alice"]) == "bob"
+        accept = self.storage_class([('alice', 1), ('bob', 1)])
+        assert accept.best_match(["alice", "bob"]) == "alice"
+        assert accept.best_match(["bob", "alice"]) == "bob"
+
     def test_accept_wildcard_specificity(self):
         accept = self.storage_class([('asterisk', 0), ('star', 0.5), ('*', 1)])
         assert accept.best_match(['star', 'asterisk'], default=None) == 'star'
@@ -956,6 +999,25 @@ class TestAccept(object):
         assert accept.best_match(['asterisk', 'times'], default=None) == \
             'times'
         assert accept.best_match(['asterisk'], default=None) is None
+
+
+class TestMIMEAccept(object):
+    storage_class = datastructures.MIMEAccept
+
+    def test_accept_wildcard_subtype(self):
+        accept = self.storage_class([('text/*', 1)])
+        assert accept.best_match(['text/html'], default=None) == 'text/html'
+        assert accept.best_match(['image/png', 'text/plain']) == 'text/plain'
+        assert accept.best_match(['image/png'], default=None) is None
+
+    def test_accept_wildcard_specificity(self):
+        accept = self.storage_class([('*/*', 1), ('text/html', 1)])
+        assert accept.best_match(['image/png', 'text/html']) == 'text/html'
+        assert accept.best_match(['image/png', 'text/plain']) == 'image/png'
+        accept = self.storage_class([('*/*', 1), ('text/html', 1),
+                                     ('image/*', 1)])
+        assert accept.best_match(['image/png', 'text/html']) == 'text/html'
+        assert accept.best_match(['text/plain', 'image/png']) == 'image/png'
 
 
 class TestFileStorage(object):

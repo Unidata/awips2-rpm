@@ -1,6 +1,119 @@
 Werkzeug Changelog
 ==================
 
+Version 0.14.1
+--------------
+
+Released on December 31st 2017
+
+- Resolved a regression with status code handling in the integrated
+  development server.
+
+Version 0.14
+------------
+
+Released on December 31st 2017
+
+- HTTP exceptions are now automatically caught by
+  ``Request.application``.
+- Added support for edge as browser.
+- Added support for platforms that lack ``SpooledTemporaryFile``.
+- Add support for etag handling through if-match
+- Added support for the SameSite cookie attribute.
+- Added ``werkzeug.wsgi.ProxyMiddleware``
+- Implemented ``has`` for ``NullCache``
+- ``get_multi`` on cache clients now returns lists all the time.
+- Improved the watchdog observer shutdown for the reloader to not crash
+  on exit on older Python versions.
+- Added support for ``filename*`` filename attributes according to
+  RFC 2231
+- Resolved an issue where machine ID for the reloader PIN was not
+  read accurately on windows.
+- Added a workaround for syntax errors in init files in the reloader.
+- Added support for using the reloader with console scripts on windows.
+- The built-in HTTP server will no longer close a connection in cases
+  where no HTTP body is expected (204, 204, HEAD requests etc.)
+- The ``EnvironHeaders`` object now skips over empty content type and
+  lengths if they are set to falsy values.
+- Werkzeug will no longer send the content-length header on 1xx or
+  204/304 responses.
+- Cookie values are now also permitted to include slashes and equal
+  signs without quoting.
+- Relaxed the regex for the routing converter arguments.
+- If cookies are sent without values they are now assumed to have an
+  empty value and the parser accepts this.  Previously this could have
+  corrupted cookies that followed the value.
+- The test ``Client`` and ``EnvironBuilder`` now support mimetypes like
+  the request object does.
+- Added support for static weights in URL rules.
+- Better handle some more complex reloader scenarios where sys.path
+  contained non directory paths.
+- ``EnvironHeaders`` no longer raises weird errors if non string keys
+  are passed to it.
+
+
+Version 0.13
+------------
+
+Released on December 7th 2017
+
+- **Deprecate support for Python 2.6 and 3.3.** CI tests will not run
+  for these versions, and support will be dropped completely in the next
+  version. (`pallets/meta#24`_)
+- Raise ``TypeError`` when port is not an integer. (`#1088`_)
+- Fully deprecate ``werkzeug.script``. Use `Click`_ instead. (`#1090`_)
+- ``response.age`` is parsed as a ``timedelta``. Previously, it was
+  incorrectly treated as a ``datetime``. The header value is an integer
+  number of seconds, not a date string. (`#414`_)
+- Fix a bug in ``TypeConversionDict`` where errors are not propagated
+  when using the converter. (`#1102`_)
+- ``Authorization.qop`` is a string instead of a set, to comply with
+  RFC 2617. (`#984`_)
+- An exception is raised when an encoded cookie is larger than, by
+  default, 4093 bytes. Browsers may silently ignore cookies larger than
+  this. ``BaseResponse`` has a new attribute ``max_cookie_size`` and
+  ``dump_cookie`` has a new argument ``max_size`` to configure this.
+  (`#780`_, `#1109`_)
+- Fix a TypeError in ``werkzeug.contrib.lint.GuardedIterator.close``.
+  (`#1116`_)
+- ``BaseResponse.calculate_content_length`` now correctly works for
+  Unicode responses on Python 3. It first encodes using
+  ``iter_encoded``. (`#705`_)
+- Secure cookie contrib works with string secret key on Python 3.
+  (`#1205`_)
+- Shared data middleware accepts a list instead of a dict of static
+  locations to preserve lookup order. (`#1197`_)
+- HTTP header values without encoding can contain single quotes.
+  (`#1208`_)
+- The built-in dev server supports receiving requests with chunked
+  transfer encoding. (`#1198`_)
+
+.. _Click: https://www.palletsprojects.com/p/click/
+.. _pallets/meta#24: https://github.com/pallets/meta/issues/24
+.. _#414: https://github.com/pallets/werkzeug/pull/414
+.. _#705: https://github.com/pallets/werkzeug/pull/705
+.. _#780: https://github.com/pallets/werkzeug/pull/780
+.. _#984: https://github.com/pallets/werkzeug/pull/984
+.. _#1088: https://github.com/pallets/werkzeug/pull/1088
+.. _#1090: https://github.com/pallets/werkzeug/pull/1090
+.. _#1102: https://github.com/pallets/werkzeug/pull/1102
+.. _#1109: https://github.com/pallets/werkzeug/pull/1109
+.. _#1116: https://github.com/pallets/werkzeug/pull/1116
+.. _#1197: https://github.com/pallets/werkzeug/pull/1197
+.. _#1198: https://github.com/pallets/werkzeug/pull/1198
+.. _#1205: https://github.com/pallets/werkzeug/pull/1205
+.. _#1208: https://github.com/pallets/werkzeug/pull/1208
+
+Version 0.12.2
+--------------
+
+Released on May 16 2017
+
+- Fix regression: Pull request ``#892`` prevented Werkzeug from correctly
+  logging the IP of a remote client behind a reverse proxy, even when using
+  `ProxyFix`.
+- Fix a bug in `safe_join` on Windows.
+
 Version 0.12.1
 --------------
 
@@ -58,6 +171,9 @@ Released on March 10th 2017
 - Color run_simple's terminal output based on HTTP codes ``#1013``.
 - Fix self-XSS in debugger console, see ``#1031``.
 - Fix IPython 5.x shell support, see ``#1033``.
+- Change Accept datastructure to sort by specificity first, allowing for more
+  accurate results when using ``best_match`` for mime types (for example in
+  ``requests.accept_mimetypes.best_match``)
 
 Version 0.11.16
 ---------------

@@ -10,8 +10,10 @@
 """
 import os
 import ssl
-import subprocess
+import sys
 import textwrap
+import time
+import subprocess
 
 
 try:
@@ -33,7 +35,7 @@ import requests
 import requests.exceptions
 import pytest
 
-from werkzeug import __version__ as version, serving
+from werkzeug import __version__ as version, serving, _reloader
 
 
 def test_serving(dev_server):
@@ -208,6 +210,60 @@ def test_reloader_nested_broken_imports(tmpdir, dev_server):
     assert r.content == b'hello'
 
 
+@pytest.mark.skipif(watchdog is None, reason='Watchdog not installed.')
+def test_reloader_reports_correct_file(tmpdir, dev_server):
+    real_app = tmpdir.join('real_app.py')
+    real_app.write(textwrap.dedent('''
+    def real_app(environ, start_response):
+        start_response('200 OK', [('Content-Type', 'text/html')])
+        return [b'hello']
+    '''))
+
+    server = dev_server('''
+    trials = []
+    def app(environ, start_response):
+        assert not trials, 'should have reloaded'
+        trials.append(1)
+        import real_app
+        return real_app.real_app(environ, start_response)
+
+    kwargs['use_reloader'] = True
+    kwargs['reloader_interval'] = 0.1
+    kwargs['reloader_type'] = 'watchdog'
+    ''')
+    server.wait_for_reloader_loop()
+
+    r = requests.get(server.url)
+    assert r.status_code == 200
+    assert r.content == b'hello'
+
+    real_app_binary = tmpdir.join('real_app.pyc')
+    real_app_binary.write('anything is fine here')
+    server.wait_for_reloader()
+
+    change_event = " * Detected change in '%(path)s', reloading" % {
+        'path': real_app_binary
+    }
+    server.logfile.seek(0)
+    for i in range(20):
+        time.sleep(0.1 * i)
+        log = server.logfile.read()
+        if change_event in log:
+            break
+    else:
+        raise RuntimeError('Change event not detected.')
+
+
+def test_windows_get_args_for_reloading(monkeypatch, tmpdir):
+    test_py_exe = r'C:\Users\test\AppData\Local\Programs\Python\Python36\python.exe'
+    monkeypatch.setattr(os, 'name', 'nt')
+    monkeypatch.setattr(sys, 'executable', test_py_exe)
+    test_exe = tmpdir.mkdir('test').join('test.exe')
+    monkeypatch.setattr(sys, 'argv', [test_exe.strpath, 'run'])
+    rv = _reloader._get_args_for_reloading()
+    assert rv == [test_exe.strpath, 'run']
+
+
 def test_monkeypached_sleep(tmpdir):
     # removing the staticmethod wrapper in the definition of
     # ReloaderLoop._sleep works most of the time, since `sleep` is a c
@@ -278,3 +334,105 @@ def test_set_content_length_and_content_type_if_provided_by_client(dev_server):
         'content_type': 'application/json'
     })
     assert r.content == b'YES'
+
+
+def test_port_must_be_integer(dev_server):
+    def app(environ, start_response):
+        start_response('200 OK', [('Content-Type', 'text/html')])
+        return [b'hello']
+
+    with pytest.raises(TypeError) as excinfo:
+        serving.run_simple(hostname='localhost', port='5001',
+                           application=app, use_reloader=True)
+    assert 'port must be an integer' in str(excinfo.value)
+
+    with pytest.raises(TypeError) as excinfo:
+        serving.run_simple(hostname='localhost', port='5001',
+                           application=app, use_reloader=False)
+    assert 'port must be an integer' in str(excinfo.value)
+
+
+def test_chunked_encoding(dev_server):
+    server = dev_server(r'''
+    from werkzeug.wrappers import Request
+    def app(environ, start_response):
+        assert environ['HTTP_TRANSFER_ENCODING'] == 'chunked'
+        assert environ.get('wsgi.input_terminated', False)
+        request = Request(environ)
+        assert request.mimetype == 'multipart/form-data'
+        assert request.files['file'].read() == b'This is a test\n'
+        assert request.form['type'] == 'text/plain'
+        start_response('200 OK', [('Content-Type', 'text/plain')])
+        return [b'YES']
+    ''')
+
+    testfile = os.path.join(os.path.dirname(__file__), 'res', 'chunked.txt')
+
+    if sys.version_info[0] == 2:
+        from httplib import HTTPConnection
+    else:
+        from http.client import HTTPConnection
+
+    conn = HTTPConnection('127.0.0.1', server.port)
+    conn.connect()
+    conn.putrequest('POST', '/', skip_host=1, skip_accept_encoding=1)
+    conn.putheader('Accept', 'text/plain')
+    conn.putheader('Transfer-Encoding', 'chunked')
+    conn.putheader(
+        'Content-Type',
+        'multipart/form-data; boundary='
+        '--------------------------898239224156930639461866')
+    conn.endheaders()
+
+    with open(testfile, 'rb') as f:
+        conn.send(f.read())
+
+    res = conn.getresponse()
+    assert res.status == 200
+    assert res.read() == b'YES'
+
+    conn.close()
+
+
+def test_chunked_encoding_with_content_length(dev_server):
+    server = dev_server(r'''
+    from werkzeug.wrappers import Request
+    def app(environ, start_response):
+        assert environ['HTTP_TRANSFER_ENCODING'] == 'chunked'
+        assert environ.get('wsgi.input_terminated', False)
+        request = Request(environ)
+        assert request.mimetype == 'multipart/form-data'
+        assert request.files['file'].read() == b'This is a test\n'
+        assert request.form['type'] == 'text/plain'
+        start_response('200 OK', [('Content-Type', 'text/plain')])
+        return [b'YES']
+    ''')
+
+    testfile = os.path.join(os.path.dirname(__file__), 'res', 'chunked.txt')
+
+    if sys.version_info[0] == 2:
+        from httplib import HTTPConnection
+    else:
+        from http.client import HTTPConnection
+
+    conn = HTTPConnection('127.0.0.1', server.port)
+    conn.connect()
+    conn.putrequest('POST', '/', skip_host=1, skip_accept_encoding=1)
+    conn.putheader('Accept', 'text/plain')
+    conn.putheader('Transfer-Encoding', 'chunked')
+    # Content-Length is invalid for chunked, but some libraries might send it
+    conn.putheader('Content-Length', '372')
+    conn.putheader(
+        'Content-Type',
+        'multipart/form-data; boundary='
+        '--------------------------898239224156930639461866')
+    conn.endheaders()
+
+    with open(testfile, 'rb') as f:
+        conn.send(f.read())
+
+    res = conn.getresponse()
+    assert res.status == 200
+    assert res.read() == b'YES'
+
+    conn.close()

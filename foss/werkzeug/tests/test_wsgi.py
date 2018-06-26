@@ -8,21 +8,22 @@
     :copyright: (c) 2014 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
+import io
+import json
 import os
+from contextlib import closing
+from os import path
 
 import pytest
 
-from os import path
-from contextlib import closing
-
 from tests import strict_eq
-
-from werkzeug.wrappers import BaseResponse
+from werkzeug import wsgi
+from werkzeug._compat import BytesIO, NativeStringIO, StringIO, to_bytes, \
+    to_native
 from werkzeug.exceptions import BadRequest, ClientDisconnected
 from werkzeug.test import Client, create_environ, run_wsgi_app
-from werkzeug import wsgi
-from werkzeug._compat import StringIO, BytesIO, NativeStringIO, to_native, \
-    to_bytes
+from werkzeug.wrappers import BaseResponse
+from werkzeug.urls import url_parse
 from werkzeug.wsgi import _RangeWrapper, wrap_file
 
 
@@ -40,30 +41,31 @@ def test_shared_data_middleware(tmpdir):
     with open(path.join(test_dir, to_native(u'äöü', 'utf-8')), 'w') as test_file:
         test_file.write(u'FOUND')
 
-    app = wsgi.SharedDataMiddleware(null_application, {
-        '/':        path.join(path.dirname(__file__), 'res'),
-        '/sources': path.join(path.dirname(__file__), 'res'),
-        '/pkg':     ('werkzeug.debug', 'shared'),
-        '/foo':     test_dir
-    })
+    for t in [list, dict]:
+        app = wsgi.SharedDataMiddleware(null_application, t([
+            ('/',        path.join(path.dirname(__file__), 'res')),
+            ('/sources', path.join(path.dirname(__file__), 'res')),
+            ('/pkg',     ('werkzeug.debug', 'shared')),
+            ('/foo',     test_dir)
+        ]))
 
-    for p in '/test.txt', '/sources/test.txt', '/foo/äöü':
-        app_iter, status, headers = run_wsgi_app(app, create_environ(p))
-        assert status == '200 OK'
+        for p in '/test.txt', '/sources/test.txt', '/foo/äöü':
+            app_iter, status, headers = run_wsgi_app(app, create_environ(p))
+            assert status == '200 OK'
+            with closing(app_iter) as app_iter:
+                data = b''.join(app_iter).strip()
+            assert data == b'FOUND'
+
+        app_iter, status, headers = run_wsgi_app(
+            app, create_environ('/pkg/debugger.js'))
         with closing(app_iter) as app_iter:
-            data = b''.join(app_iter).strip()
-        assert data == b'FOUND'
+            contents = b''.join(app_iter)
+        assert b'$(function() {' in contents
 
-    app_iter, status, headers = run_wsgi_app(
-        app, create_environ('/pkg/debugger.js'))
-    with closing(app_iter) as app_iter:
-        contents = b''.join(app_iter)
-    assert b'$(function() {' in contents
-
-    app_iter, status, headers = run_wsgi_app(
-        app, create_environ('/missing'))
-    assert status == '404 NOT FOUND'
-    assert b''.join(app_iter).strip() == b'NOT FOUND'
+        app_iter, status, headers = run_wsgi_app(
+            app, create_environ('/missing'))
+        assert status == '404 NOT FOUND'
+        assert b''.join(app_iter).strip() == b'NOT FOUND'
 
 
 def test_dispatchermiddleware():
@@ -242,6 +244,15 @@ def test_limited_stream():
     io = StringIO(u'123\n456\n')
     stream = wsgi.LimitedStream(io, 8)
     strict_eq(list(stream), [u'123\n', u'456\n'])
+
+
+def test_limited_stream_json_load():
+    stream = wsgi.LimitedStream(BytesIO(b'{"hello": "test"}'), 17)
+    # flask.json adapts bytes to text with TextIOWrapper
+    # this expects stream.readable() to exist and return true
+    stream = io.TextIOWrapper(io.BufferedReader(stream), 'UTF-8')
+    data = json.load(stream)
+    assert data == {'hello': 'test'}
 
 
 def test_limited_stream_disconnection():
@@ -458,3 +469,51 @@ def test_range_wrapper():
         assert next(range_wrapper) == b'UND\n'
         with pytest.raises(StopIteration):
             next(range_wrapper)
+
+
+def test_http_proxy(dev_server):
+    APP_TEMPLATE = r'''
+    from werkzeug.wrappers import Request, Response
+
+    @Request.application
+    def app(request):
+        return Response(u'%s|%s|%s' % (
+            request.headers.get('X-Special'),
+            request.environ['HTTP_HOST'],
+            request.path,
+        ))
+    '''
+
+    server = dev_server(APP_TEMPLATE)
+
+    app = wsgi.ProxyMiddleware(BaseResponse('ROOT'), {
+        '/foo': {
+            'target': server.url,
+            'host': 'faked.invalid',
+            'headers': {'X-Special': 'foo'},
+        },
+        '/bar': {
+            'target': server.url,
+            'host': None,
+            'remove_prefix': True,
+            'headers': {'X-Special': 'bar'},
+        },
+        '/autohost': {
+            'target': server.url,
+        },
+    })
+
+    client = Client(app, response_wrapper=BaseResponse)
+
+    rv = client.get('/')
+    assert rv.data == b'ROOT'
+
+    rv = client.get('/foo/bar')
+    assert rv.data.decode('ascii') == 'foo|faked.invalid|/foo/bar'
+
+    rv = client.get('/bar/baz')
+    assert rv.data.decode('ascii') == 'bar|localhost|/baz'
+
+    rv = client.get('/autohost/aha')
+    assert rv.data.decode('ascii') == 'None|%s|/autohost/aha' % url_parse(
+        server.url).ascii_host

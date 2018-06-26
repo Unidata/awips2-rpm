@@ -183,10 +183,14 @@ class TestFileSystemCache(CacheTests):
     def test_filesystemcache_clear(self, c):
         assert c.set('foo', 'bar')
         cache_files = os.listdir(c._path)
-        assert len(cache_files) == 1
+        # count = 2 because of the count file
+        assert len(cache_files) == 2
         assert c.clear()
+
+        # The only file remaining is the count file
         cache_files = os.listdir(c._path)
-        assert len(cache_files) == 0
+        assert os.listdir(c._path) == [
+            os.path.basename(c._get_filename(c._fs_count_file))]
 
 
 # Don't use pytest marker
@@ -202,7 +206,7 @@ if redis is not None:
         ])
         def make_cache(self, xprocess, request):
             def preparefunc(cwd):
-                return 'server is now ready', ['redis-server']
+                return 'Ready to accept connections', ['redis-server']
 
             xprocess.ensure('redis_server', preparefunc)
             args, kwargs = request.param
@@ -267,3 +271,18 @@ class TestUWSGICache(CacheTests):
         c = cache.UWSGICache(cache='werkzeugtest')
         request.addfinalizer(c.clear)
         return lambda: c
+
+
+class TestNullCache(object):
+
+    @pytest.fixture
+    def make_cache(self):
+        return cache.NullCache
+
+    @pytest.fixture
+    def c(self, make_cache):
+        return make_cache()
+
+    def test_nullcache_has(self, c):
+        assert c.has('foo') in (False, 0)
+        assert c.has('spam') in (False, 0)

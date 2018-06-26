@@ -128,7 +128,7 @@ class TestHTTPUtility(object):
         assert a.realm == 'testrealm@host.invalid'
         assert a.nonce == 'dcd98b7102dd2f0e8b11d0f600bfb0c093'
         assert a.uri == '/dir/index.html'
-        assert 'auth' in a.qop
+        assert a.qop == 'auth'
         assert a.nc == '00000001'
         assert a.cnonce == '0a4f113b'
         assert a.response == '6629fae49393a05397450978507c4ef1'
@@ -280,6 +280,14 @@ class TestHTTPUtility(object):
             ('form-data', {'name': u'\u016an\u012dc\u014dde\u033d',
                            'filename': 'some_file.txt'})
 
+    def test_parse_options_header_value_with_quotes(self):
+        assert http.parse_options_header(
+            'form-data; name="file"; filename="t\'es\'t.txt"'
+        ) == ('form-data', {'name': 'file', 'filename': "t'es't.txt"})
+        assert http.parse_options_header(
+            'form-data; name="file"; filename*=UTF-8\'\'"\'🐍\'.txt"'
+        ) == ('form-data', {'name': 'file', 'filename': u"'🐍'.txt"})
+
     def test_parse_options_header_broken_values(self):
         # Issue #995
         assert http.parse_options_header(' ') == ('', {})
@@ -372,6 +380,22 @@ class TestHTTPUtility(object):
         strict_eq(dict(http.parse_cookie('fo234{=bar; blub=Blah')),
                   {'fo234{': u'bar', 'blub': u'Blah'})
 
+        strict_eq(http.dump_cookie('key', 'xxx/'), 'key=xxx/; Path=/')
+        strict_eq(http.dump_cookie('key', 'xxx='), 'key=xxx=; Path=/')
+
+    def test_bad_cookies(self):
+        strict_eq(
+            dict(http.parse_cookie('first=IamTheFirst ; a=1; oops ; a=2 ;'
+                                   'second = andMeTwo;')),
+            {
+                'first': u'IamTheFirst',
+                'a': u'1',
+                'a': u'2',
+                'oops': u'',
+                'second': u'andMeTwo',
+            }
+        )
+
     def test_cookie_quoting(self):
         val = http.dump_cookie("foo", "?foo")
         strict_eq(val, 'foo="?foo"; Path=/')
@@ -416,6 +440,30 @@ class TestHTTPUtility(object):
 
         val = http.dump_cookie('foo', 'bar', domain=u'.foo.com')
         strict_eq(val, 'foo=bar; Domain=.foo.com; Path=/')
+
+    def test_cookie_maxsize(self, recwarn):
+        val = http.dump_cookie('foo', 'bar' * 1360 + 'b')
+        assert len(recwarn) == 0
+        assert len(val) == 4093
+
+        http.dump_cookie('foo', 'bar' * 1360 + 'ba')
+        assert len(recwarn) == 1
+        w = recwarn.pop()
+        assert 'cookie is too large' in str(w.message)
+
+        http.dump_cookie('foo', b'w' * 502, max_size=512)
+        assert len(recwarn) == 1
+        w = recwarn.pop()
+        assert 'the limit is 512 bytes' in str(w.message)
+
+    @pytest.mark.parametrize('input, expected', [
+        ('strict', 'foo=bar; Path=/; SameSite=Strict'),
+        ('lax', 'foo=bar; Path=/; SameSite=Lax'),
+        (None, 'foo=bar; Path=/'),
+    ])
+    def test_cookie_samesite_attribute(self, input, expected):
+        val = http.dump_cookie('foo', 'bar', samesite=input)
+        strict_eq(val, expected)
 
 
 class TestRange(object):
