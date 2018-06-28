@@ -59,7 +59,6 @@ fi
 %install
 TMP_BUILD_DIR="/tmp/eclipse-build/"
 
-CORE_PROJECT_DIR="%{_baseline_workspace}/foss"
 ECLIPSE_BIN_DIR="%{_static_files}/eclipse"
 ECLIPSE_TAR_FILE="eclipse-rcp-neon-1a-linux-gtk-x86_64.tar.gz"
 ECLIPSE_DELTA_FILE="eclipse-I201609071200-delta-pack.zip"
