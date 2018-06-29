@@ -1,19 +1,19 @@
 /**
  * This software was developed and / or modified by Raytheon Company,
  * pursuant to Contract DG133W-05-CQ-1067 with the US Government.
- * 
+ *
  * U.S. EXPORT CONTROLLED TECHNICAL DATA
  * This software product contains export-restricted data whose
  * export/transfer/disclosure is restricted by U.S. law. Dissemination
  * to non-U.S. persons whether in the United States or abroad requires
  * an export license or other authorization.
- * 
+ *
  * Contractor Name:        Raytheon Company
  * Contractor Address:     6825 Pine Street, Suite 340
  *                         Mail Stop B8
  *                         Omaha, NE 68106
  *                         402.291.0100
- * 
+ *
  * See the AWIPS II Master Rights File ("Master Rights File.pdf") for
  * further licensing information.
  **/
@@ -23,9 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.zip.InflaterInputStream;
-
-import opendap.dap.DAP2Exception;
-import opendap.dap.ServerVersion;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -43,25 +40,28 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
+import opendap.dap.DAP2Exception;
+import opendap.dap.ServerVersion;
+
 /**
  * An {@link HttpConnectStrategy} implementation using the Apache HTTP Client.
- * 
+ *
  * <pre>
- * 
+ *
  * SOFTWARE HISTORY
- * 
- * Date         Ticket#    Engineer    Description
- * ------------ ---------- ----------- --------------------------
- * Jul 06, 2012 634        djohnson    Extracted from DConnect, 
- *                                      added {@link EntityInputStream}.
- * Jul 09, 2012 634        djohnson    Fully consume the entity prior to throwing exception.
- * 
- * Apr 14, 2015            dhladky     upgrading dods/opendap.
- * 
+ *
+ * Date          Ticket#  Engineer  Description
+ * ------------- -------- --------- --------------------------------------------
+ * Jul 06, 2012  634      djohnson  Extracted from DConnect, added {@link
+ *                                  EntityInputStream}.
+ * Jul 09, 2012  634      djohnson  Fully consume the entity prior to throwing
+ *                                  exception.
+ * Apr 14, 2015           dhladky   upgrading dods/opendap.
+ * Sep 13, 2017  6430     rjpeter   Fix connection/socket timeout.
+ *
  * </pre>
- * 
+ *
  * @author djohnson
- * @version 1.0
  */
 
 public class ApacheHttpConnectStrategy extends BaseHttpConnectStrategy {
@@ -69,16 +69,21 @@ public class ApacheHttpConnectStrategy extends BaseHttpConnectStrategy {
     private static HttpClient httpClient;
 
     private static PoolingHttpClientConnectionManager connectionManager;
-    
+
     private static HttpClientBuilder clientBuilder;
-    
+
     private static RequestConfig requestConfig;
 
     static {
         connectionManager = new PoolingHttpClientConnectionManager();
         connectionManager.setDefaultMaxPerRoute(10);
         connectionManager.setMaxTotal(100);
-        requestConfig = RequestConfig.custom().build();
+        requestConfig = RequestConfig.custom()
+                .setConnectTimeout(Integer.getInteger(
+                        "dods.connection.timeout.milliseconds", 10000))
+                .setSocketTimeout(Integer
+                        .getInteger("dods.socket.timeout.milliseconds", 60000))
+                .build();
         clientBuilder = HttpClientBuilder.create();
         clientBuilder.setDefaultRequestConfig(requestConfig);
         clientBuilder.setConnectionManager(connectionManager);
@@ -86,8 +91,8 @@ public class ApacheHttpConnectStrategy extends BaseHttpConnectStrategy {
     }
 
     @Override
-    public InputStream getInputStream(URL url) throws IOException,
-            DAP2Exception {
+    public InputStream getInputStream(URL url)
+            throws IOException, DAP2Exception {
         HttpResponse response = openHttpConnection(url);
 
         // If the response was null, return null to the caller
@@ -102,7 +107,7 @@ public class ApacheHttpConnectStrategy extends BaseHttpConnectStrategy {
 
     /**
      * Open a connection to the DODS server.
-     * 
+     *
      * @param url
      *            the URL to open.
      * @return the opened <code>InputStream</code>.
@@ -125,10 +130,12 @@ public class ApacheHttpConnectStrategy extends BaseHttpConnectStrategy {
             // Status is not OK, abort current get and start again...
             httpget.abort();
         } catch (Exception ex) {
-            if (!httpget.isAborted())
+            if (!httpget.isAborted()) {
                 httpget.abort();
-            throw new IOException("Failed to open connection to URL: "
-                    + url.toExternalForm(), ex);
+            }
+            throw new IOException(
+                    "Failed to open connection to URL: " + url.toExternalForm(),
+                    ex);
         }
 
         return null;
@@ -171,18 +178,21 @@ public class ApacheHttpConnectStrategy extends BaseHttpConnectStrategy {
 
         return null;
     }
-    
+
     /**
-     * This is an application level override of the Method in the DConnect class of DAP
-     * This code handles the Content-type: header for
+     * This is an application level override of the Method in the DConnect class
+     * of DAP This code handles the Content-type: header for
      * <code>openConnection</code> and <code>parseMime</code>
      *
-     * @param is       the InputStream to read.
-     * @param encoding the Content-type header, or null.
+     * @param is
+     *            the InputStream to read.
+     * @param encoding
+     *            the Content-type header, or null.
      * @return the new InputStream, after applying an
      *         <code>InflaterInputStream</code> filter if necessary.
      */
-    private static InputStream handleContentEncoding(InputStream is, String encoding) {
+    private static InputStream handleContentEncoding(InputStream is,
+            String encoding) {
         if (encoding != null && encoding.equals("deflate")) {
             return new InflaterInputStream(is);
         } else {
@@ -193,7 +203,8 @@ public class ApacheHttpConnectStrategy extends BaseHttpConnectStrategy {
     @Override
     public void setProxy(String host, int port) {
         HttpHost proxy = new HttpHost(host, port);
-        DefaultProxyRoutePlanner routePlanner = new DefaultProxyRoutePlanner(proxy);
+        DefaultProxyRoutePlanner routePlanner = new DefaultProxyRoutePlanner(
+                proxy);
         clientBuilder.setRoutePlanner(routePlanner);
     }
 
@@ -206,17 +217,14 @@ public class ApacheHttpConnectStrategy extends BaseHttpConnectStrategy {
         }
     }
 
-
     @Override
     public void setConnectionTimeout(int connectionTimeout) {
-        RequestConfig.custom()
-                .setConnectTimeout(connectionTimeout * 1000);
+        // do nothing, don't allow per connection tuning
     }
 
     @Override
     public void setSocketTimeout(int socketTimeout) {
-        RequestConfig.custom()
-                .setSocketTimeout(socketTimeout * 1000);
+        // do nothing, don't allow per connection tuning
     }
 
     /**

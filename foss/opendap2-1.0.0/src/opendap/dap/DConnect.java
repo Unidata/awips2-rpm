@@ -59,9 +59,10 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.zip.InflaterInputStream;
 
-import opendap.dap.parser.ParseException;
-
 import com.raytheon.opendap.HttpConnectStrategy;
+import com.raytheon.opendap.InputStreamWrapper;
+
+import opendap.dap.parser.ParseException;
 
 /**
  * This class provides support for common OPeNDAP client-side operations such as
@@ -85,24 +86,21 @@ import com.raytheon.opendap.HttpConnectStrategy;
  * Date         Ticket#    Engineer    Description
  * ------------ ---------- ----------- --------------------------
  * Apr 14, 2015            dhladky     upgrading dods/opendap.
+ * Jun 06, 2017 6222       tgurney     Add support for wrapping the input stream
+ * Sep 15, 2017 6430       rjpeter     Default the HTTP_CONNECT_STRATEGY.
  * 
  * </pre>
  * 
  * @author djohnson
- * @version 1.0
  */
-
 public class DConnect {
     
     @SuppressWarnings("unused")
     private final HttpConnectStrategy httpStrategy;
     
-    static final String DODS_SOCKET_TIMEOUT_MILLISECONDS = "dods.socket.timeout.milliseconds";
-
-    static final String DODS_CONNECTION_TIMEOUT_MILLISECONDS = "dods.connection.timeout.milliseconds";
-
-    private static final String HTTP_CONNECT_STRATEGY = System
-            .getProperty("opendap.http.connect.strategy");
+    private static final String HTTP_CONNECT_STRATEGY = System.getProperty(
+            "opendap.http.connect.strategy",
+            "com.raytheon.opendap.ApacheHttpConnectStrategy");
     
     
     private boolean dumpStream = false, dumpDAS = false;
@@ -146,6 +144,7 @@ public class DConnect {
      */
     private ServerVersion ver;
 
+    private InputStreamWrapper streamWrapper;
 
 
     public void setServerVersion(int major, int minor) {
@@ -168,7 +167,24 @@ public class DConnect {
     public DConnect(String urlString) throws FileNotFoundException {
         this(urlString, true);
     }
-    
+
+    /**
+     * Creates an instance bound to url which accepts compressed documents.
+     *
+     * @param urlString
+     *            connect to this URL.
+     * @param streamWrapper
+     *            if not null, use this to wrap the input stream
+     * @throws FileNotFoundException
+     *             thrown if <code>urlString</code> is not a valid URL, or a
+     *             filename which exists on the system.
+     * @see DConnect#DConnect(String, boolean)
+     */
+    public DConnect(String urlString, InputStreamWrapper streamWrapper)
+            throws FileNotFoundException {
+        this(urlString, true, streamWrapper);
+    }
+
     /**
      * Creates an instance bound to url which accepts compressed documents.
      * 
@@ -186,6 +202,30 @@ public class DConnect {
     public DConnect(String urlString, String proxyHost, String proxyPort)
             throws FileNotFoundException {
         this(urlString, proxyHost, proxyPort, true);
+    }
+
+    /**
+     * Creates an instance bound to url which accepts compressed documents.
+     * 
+     * @param urlString
+     *            connect to this URL.
+     * @param proxyHost
+     *            the proxy host
+     * @param proxyPort
+     *            the proxy port
+     * @param streamWrapper
+     *            if not null, use this to wrap the input stream
+     * @exception FileNotFoundException
+     *                thrown if <code>urlString</code> is not a valid URL, or a
+     *                filename which exists on the system.
+     * @see DConnect#DConnect(String, boolean)
+     */
+    public DConnect(String urlString, String proxyHost, String proxyPort,
+            InputStreamWrapper streamWrapper) throws FileNotFoundException {
+        this(urlString, proxyHost, proxyPort, true,
+                newInstanceOfAssignableType(HttpConnectStrategy.class,
+                        HTTP_CONNECT_STRATEGY),
+                streamWrapper);
     }
 
     /**
@@ -210,7 +250,8 @@ public class DConnect {
             boolean acceptDeflate) throws FileNotFoundException {
         this(urlString, proxyHost, proxyPort, acceptDeflate,
                 newInstanceOfAssignableType(HttpConnectStrategy.class,
-                        HTTP_CONNECT_STRATEGY));
+                        HTTP_CONNECT_STRATEGY),
+                null);
     }
 
     /**
@@ -228,21 +269,18 @@ public class DConnect {
      *            true if this client can accept responses encoded with deflate.
      * @param httpStrategy
      *            the http strategy to use
+     * @param streamWrapper
+     *            if not null, use this to wrap the input stream
      * @exception FileNotFoundException
      *                thrown if <code>urlString</code> is not a valid URL, or a
      *                filename which exists on the system.
      */
     DConnect(String urlString, String proxyHost, String proxyPort,
-            boolean acceptDeflate, HttpConnectStrategy httpStrategy)
+            boolean acceptDeflate, HttpConnectStrategy httpStrategy,
+            InputStreamWrapper streamWrapper)
             throws FileNotFoundException {
-
+        this.streamWrapper = streamWrapper;
         this.httpStrategy = httpStrategy;
-        // Prevent connections from having unlimited time (unless using default
-        // values)
-        httpStrategy.setConnectionTimeout(Integer.getInteger(
-                DODS_CONNECTION_TIMEOUT_MILLISECONDS, 0));
-        httpStrategy.setSocketTimeout(Integer.getInteger(
-                DODS_SOCKET_TIMEOUT_MILLISECONDS, 0));
 
         if (proxyHost != null && proxyPort != null) {
             httpStrategy.setProxy(proxyHost, Integer.parseInt(proxyPort));
@@ -273,21 +311,44 @@ public class DConnect {
         
     }
 
+    /**
+     * Creates an instance bound to url. If <code>acceptDeflate</code> is true
+     * then HTTP Request headers will indicate to servers that this client can
+     * accept compressed documents.
+     *
+     * @param urlString
+     *            Connect to this URL. If urlString is not a valid URL, it is
+     *            assumed to be a filename, which is opened.
+     * @param acceptDeflate
+     *            true if this client can accept responses encoded with deflate.
+     * @throws FileNotFoundException
+     *             thrown if <code>urlString</code> is not a valid URL, or a
+     *             filename which exists on the system.
+     */
+    public DConnect(String urlString, boolean acceptDeflate)
+            throws FileNotFoundException {
+        this(urlString, acceptDeflate, null);
+    }
 
     /**
      * Creates an instance bound to url. If <code>acceptDeflate</code> is true
      * then HTTP Request headers will indicate to servers that this client can
      * accept compressed documents.
      *
-     * @param urlString     Connect to this URL.  If urlString is not a valid URL,
-     *                      it is assumed to be a filename, which is opened.
-     * @param acceptDeflate true if this client can accept responses encoded
-     *                      with deflate.
-     * @throws FileNotFoundException thrown if <code>urlString</code> is not
-     *                               a valid URL, or a filename which exists on the system.
+     * @param urlString
+     *            Connect to this URL. If urlString is not a valid URL, it is
+     *            assumed to be a filename, which is opened.
+     * @param acceptDeflate
+     *            true if this client can accept responses encoded with deflate.
+     * @param streamWrapper
+     *            if not null, use this to wrap the input stream
+     * @throws FileNotFoundException
+     *             thrown if <code>urlString</code> is not a valid URL, or a
+     *             filename which exists on the system.
      */
-    public DConnect(String urlString, boolean acceptDeflate) throws FileNotFoundException {
-        
+    public DConnect(String urlString, boolean acceptDeflate,
+            InputStreamWrapper streamWrapper) throws FileNotFoundException {
+        this.streamWrapper = streamWrapper;
         this.httpStrategy = null;
         int ceIndex = urlString.indexOf('?');
         if (ceIndex != -1) {
@@ -386,6 +447,9 @@ public class DConnect {
         if (is == null)
             throw new DAP2Exception("Unable to open input stream");
 
+        if (streamWrapper != null) {
+            is = streamWrapper.wrapStream(is);
+        }
         // check headers
         String type = connection.getHeaderField("content-description");
         // LOOK - debug
@@ -853,7 +917,11 @@ public class DConnect {
     private DataDDS getDataFromFileStream(InputStream fileStream, StatusUI statusUI, BaseTypeFactory btf) throws IOException,
             ParseException, DDSException, DAP2Exception {
 
-        InputStream is = parseMime(fileStream);
+        InputStream is = fileStream;
+        if (streamWrapper != null) {
+            is = streamWrapper.wrapStream(fileStream);
+        }
+        is = parseMime(is);
         DataDDS dds = new DataDDS(ver, btf);
 
         try {
