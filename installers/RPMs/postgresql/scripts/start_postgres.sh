@@ -9,7 +9,7 @@ POSTGRESQL_INSTALL="/awips2"
 prefix="${POSTGRESQL_INSTALL}/postgresql"
 
 # Data Directory
-PGDATA="${POSTGRESQL_INSTALL}/data"
+PGDATA="${POSTGRESQL_INSTALL}/database/data"
 
 # Where to keep a log file
 PGLOG="$PGDATA/serverlog"

@@ -14,7 +14,7 @@
 Name: awips2-postgresql
 Summary: AWIPS II PostgreSQL Distribution
 Version: %{_postgresql_version}
-Release: 1%{?dist}
+Release: %{_component_version}.%{_component_release}%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
@@ -244,7 +244,7 @@ make install
 if [ $? -ne 0 ]; then
    exit 1
 fi
-popd 
+popd
 
 pushd ${GDAL_SRC_DIR}
 LDFLAGS='-Wl,-rpath,/awips2/postgresql/lib,-rpath,/awips2/psql/lib' ./configure \
@@ -264,17 +264,16 @@ fi
 popd
 
 pushd ${POSTGIS_SRC_DIR}
-
 _POSTGRESQL_ROOT=%{_postgres_build_loc}/awips2/postgresql
 _POSTGRESQL_BIN=${_POSTGRESQL_ROOT}/bin
 LDFLAGS='-Wl,-rpath,/awips2/postgresql/lib,-rpath,/awips2/psql/lib' ./configure \
-   --with-pgconfig=${_POSTGRESQL_BIN}/pg_config \
-   --with-geosconfig=${_POSTGRESQL_BIN}/geos-config \
-   --with-projdir=${_POSTGRESQL_ROOT} \
-   --with-gdalconfig=${_POSTGRESQL_BIN}/gdal-config \
-   --prefix=%{_postgres_build_loc}/awips2/postgresql
+    --with-pgconfig=${_POSTGRESQL_BIN}/pg_config \
+    --with-geosconfig=${_POSTGRESQL_BIN}/geos-config \
+    --with-projdir=${_POSTGRESQL_ROOT} \
+    --with-gdalconfig=${_POSTGRESQL_BIN}/gdal-config \
+    --prefix=%{_postgres_build_loc}/awips2/postgresql
 if [ $? -ne 0 ]; then
-   exit 1
+    exit 1
 fi
 # disable doc since it attempts to download files from
 # the internet
@@ -299,16 +298,15 @@ make
 # run make twice - the first time may fail due to doc
 make
 if [ $? -ne 0 ]; then
-   exit 1
+    exit 1
 fi
 make install
 if [ $? -ne 0 ]; then
-   exit 1
+    exit 1
 fi
-popd
 
 # Create The PostgreSQL Data Directory
-mkdir -p ${RPM_BUILD_ROOT}/awips2/data
+mkdir -p ${RPM_BUILD_ROOT}/awips2/database/data
 
 /bin/cp -Rf %{_postgres_build_loc}/awips2/postgresql/* %{_build_root}/awips2/postgresql
 if [ $? -ne 0 ]; then
@@ -353,7 +351,7 @@ and populate the AWIPS II databases.
 %files
 %defattr(644,awips,fxalpha,755)
 %attr(744,root,root) /etc/init.d/edex_postgres
-%attr(700,awips,fxalpha) /awips2/data
+%attr(700,awips,fxalpha) /awips2/database/data
 %dir /awips2/postgresql
 %dir /awips2/postgresql/include
 /awips2/postgresql/include/*
