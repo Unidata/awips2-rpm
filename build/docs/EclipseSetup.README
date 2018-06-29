@@ -38,7 +38,7 @@ EDEX and Development Environment Setup:
    sudo usermod -G -a fxalpha developer
    sudo chown -R developer.fxalpha /awips2
    sudo chmod -R 775 /awips2
-   sudo chmod 700 /awips2/data
+   sudo chmod 700 /awips2/database/data
 
 5. Change user to developer in the following files:
 
