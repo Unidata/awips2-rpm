@@ -2,19 +2,21 @@
 %define suexec_caller apache
 %define mmn 20120211
 
+%define FOSS_DIR "%{_baseline_workspace}/foss"
 %define HTTP_FOSS_DIR "%{_baseline_workspace}/foss/%{HTTP_PACKAGE_NAME}/packaged/"
 %define HTTP_PACKAGE_NAME "httpd-%{version}"
 %define HTTP_SOURCE_TAR "%{HTTP_PACKAGE_NAME}.tar.gz"
-%define HTTP_DEPS_TAR "%{HTTP_PACKAGE_NAME}-deps.tar.gz"
 %define RPMBUILD_PYPIES_DIR "%{_baseline_workspace}/rpmbuild/BUILD/httpd-pypies"
 %define RPMBUILD_HTTP_DIR %RPMBUILD_PYPIES_DIR/%HTTP_PACKAGE_NAME
 %define DISTCACHE distcache-1.4.5
 %define MOD_WSGI_VERSION 3.5
+%define APR_VERSION 1.6.2
+%define APR_UTIL_VERSION 1.6.0
 
 Summary: Apache HTTP Server
 Name: awips2-httpd-pypies
-Version: 2.4.23
-Release: 3%{?dist}
+Version: 2.4.27
+Release: 1%{?dist}
 URL: http://httpd.apache.org/
 License: Apache License, Version 2.0
 Group: AWIPSII
@@ -29,10 +31,11 @@ Requires(post): chkconfig
 Provides: webserver
 Provides: mod_dav = %{version}-%{release}, httpd-suexec = %{version}-%{release}
 Provides: %name-mmn = %{mmn}
-Requires: %name-tools
+Requires: %name-tools >= %{version}-%{release}
 Requires: awips2-pypies
-Requires: awips2-tools, awips2-python, awips2-python-h5py
-Requires: awips2-python-numpy, awips2-python-awips, awips2-python-werkzeug
+Requires: awips2-tools, awips2-python, awips2-python-awips, awips2-python-h5py
+Requires: awips2-python-numpy, awips2-python-werkzeug
+Vendor: %{_build_vendor}
 Packager: %{_build_site}
 
 %description
@@ -43,11 +46,11 @@ Internet.
 %package -n %name-tools
 Group: AWIPSII
 Summary: Tools for use with the Apache HTTP Server
+Requires: %name = %{version}-%{release}
 
 %description -n %name-tools
 The httpd-tools package contains tools which can be used with 
 the Apache HTTP Server.
-# rm -rf awips2-httpd-pypies-devel*.rpm awips2-httpd-pypies-manual*.rpm awips2-httpd-pypies-mod*.rpm
 
 %prep
 
@@ -74,12 +77,25 @@ fi
 #extract the http source
 cd %RPMBUILD_PYPIES_DIR
 cp -v %HTTP_FOSS_DIR/%HTTP_SOURCE_TAR .
-cp -v %HTTP_FOSS_DIR/%HTTP_DEPS_TAR .
 tar xf %{HTTP_SOURCE_TAR}
-tar xzf %{HTTP_DEPS_TAR}
-if [ $? -ne 0 ]; then
-   exit 1
-fi
+
+pushd .
+
+cd %{HTTP_PACKAGE_NAME}/srclib
+
+#copy the apr and apr-util source tar to srclib directory
+cp -v %{FOSS_DIR}/apr/packaged/apr-%{APR_VERSION}.tar.gz .
+cp -v %{FOSS_DIR}/apr-util/packaged/apr-util-%{APR_UTIL_VERSION}.tar.gz .
+
+#extract apr and apr-util
+tar xf apr-%{APR_VERSION}.tar.gz
+tar xf apr-util-%{APR_UTIL_VERSION}.tar.gz
+
+#create symlinks for the build
+ln -s apr-%{APR_VERSION} apr
+ln -s apr-util-%{APR_UTIL_VERSION} apr-util
+
+popd
 
 cd %HTTP_PACKAGE_NAME
 # Safety check: prevent build if defined MMN does not equal upstream MMN.
@@ -130,7 +146,7 @@ popd
 
 echo -e "\n***Building %{HTTP_PACKAGE_NAME}***\n\n"
 ./configure \
-	--prefix=/awips2/httpd_pypies%{_sysconfdir}/httpd \
+        --prefix=/awips2/httpd_pypies%{_sysconfdir}/httpd \
         --exec-prefix=/awips2/httpd_pypies%{_prefix} \
         --bindir=/awips2/httpd_pypies%{_bindir} \
         --sbindir=/awips2/httpd_pypies%{_sbindir} \
@@ -161,7 +177,7 @@ echo -e "\n***Building %{HTTP_PACKAGE_NAME}***\n\n"
         --enable-bucketeer \
         --enable-case-filter \
         --enable-case-filter-in \
-	    --enable-layout=RPM \
+        --enable-layout=RPM \
         --disable-imagemap \
         --enable-mods-shared=all \
         --enable-ssl \
@@ -189,7 +205,7 @@ if [ $? -ne 0 ]; then
 fi
 
 ###########
-#BEGIN MOD WSGI  
+#BEGIN MOD WSGI
 ###########
 
 # build mod_wsgi.so
@@ -265,7 +281,7 @@ if [ $? -ne 0 ]; then
    exit 1
 fi
 
-LD_LIBRARY_PATH=%RPMBUILD_PYPIES_DIR/awips2/httpd_pypies/usr/lib64/:/awips2/python/lib:$LD_LIBRARY_PATH \
+LD_PRELOAD=%RPMBUILD_PYPIES_DIR/awips2/httpd_pypies/usr/lib64/libapr-1.so:%RPMBUILD_PYPIES_DIR/awips2/httpd_pypies/usr/lib64/libaprutil-1.so.0 \
 ./configure --with-python=/awips2/python/bin/python --with-apxs=./apxs
 
 if [ $? -ne 0 ]; then
@@ -321,12 +337,16 @@ mkdir -p $RPM_BUILD_ROOT/awips2/httpd_pypies/etc/rc.d/init.d
 mkdir -p $RPM_BUILD_ROOT/etc/rc.d/init.d
 
 install -m755 %{_baseline_workspace}/installers/RPMs/httpd-pypies/configuration/etc/init.d/httpd-pypies \
-	$RPM_BUILD_ROOT/awips2/httpd_pypies/etc/rc.d/init.d/httpd
+    $RPM_BUILD_ROOT/awips2/httpd_pypies/etc/rc.d/init.d/httpd
 
-ln -sf /awips2/httpd_pypies/etc/rc.d/init.d/httpd $RPM_BUILD_ROOT/etc/rc.d/init.d/httpd-pypies
+install -m755 %{_baseline_workspace}/installers/RPMs/httpd-pypies/configuration/etc/init.d/httpd-pypies \
+        $RPM_BUILD_ROOT/etc/rc.d/init.d/httpd-pypies
+
 install -m755 ./build/rpm/htcacheclean.init \
         $RPM_BUILD_ROOT/awips2/httpd_pypies/etc/rc.d/init.d/htcacheclean
-ln -sf /awips2/httpd_pypies/etc/rc.d/init.d/htcacheclean $RPM_BUILD_ROOT/etc/rc.d/init.d/htcacheclean-pypies
+
+install -m755 ./build/rpm/htcacheclean.init \
+        $RPM_BUILD_ROOT/etc/rc.d/init.d/htcacheclean-pypies
 
 # install cron job
 mkdir -p ${RPM_BUILD_ROOT}/etc/cron.daily
@@ -347,13 +367,13 @@ sed -e "s|/usr/local/apache2/conf/httpd.conf|/awips2/httpd_pypies/etc/httpd/conf
 # install log rotation stuff
 mkdir -p $RPM_BUILD_ROOT/etc/logrotate.d
 install -m644 ./build/rpm/httpd.logrotate \
-	$RPM_BUILD_ROOT/etc/logrotate.d/httpd_pypies
+    $RPM_BUILD_ROOT/etc/logrotate.d/httpd_pypies
 
 # Remove unpackaged files
 rm -rf $RPM_BUILD_ROOT/awips2/httpd_pypies%{_libdir}/httpd/modules/*.exp \
-       $RPM_BUILD_ROOT/awips2/httpd_pypies%{contentdir}/cgi-bin/* 
+       $RPM_BUILD_ROOT/awips2/httpd_pypies%{contentdir}/cgi-bin/*
 
-# Make suexec a+rw so it can be stripped. 
+# Make suexec a+rw so it can be stripped.  %%files lists real permissions
 chmod 755 $RPM_BUILD_ROOT/awips2/httpd_pypies%{_sbindir}/suexec
 
 ###########
@@ -394,8 +414,8 @@ install -m644 %{_baseline_workspace}/installers/RPMs/httpd-pypies/configuration/
     ${RPM_BUILD_ROOT}/awips2/httpd_pypies/etc/httpd/conf
 
 # Install docs
-mkdir -p ${RPM_BUILD_ROOT}/awips2/httpd_pypies/usr/share/doc/awips2-httpd-pypies-2.4.23
-cp -pr ABOUT_APACHE README CHANGES LICENSE VERSIONING NOTICE ${RPM_BUILD_ROOT}/awips2/httpd_pypies/usr/share/doc/awips2-httpd-pypies-2.4.23
+mkdir -p ${RPM_BUILD_ROOT}/awips2/httpd_pypies/usr/share/doc/awips2-httpd-pypies-%{version}
+cp -pr ABOUT_APACHE README CHANGES LICENSE VERSIONING NOTICE ${RPM_BUILD_ROOT}/awips2/httpd_pypies/usr/share/doc/awips2-httpd-pypies-%{version}
 
 # Create subsys
 mkdir -p ${RPM_BUILD_ROOT}/awips2/httpd_pypies/var/lock/subsys
@@ -403,7 +423,7 @@ mkdir -p ${RPM_BUILD_ROOT}/awips2/httpd_pypies/var/lock/subsys
 %pre
 # Add the "apache" user
 /usr/sbin/useradd -c "Apache" -u 48 \
-	-s /sbin/nologin -r -d %{contentdir} apache 2> /dev/null || :
+    -s /sbin/nologin -r -d %{contentdir} apache 2> /dev/null || :
 
 %post
 # Register the httpd service
@@ -412,10 +432,10 @@ mkdir -p ${RPM_BUILD_ROOT}/awips2/httpd_pypies/var/lock/subsys
 
 %preun
 if [ $1 = 0 ]; then
-	/sbin/service httpd-pypies stop > /dev/null 2>&1
-        /sbin/service htcacheclean-pypies stop > /dev/null 2>&1
-	/sbin/chkconfig --del httpd-pypies
-        /sbin/chkconfig --del htcacheclean-pypies
+    /sbin/service httpd-pypies stop > /dev/null 2>&1
+    /sbin/service htcacheclean-pypies stop > /dev/null 2>&1
+    /sbin/chkconfig --del httpd-pypies
+    /sbin/chkconfig --del htcacheclean-pypies
 fi
 
 %post -n %name-tools
@@ -433,29 +453,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,awips,fxalpha)
-/awips2/httpd_pypies/etc/
-/awips2/httpd_pypies/etc/httpd/conf/extra/
-/awips2/httpd_pypies/etc/httpd/conf/original/extra/
-/awips2/httpd_pypies/etc/httpd/conf/original/
-/awips2/httpd_pypies/etc/rc.d/init.d/
-/awips2/httpd_pypies/usr/lib64/
-/awips2/httpd_pypies/usr/sbin/
-/awips2/httpd_pypies/usr/include/httpd
-/awips2/httpd_pypies/usr/share/doc/awips2-httpd-pypies-2.4.23/
-/awips2/httpd_pypies/usr/share/man/man1/
-/awips2/httpd_pypies/usr/share/man/man8/
-/awips2/httpd_pypies/var/cache/httpd/
-/awips2/httpd_pypies/var/lib/
-/awips2/httpd_pypies/var/lock/
-/awips2/httpd_pypies/var/log/
-/awips2/httpd_pypies/var/
-/awips2/httpd_pypies/var/www/wsgi/
-%dir /awips2/httpd_pypies%{_sysconfdir}/httpd
-/awips2/httpd_pypies%{_sysconfdir}/httpd/modules
-/awips2/httpd_pypies%{_sysconfdir}/httpd/logs
-/awips2/httpd_pypies%{_sysconfdir}/httpd/run
-%dir /awips2/httpd_pypies%{_sysconfdir}/httpd/conf
-%dir /awips2/httpd_pypies%{_sysconfdir}/httpd/conf.d
+%dir /awips2/httpd_pypies
+/awips2/httpd_pypies/*
 %config(noreplace) /awips2/httpd_pypies%{_sysconfdir}/httpd/conf/httpd.conf
 %config(noreplace) /awips2/httpd_pypies%{_sysconfdir}/httpd/conf/magic
 %config(noreplace) /awips2/httpd_pypies%{_sysconfdir}/httpd/conf/mime.types
@@ -486,163 +485,25 @@ rm -rf $RPM_BUILD_ROOT
 %config /awips2/httpd_pypies%{_sysconfdir}/rc.d/init.d/httpd
 %config /awips2/httpd_pypies%{_sysconfdir}/rc.d/init.d/htcacheclean
 %{_sysconfdir}/cron.daily/pypiesLogCleanup.sh
-/awips2/httpd_pypies%{_sbindir}/fcgistarter
 /etc/rc.d/init.d/htcacheclean-pypies
-/awips2/httpd_pypies%{_sbindir}/htcacheclean
 /etc/rc.d/init.d/httpd-pypies
 %attr(0700,awips,fxalpha) %dir /awips2/httpd_pypies/var/lock/subsys
-/awips2/httpd_pypies%{_sbindir}/httpd
-/awips2/httpd_pypies%{_sbindir}/apachectl
 %attr(4510,awips,fxalpha) /awips2/httpd_pypies%{_sbindir}/suexec
-%dir /awips2/httpd_pypies%{_libdir}/httpd
-%dir /awips2/httpd_pypies%{_libdir}/httpd/modules
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_access_compat.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_actions.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_alias.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_allowmethods.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_asis.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_auth_basic.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_auth_digest.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_auth_form.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_authn_anon.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_authn_core.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_authn_dbd.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_authn_dbm.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_authn_file.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_authn_socache.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_authz_core.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_authz_dbd.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_authz_dbm.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_authz_groupfile.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_authz_host.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_authz_owner.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_authz_user.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_autoindex.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_bucketeer.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_buffer.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_cache_disk.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_cache_socache.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_cache.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_case_filter.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_case_filter_in.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_cgid.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_charset_lite.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_data.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_dav_fs.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_dav_lock.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_dav.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_dbd.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_deflate.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_dialup.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_dir.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_dumpio.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_echo.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_env.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_expires.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_ext_filter.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_file_cache.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_filter.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_headers.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_heartbeat.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_heartmonitor.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_include.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_info.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_lbmethod_bybusyness.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_lbmethod_byrequests.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_lbmethod_bytraffic.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_lbmethod_heartbeat.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_log_config.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_log_debug.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_log_forensic.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_logio.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_macro.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_mime_magic.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_mime.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_mpm_event.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_mpm_prefork.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_mpm_worker.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_negotiation.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_proxy_ajp.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_proxy_balancer.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_proxy_connect.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_proxy_express.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_proxy_fcgi.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_proxy_ftp.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_proxy_http.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_proxy_scgi.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_proxy_wstunnel.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_proxy.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_ratelimit.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_reflector.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_remoteip.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_reqtimeout.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_request.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_rewrite.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_sed.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_session_cookie.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_session_crypto.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_session_dbd.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_session.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_setenvif.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_slotmem_plain.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_slotmem_shm.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_socache_dbm.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_socache_memcache.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_socache_shmcb.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_speling.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_status.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_substitute.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_suexec.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_unique_id.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_unixd.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_userdir.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_usertrack.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_version.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_vhost_alias.so
-/awips2/httpd_pypies%{_libdir}/httpd/modules/mod_watchdog.so
-/awips2/httpd_pypies/etc/httpd/conf.d/pypies.conf
-/awips2/httpd_pypies/usr/lib64/httpd/modules/mod_proxy_hcheck.so
-/awips2/httpd_pypies/usr/lib64/httpd/modules/mod_wsgi.so
-/awips2/httpd_pypies/var/www/wsgi/pypies.wsgi
-/awips2/httpd_pypies/usr/share/doc/awips2-httpd-pypies-2.4.23/ABOUT_APACHE
-/awips2/httpd_pypies/usr/share/doc/awips2-httpd-pypies-2.4.23/CHANGES
-/awips2/httpd_pypies/usr/share/doc/awips2-httpd-pypies-2.4.23/LICENSE
-/awips2/httpd_pypies/usr/share/doc/awips2-httpd-pypies-2.4.23/NOTICE
-/awips2/httpd_pypies/usr/share/doc/awips2-httpd-pypies-2.4.23/README
-/awips2/httpd_pypies/usr/share/doc/awips2-httpd-pypies-2.4.23/VERSIONING
-%dir /awips2/httpd_pypies%{contentdir}
-%dir /awips2/httpd_pypies%{contentdir}/cgi-bin
-%dir /awips2/httpd_pypies%{contentdir}/html
-%dir /awips2/httpd_pypies%{contentdir}/icons
-%dir /awips2/httpd_pypies%{contentdir}/error
-%dir /awips2/httpd_pypies%{contentdir}/error/include
-/awips2/httpd_pypies%{contentdir}/icons/*
-/awips2/httpd_pypies%{contentdir}/error/README
-/awips2/httpd_pypies%{contentdir}/html/index.html
 %config(noreplace) /awips2/httpd_pypies%{contentdir}/error/*.var
 %config(noreplace) /awips2/httpd_pypies%{contentdir}/error/include/*.html
 %attr(0755,awips,fxalpha) %dir /awips2/httpd_pypies/%{_localstatedir}/log/httpd
 %attr(0700,awips,fxalpha) %dir /awips2/httpd_pypies%{_localstatedir}/lib/dav
 %attr(0700,awips,fxalpha) %dir /awips2/httpd_pypies%{_localstatedir}/cache/httpd/cache-root
-/awips2/httpd_pypies%{_mandir}/man1/*
-/awips2/httpd_pypies%{_mandir}/man8/suexec*
-/awips2/httpd_pypies%{_mandir}/man8/apachectl.8*
-/awips2/httpd_pypies%{_mandir}/man8/httpd.8*
-/awips2/httpd_pypies%{_mandir}/man8/htcacheclean.8*
-/awips2/httpd_pypies%{_mandir}/man8/fcgistarter.8*
 
 %files -n %name-tools
 %defattr(-,awips,fxalpha)
-/awips2/httpd_pypies/usr/bin/
-/awips2/httpd_pypies/usr/share/man/man1/
-/awips2/httpd_pypies/usr/share/man/man8/
-/awips2/httpd_pypies/usr/distcache
 /awips2/httpd_pypies%{_bindir}/ab
 /awips2/httpd_pypies%{_bindir}/htdbm
 /awips2/httpd_pypies%{_bindir}/htdigest
 /awips2/httpd_pypies%{_bindir}/htpasswd
 /awips2/httpd_pypies%{_bindir}/logresolve
 /awips2/httpd_pypies%{_bindir}/httxt2dbm
+/awips2/httpd_pypies%{_sbindir}/rotatelogs
 /awips2/httpd_pypies%{_mandir}/man1/htdbm.1*
 /awips2/httpd_pypies%{_mandir}/man1/htdigest.1*
 /awips2/httpd_pypies%{_mandir}/man1/htpasswd.1*
