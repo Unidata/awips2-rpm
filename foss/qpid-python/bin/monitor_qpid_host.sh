@@ -8,9 +8,9 @@ function setupEnv() {
   
   runTimeDate=$( date +"%Y%m%d %H:%M:%S" )
   nowTimeDate=$( date +%A )
-  logDirectory=/data/fxa/qpid
+  logDirectory=/awips2/fxa/data/qpid
   logName=$( basename $0 .sh ).${nowTimeDate}.log 
-  nasHost=nas1
+  nasHost=localhost
   nasVolName=dataFXA  # This is so we can change it for new nas! 
   lsofCommand="lsof -Pns -p"
   platformName=$( hostname | cut -f2 -d'-')
@@ -75,11 +75,6 @@ function echoFail() {
 }
 
 function cleanup() {
-
-  if [[ "${hadToMount}" ]]
-  then
-      umount /data/fxa 
-  fi
 
 }
 
@@ -218,18 +213,6 @@ setupEnv
 {
 
 echo -ne "\n| START " && echoDate && echo -e "----------------------------------------------------------------|\n"
-
-if ! grep /data/fxa /proc/mounts | grep nfs 2>&1 > /dev/null
-then
-  # /data/fxa isn't an nfs mount  
-  if mount ${nasHost}:${nasVolName} /data/fxa
-  then
-      hadToMount=true
-  else
-      echoFail "ERROR:\t Couldn't mount /data/fxa and that is where the log goes!"
-      exit 1
-  fi
-fi
 
 # now check write permission 
 if [[ ! -d ${logDirectory} ]]

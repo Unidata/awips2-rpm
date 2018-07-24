@@ -48,7 +48,7 @@ wrapper.search.java.classpath.2=${QPID_HOME}/lib/plugins
 wrapper.java.additional.gc.1=-XX:+UseConcMarkSweepGC
 wrapper.java.additional.gc.2=-XX:+CMSIncrementalMode
 wrapper.java.additional.gc.6=-XX:+HeapDumpOnOutOfMemoryError
-wrapper.java.additional.gc.7=-XX:HeapDumpPath=/data/fxa/qpid
+wrapper.java.additional.gc.7=-XX:HeapDumpPath=/awips2/fxa/data/qpid
 
 # the main qpid java class that will be started
 wrapper.java.app.mainclass=org.apache.qpid.server.Main

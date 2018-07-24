@@ -32,7 +32,7 @@
 # NOTE: Script must be located at /awips2/qpid/bin/yajsw/scripts for it to work
 
 # base path to save capture data to, will create subdirectory for each server
-basePath="/data/fxa/cave"
+basePath="/awips2/cave/fxa"
 
 state=$1
 string_state=$2
