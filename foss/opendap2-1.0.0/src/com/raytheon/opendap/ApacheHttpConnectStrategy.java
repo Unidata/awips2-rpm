@@ -58,6 +58,7 @@ import opendap.dap.ServerVersion;
  *                                  exception.
  * Apr 14, 2015           dhladky   upgrading dods/opendap.
  * Sep 13, 2017  6430     rjpeter   Fix connection/socket timeout.
+ * Jun 12, 2018  7320     rjpeter   Removed unavailable options.
  *
  * </pre>
  *
@@ -87,6 +88,19 @@ public class ApacheHttpConnectStrategy extends BaseHttpConnectStrategy {
         clientBuilder = HttpClientBuilder.create();
         clientBuilder.setDefaultRequestConfig(requestConfig);
         clientBuilder.setConnectionManager(connectionManager);
+
+        String proxyHost = System.getProperty("http.proxyHost");
+        String proxyPort = System.getProperty("http.proxyPort");
+
+        if (proxyHost != null && !"".equals(proxyHost) && proxyPort != null
+                && !"".equals(proxyPort)) {
+            HttpHost proxy = new HttpHost(proxyHost,
+                    Integer.parseInt(proxyPort));
+            DefaultProxyRoutePlanner routePlanner = new DefaultProxyRoutePlanner(
+                    proxy);
+            clientBuilder.setRoutePlanner(routePlanner);
+        }
+
         httpClient = clientBuilder.build();
     }
 
@@ -198,33 +212,6 @@ public class ApacheHttpConnectStrategy extends BaseHttpConnectStrategy {
         } else {
             return is;
         }
-    }
-
-    @Override
-    public void setProxy(String host, int port) {
-        HttpHost proxy = new HttpHost(host, port);
-        DefaultProxyRoutePlanner routePlanner = new DefaultProxyRoutePlanner(
-                proxy);
-        clientBuilder.setRoutePlanner(routePlanner);
-    }
-
-    @Override
-    public void setDeflate(boolean deflate) {
-        if (deflate) {
-            // is added by default
-        } else {
-            clientBuilder.disableContentCompression();
-        }
-    }
-
-    @Override
-    public void setConnectionTimeout(int connectionTimeout) {
-        // do nothing, don't allow per connection tuning
-    }
-
-    @Override
-    public void setSocketTimeout(int socketTimeout) {
-        // do nothing, don't allow per connection tuning
     }
 
     /**

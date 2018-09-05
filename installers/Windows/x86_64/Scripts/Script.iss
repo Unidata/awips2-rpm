@@ -20,7 +20,7 @@
 ; Jul 08, 2015  4295     dlovely     Added function to clear Windows icon cache
 ; Aug 03, 2015  4694     dlovely     Logback will now add user.home to LOGDIR
 ; Feb 09, 2016  5196     dlovely     Exposed the JDK reg key as a system var
-;
+; Aug 27, 2018  20826    smoorthy    add -vm parameter
 
 [Setup]
 ; Unique Application GUID. This does not change version to version.
@@ -78,8 +78,8 @@ Source: CAVE\cave.exe; DestDir: {app}\CAVE; Components: cave; Flags: ignoreversi
 
 [Icons]
 ; Icons for CAVE
-Name: {commondesktop}\AWIPS II CAVE; Filename: {app}\Cave\cave.exe; Parameters: "-component thinclient"; Tasks: desktopicon; WorkingDir: {app}\Cave; Comment: "AWIPS II CAVE"; Components: cave; IconFilename: {app}\CAVE\cave.exe
-Name: {group}\AWIPS II CAVE; Filename: {app}\Cave\cave.exe; Parameters: "-component thinclient"; WorkingDir: {app}\Cave; Comment: "AWIPS II CAVE"; Components: cave; IconFilename: {app}\CAVE\cave.exe
+Name: {commondesktop}\AWIPS II CAVE; Filename: {app}\Cave\cave.exe; Parameters: "-component thinclient -vm ""{code:GetJavaJREDir}\bin\javaw.exe"""; Tasks: desktopicon; WorkingDir: {app}\Cave; Comment: "AWIPS II CAVE"; Components: cave; IconFilename: {app}\CAVE\cave.exe
+Name: {group}\AWIPS II CAVE; Filename: {app}\Cave\cave.exe; Parameters: "-component thinclient -vm ""{code:GetJavaJREDir}\bin\javaw.exe"""; WorkingDir: {app}\Cave; Comment: "AWIPS II CAVE"; Components: cave; IconFilename: {app}\CAVE\cave.exe
 ; Uninstaller Icon - Start Menu Only. 
 Name: {group}\{cm:UninstallProgram,AWIPS II CAVE}; Filename: {uninstallexe}
 
