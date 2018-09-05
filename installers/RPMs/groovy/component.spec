@@ -50,7 +50,7 @@ fi
 
 INSTALLER_GROOVY="%{_baseline_workspace}/installers/RPMs/groovy"
 
-_foss_dir="%{_baseline_workspace}/foss/groovy
+_foss_dir="%{_baseline_workspace}/foss/groovy"
 _groovy_dist="${_foss_dir}/packaged/apache-groovy-binary-%{_groovy_version}.zip"
 
 unzip ${_groovy_dist} -d %{_build_root}/awips2
