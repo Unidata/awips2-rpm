@@ -114,24 +114,20 @@ if [ $? -ne 0 ]; then
    exit 1
 fi
 
-# copy qpid lib and include directories.
-/bin/cp -rv %{_qpid_build_loc}/%{_libdir} \
-   %{_build_root}/%{_libdir}
-/bin/cp -rv %{_qpid_build_loc}/%{_includedir} \
-   %{_build_root}/%{_includedir}
-   
+# copy qpid lib and include directories
+/bin/cp -rv %{_qpid_build_loc}/awips2/qpid/lib \
+   %{_build_root}/awips2/qpid
+/bin/cp -rv %{_qpid_build_loc}/awips2/qpid/lib64/* \
+   %{_build_root}/awips2/qpid/lib
+/bin/cp -rv %{_qpid_build_loc}/awips2/qpid/include \
+   %{_build_root}/awips2/qpid
+
 %clean
 rm -rf ${RPM_BUILD_ROOT}
 rm -rf %{_qpid_build_loc}
 
 %files
 %defattr(644,awips,fxalpha,755)
-%dir %{_prefix}
-%dir %{_includedir}
-%{_includedir}/*
-%dir %{_libdir}
-%{_libdir}/cmake
-%{_libdir}/*.so*
-%{_libdir}/pkgconfig
-%dir /awips2/qpid/lib64/qpid/daemon
-/awips2/qpid/lib64/qpid/daemon/*
+/awips2/qpid/lib/*
+%dir /awips2/qpid/include
+/awips2/qpid/include/*

@@ -33,7 +33,7 @@ Provides: mod_dav = %{version}-%{release}, httpd-suexec = %{version}-%{release}
 Provides: %name-mmn = %{mmn}
 Requires: %name-tools >= %{version}-%{release}
 Requires: awips2-pypies
-Requires: awips2-tools, awips2-python, awips2-python-awips, awips2-python-h5py
+Requires: awips2-tools, awips2-python, awips2-python-h5py
 Requires: awips2-python-numpy, awips2-python-werkzeug
 Vendor: %{_build_vendor}
 Packager: %{_build_site}
