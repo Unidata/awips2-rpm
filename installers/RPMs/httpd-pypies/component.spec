@@ -10,12 +10,12 @@
 %define RPMBUILD_HTTP_DIR %RPMBUILD_PYPIES_DIR/%HTTP_PACKAGE_NAME
 %define DISTCACHE distcache-1.4.5
 %define MOD_WSGI_VERSION 3.5
-%define APR_VERSION 1.6.2
+%define APR_VERSION 1.6.5
 %define APR_UTIL_VERSION 1.6.0
 
 Summary: Apache HTTP Server
 Name: awips2-httpd-pypies
-Version: 2.4.27
+Version: 2.4.38
 Release: 1%{?dist}
 URL: http://httpd.apache.org/
 License: Apache License, Version 2.0
