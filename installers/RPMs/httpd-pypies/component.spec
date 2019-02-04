@@ -9,7 +9,7 @@
 %define RPMBUILD_PYPIES_DIR "%{_baseline_workspace}/rpmbuild/BUILD/httpd-pypies"
 %define RPMBUILD_HTTP_DIR %RPMBUILD_PYPIES_DIR/%HTTP_PACKAGE_NAME
 %define DISTCACHE distcache-1.4.5
-%define MOD_WSGI_VERSION 3.5
+%define MOD_WSGI_VERSION 4.6.5
 %define APR_VERSION 1.6.5
 %define APR_UTIL_VERSION 1.6.0
 
@@ -217,77 +217,61 @@ fi
 
 pushd . > /dev/null
 cd %{_topdir}/BUILD
-if [ -d mod_wsgi-%{MOD_WSGI_VERSION} ]; then
-   /bin/rm -rf mod_wsgi-%{MOD_WSGI_VERSION}
-   if [ $? -ne 0 ]; then
-      exit 1
-   fi
-fi
 /bin/tar -xvf mod_wsgi-%{MOD_WSGI_VERSION}.tar.gz
 if [ $? -ne 0 ]; then
    exit 1
 fi
-
 cd mod_wsgi-%{MOD_WSGI_VERSION}
+
 export CPPFLAGS="-I/awips2/python/include/python2.7"
 export LDFLAGS="-L/awips2/python/lib"
-
 echo -e "\n***Building mod_wsgi-%{MOD_WSGI_VERSION}***\n\n"
 
 #copy apxs files locally
 cp -v %RPMBUILD_PYPIES_DIR/awips2/httpd_pypies/usr/bin/apxs .
-
 if [ $? -ne 0 ]; then
    exit 1
 fi
 
 cp -v %RPMBUILD_PYPIES_DIR/awips2/httpd_pypies/usr/lib64/httpd/build/config_vars.mk .
-
 if [ $? -ne 0 ]; then
    exit 1
 fi
 
 cp -v %RPMBUILD_PYPIES_DIR/awips2/httpd_pypies/usr/bin/apr-1-config .
-
 if [ $? -ne 0 ]; then
    exit 1
 fi
 
 #change apxs to reference local dir
 sed -i "s#builddir = .*#builddir = '.';#g" apxs
-
 if [ $? -ne 0 ]; then
    exit 1
 fi
 
 #change config_vars to reference build root
 sed -i 's#/awips2/#'%RPMBUILD_PYPIES_DIR'/awips2/#g' config_vars.mk
-
 if [ $? -ne 0 ]; then
    exit 1
 fi
 
 #change APR_CONFIG to reference local dir
 sed -i 's#APR_CONFIG.*#APR_CONFIG=./apr-1-config#g' config_vars.mk
-
 if [ $? -ne 0 ]; then
    exit 1
 fi
 
 #change apr-1-config to reference build root
 sed -i 's#/awips2/#'%RPMBUILD_PYPIES_DIR'/awips2/#g' apr-1-config
-
 if [ $? -ne 0 ]; then
    exit 1
 fi
 
 LD_PRELOAD=%RPMBUILD_PYPIES_DIR/awips2/httpd_pypies/usr/lib64/libapr-1.so:%RPMBUILD_PYPIES_DIR/awips2/httpd_pypies/usr/lib64/libaprutil-1.so.0 \
 ./configure --with-python=/awips2/python/bin/python --with-apxs=./apxs
-
 if [ $? -ne 0 ]; then
    exit 1
 fi
-
 make %{?_smp_mflags} 
 if [ $? -ne 0 ]; then
    exit 1
@@ -382,9 +366,8 @@ chmod 755 $RPM_BUILD_ROOT/awips2/httpd_pypies%{_sbindir}/suexec
 
 pushd . > /dev/null
 cd %{_topdir}/BUILD/mod_wsgi-%{MOD_WSGI_VERSION}
-
 # Install the module required by pypies.
-install -m755 .libs/mod_wsgi.so \
+install -m755 ./src/server/.libs/mod_wsgi.so \
     ${RPM_BUILD_ROOT}/awips2/httpd_pypies/etc/httpd/modules
 
 cd ../
@@ -412,6 +395,9 @@ install -m644 %{_baseline_workspace}/installers/RPMs/httpd-pypies/configuration/
 # Install & Override the httpd configuration.
 install -m644 %{_baseline_workspace}/installers/RPMs/httpd-pypies/configuration/conf/httpd.conf \
     ${RPM_BUILD_ROOT}/awips2/httpd_pypies/etc/httpd/conf
+mkdir -p ${RPM_BUILD_ROOT}/awips2/httpd_pypies/etc/httpd/conf/extra
+install -m644 %{_baseline_workspace}/installers/RPMs/httpd-pypies/configuration/conf/extra/httpd-default.conf \
+    ${RPM_BUILD_ROOT}/awips2/httpd_pypies/etc/httpd/conf/extra
 
 # Install docs
 mkdir -p ${RPM_BUILD_ROOT}/awips2/httpd_pypies/usr/share/doc/awips2-httpd-pypies-%{version}
