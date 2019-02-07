@@ -7,7 +7,7 @@
 #
 Name: awips2-python-six
 Summary: AWIPS II Python six Distribution
-Version: 1.11.0
+Version: 1.12.0
 Release: 1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}

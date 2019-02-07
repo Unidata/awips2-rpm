@@ -7,7 +7,7 @@
 #
 Name: awips2-python-pytz
 Summary: AWIPS II Python pytz Distribution
-Version: 2015.4
+Version: 2018.9
 Release: 1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
@@ -49,7 +49,7 @@ fi
 mkdir -p %{_python_build_loc}
 
 %build
-PYTZ_SRC_DIR="%{_baseline_workspace}/foss/pytz-%{version}/packaged"
+PYTZ_SRC_DIR="%{_baseline_workspace}/foss/pytz"
 
 cp -rv ${PYTZ_SRC_DIR}/pytz-%{version}.tar.gz %{_python_build_loc}
 pushd . > /dev/null

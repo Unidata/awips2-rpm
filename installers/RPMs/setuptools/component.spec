@@ -7,7 +7,7 @@
 #
 Name: awips2-python-setuptools
 Summary: AWIPS II Python setuptools Distribution
-Version: 28.6.0
+Version: 40.7.3
 Release: 1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
@@ -46,12 +46,12 @@ fi
 mkdir -p %{_python_build_loc}
 
 %build
-SETUPTOOLS_SRC_DIR="%{_baseline_workspace}/foss/setuptools/packaged"
+SETUPTOOLS_SRC_DIR="%{_baseline_workspace}/foss/setuptools"
 
-cp -rv ${SETUPTOOLS_SRC_DIR}/setuptools-%{version}.tar.gz %{_python_build_loc}
+cp -rv ${SETUPTOOLS_SRC_DIR}/setuptools-%{version}.zip %{_python_build_loc}
 pushd . > /dev/null
 cd %{_python_build_loc}
-tar xf setuptools-%{version}.tar.gz
+unzip setuptools-%{version}.zip
 cd setuptools-%{version}
 
 export LD_LIBRARY_PATH=/awips2/python/lib

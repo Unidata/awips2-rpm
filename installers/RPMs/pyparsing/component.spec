@@ -7,7 +7,7 @@
 #
 Name: awips2-python-pyparsing
 Summary: AWIPS II Python pyparsing Distribution
-Version: 2.2.0
+Version: 2.3.1
 Release: 1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
