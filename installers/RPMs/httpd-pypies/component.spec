@@ -3,7 +3,7 @@
 %define mmn 20120211
 
 %define FOSS_DIR "%{_baseline_workspace}/foss"
-%define HTTP_FOSS_DIR "%{_baseline_workspace}/foss/%{HTTP_PACKAGE_NAME}/packaged/"
+%define HTTP_FOSS_DIR "%{_baseline_workspace}/foss/httpd/"
 %define HTTP_PACKAGE_NAME "httpd-%{version}"
 %define HTTP_SOURCE_TAR "%{HTTP_PACKAGE_NAME}.tar.gz"
 %define RPMBUILD_PYPIES_DIR "%{_baseline_workspace}/rpmbuild/BUILD/httpd-pypies"
@@ -15,7 +15,7 @@
 
 Summary: Apache HTTP Server
 Name: awips2-httpd-pypies
-Version: 2.4.38
+Version: 2.4.39
 Release: 1%{?dist}
 URL: http://httpd.apache.org/
 License: Apache License, Version 2.0
