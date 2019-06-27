@@ -724,6 +724,7 @@ public class DConnect {
         }
 
         URL url = new URL(urlString + ".dods" + getCompleteCE(CE));
+
         return getDataFromUrl(url, statusUI, btf);
     }
 
