@@ -8,7 +8,7 @@
 #
 Name: awips2-python
 Summary: AWIPS Python Distribution
-Version: 2.7.15
+Version: 2.7.13
 Release: 1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
