@@ -8,7 +8,7 @@
 #
 Name: awips2-python
 Summary: AWIPS Python Distribution
-Version: 2.7.13
+Version: 2.7.15
 Release: 1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
@@ -49,7 +49,7 @@ mkdir -p %{_python_build_loc}
 
 %build
 PYTHON_TAR="Python-%{version}.tgz"
-PYTHON_PROJECT_SRC_DIR="%{_baseline_workspace}/foss/python-%{version}"
+PYTHON_PROJECT_SRC_DIR="%{_baseline_workspace}/foss/python-%{version}/packaged"
 FOSS_PYTHON_DIR=$PYTHON_PROJECT_SRC_DIR
 
 cp -v ${FOSS_PYTHON_DIR}/${PYTHON_TAR} %{_python_build_loc}

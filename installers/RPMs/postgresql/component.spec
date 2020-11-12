@@ -1,5 +1,5 @@
 %define _build_arch %(uname -i)
-%define _postgresql_version 9.5.13
+%define _postgresql_version 9.5.14
 %define _postgres_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 %define _postgres_src_loc %{_baseline_workspace}/foss/postgresql
 %define _postgres_script_loc %{_baseline_workspace}/installers/RPMs/postgresql/scripts
