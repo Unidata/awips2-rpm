@@ -1,0 +1,77 @@
+environment:
+  PACKAGE_NAME: tables
+  BUILD_DEPENDS: "numpy>=1.8.0 numexpr>=2.5.2 six cython bzip2"
+  TEST_DEPENDS: "numpy>=1.8.0 numexpr>=2.5.2 six mock"
+  # Make setup.py include conda specific dll's in wheel
+  BUILDWHEEL: True
+
+  global:
+    # SDK v7.0 MSVC Express 2008's SetEnv.cmd script will fail if the
+    # /E:ON and /V:ON options are not enabled in the batch script intepreter
+    # See: http://stackoverflow.com/a/13751649/163740
+    # From: https://github.com/astropy/ci-helpers/blob/master/appveyor/windows_sdk.cmd
+    CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci\\appveyor\\windows_sdk.cmd"
+
+  matrix:
+#    - PYTHON: "C:\\Miniconda"
+#      PYTHON_VERSION: "2.7"
+#      PYTHON_ARCH: "32"
+
+    - PYTHON: "C:\\Miniconda-x64"
+      PYTHON_VERSION: "2.7"
+      PYTHON_ARCH: "64"
+      HDF5_VERSION: "1.8"
+
+# - PYTHON: "C:\\Miniconda-x64"
+#   PYTHON_VERSION: "2.7"
+#   PYTHON_ARCH: "64"
+#   HDF5_VERSION: "1.10"
+
+    - PYTHON: "C:\\Miniconda36-x64"
+      PYTHON_VERSION: "3.6"
+      PYTHON_ARCH: "64"
+      HDF5_VERSION: "1.8"
+
+    - PYTHON: "C:\\Miniconda36-x64"
+      PYTHON_VERSION: "3.6"
+      PYTHON_ARCH: "64"
+      HDF5_VERSION: "1.10"
+
+install:
+  # this installs the appropriate Miniconda (Py2/Py3, 32/64 bit),
+  # as well as pip, conda-build, and the binstar CLI
+  #- powershell .\\ci\\appveyor\\install.ps1
+  - powershell .\\ci\\appveyor\\missing-headers.ps1
+  - "set PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
+
+build_script:
+  - conda config --add channels conda-forge
+  - conda create --yes -n build_env python=%PYTHON_VERSION% %BUILD_DEPENDS%
+  - activate build_env
+
+  # Install HDF5 Library
+  # Add tomkooij channel for HDF5 v1.10 conda packages
+  - conda config --add channels http://conda.anaconda.org/tomkooij
+  - conda install --yes hdf5=%HDF5_VERSION%
+
+  # Build wheel
+  - "%CMD_IN_ENV% python setup.py bdist_wheel"
+
+test_script:
+  # create test env
+  - conda create --yes -n test_env python=%PYTHON_VERSION% %TEST_DEPENDS%
+  - activate test_env
+
+  # install from wheel
+  - pip install --no-index --find-links dist/ %PACKAGE_NAME%
+
+  - cd ..
+  - python -m tables.tests.test_all
+
+  - pt2to3 -h
+  - ptrepack -h
+  - ptdump -h
+  - pttree -h
+
+artifacts:
+    - path: "dist\\*"

@@ -51,16 +51,20 @@ mkdir -p %{_python_build_loc}
 PRE_REQS_HDF5_TAR=""
 if [ "%{_build_arch}" = "i386" ]; then
    PRE_REQS_HDF5_TAR="hdf5-%{_hdf5_version}-patch1-linux-shared.tar.gz"
+   #PRE_REQS_HDF5_TAR="hdf5-%{_hdf5_version}-linux*shared.tar.gz"
 else
    if [ "%{_build_arch}" = "x86_64" ]; then
       PRE_REQS_HDF5_TAR="hdf5-%{_hdf5_version}-patch1-linux-x86_64-shared.tar.gz"
+      #PRE_REQS_HDF5_TAR="hdf5-%{_hdf5_version}-linux*shared.tar.gz"
    else
       echo "ERROR: Unrecognized Architecture."
       exit 1
    fi
 fi
 
-PRE_REQS_DIR="%{_baseline_workspace}/rpms/python.site-packages/deploy.builder/pre-reqs"
+#Tiff updated
+#PRE_REQS_DIR="%{_baseline_workspace}/rpms/python.site-packages/deploy.builder/pre-reqs"
+PRE_REQS_DIR="%{_baseline_workspace}/installers/RPMs/python/src/x86_64"
 cp -v ${PRE_REQS_DIR}/${PRE_REQS_HDF5_TAR} \
    %{_python_build_loc}/
 RC=$?
@@ -82,12 +86,17 @@ popd > /dev/null
 export HDF5_DIR=
 if [ "%{_build_arch}" = "i386" ]; then
    export HDF5_DIR="%{_python_build_loc}/hdf5-%{_hdf5_version}-patch1-linux-shared"
+   #export HDF5_DIR="%{_python_build_loc}/hdf5-%{_hdf5_version}-linux-centos7-x86_64-gcc485-shared"
+
 else
    export HDF5_DIR="%{_python_build_loc}/hdf5-%{_hdf5_version}-patch1-linux-x86_64-shared"
+   #export HDF5_DIR="%{_python_build_loc}/hdf5-%{_hdf5_version}-linux-centos7-x86_64-gcc485-shared"
 fi
 
-TABLES_SRC_DIR="%{_baseline_workspace}/foss/tables"
-TABLES_TAR="v%{version}.tar.gz"
+#TABLES_SRC_DIR="%{_baseline_workspace}/foss/tables"
+TABLES_SRC_DIR="%{_baseline_workspace}/foss/tables-%{version}/packaged"
+#TABLES_TAR="v%{version}.tar.gz"
+TABLES_TAR="tables-%{version}.tar.gz"
 cp -v ${TABLES_SRC_DIR}/${TABLES_TAR} \
    %{_python_build_loc}
 RC=$?
@@ -103,7 +112,8 @@ if [ ${RC} -ne 0 ]; then
    exit 1
 fi
 rm -fv ${TABLES_TAR}
-cd PyTables-%{version}
+#cd PyTables-%{version}
+cd tables-%{version}
 
 /awips2/python/bin/python setup.py build
 RC=$?
@@ -116,12 +126,15 @@ popd > /dev/null
 export HDF5_DIR=
 if [ "%{_build_arch}" = "i386" ]; then
    export HDF5_DIR="%{_python_build_loc}/hdf5-%{_hdf5_version}-patch1-linux-shared"
+   #export HDF5_DIR="%{_python_build_loc}/hdf5-%{_hdf5_version}-linux-centos7-x86_64-gcc485-shared"
 else
    export HDF5_DIR="%{_python_build_loc}/hdf5-%{_hdf5_version}-patch1-linux-x86_64-shared"
+   #export HDF5_DIR="%{_python_build_loc}/hdf5-%{_hdf5_version}-linux-centos7-x86_64-gcc485-shared"
 fi
 
 pushd . > /dev/null
-cd %{_python_build_loc}/PyTables-%{version}
+#cd %{_python_build_loc}/PyTables-%{version}
+cd %{_python_build_loc}/tables-%{version}
 /awips2/python/bin/python setup.py install \
    --root=%{_build_root} \
    --prefix=/awips2/python
@@ -150,3 +163,4 @@ rm -rf %{_python_build_loc}
 %defattr(755,awips,fxalpha,755)
 %dir /awips2/python/bin
 /awips2/python/bin/*
+
