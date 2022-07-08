@@ -158,7 +158,7 @@ fi
 HDF_ROOT_DIR=`/bin/tar -tf ${HDF5_TAR} | head -n 1`
 rm -fv ${HDF5_TAR}
 
-cp -v ${HDF_ROOT_DIR}lib/* \
+cp -av ${HDF_ROOT_DIR}lib/* \
    %{_build_root}/awips2/python/lib
 if [ $? -ne 0 ]; then
    exit 1
