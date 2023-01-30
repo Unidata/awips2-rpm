@@ -1,0 +1,57 @@
+def projectHome = '../../..'
+
+// set the sources for this build
+sourceSets.main.java.srcDirs = ["$projectHome/src/yajsw/src/main/java", "$projectHome/src/app/src/main/java"]
+sourceSets.main.resources.srcDirs = ["$projectHome/src/yajsw/src/main/java"]
+sourceSets.main.resources.includes  = ['resources/*']
+
+// this project uses the ahessian sub-project
+dependencies {
+    compile project(':ahessian')
+}
+
+dependencies {
+    compile group: 'commons-cli', 				name: 'commons-cli', 							version: "$commons_cli_version"
+    compile group: 'commons-collections', name: 'commons-collections', 			version: "$commons_collections_version"
+    compile group: 'commons-configuration2', name: 'commons-configuration2', 	version: "$commons_configuration_version"
+    compile group: 'commons-text', name: 'commons-text', 	version: "$commons_text_version"
+    compile group: 'commons-io', 					name: 'commons-io', 							version: "$commons_io_version"
+    compile group: 'commons-lang3', 				name: 'commons-lang3', 						version: "$commons_lang_version"
+    compile group: 'commons-logging', 		name: 'commons-logging', 					version: "$commons_logging_version"
+    compile group: 'commons-vfs2', 				name: 'commons-vfs2', 						version: "$commons_vfs2_version"
+    compile group: 'groovy', 					name: 'groovy', 							version: "$groovy_version"
+    compile group: 'jna', 								name: 'jna', 											version: "$jna_version"
+    compile group: 'jna', 								name: 'jna-platform', 						version: "$platform_version"
+    compile group: 'netty', 							name: 'netty', 										version: "$netty_version"
+    compile group: 'automaton', 					name: 'automaton', 								version: "$automaton_version"
+    compile group: 'abeille', 						name: 'formsrt', 									version: "$formsrt_version"
+    compile group: 'forms', 							name: 'forms', 										version: "$forms_version"
+    compile group: 'velocity', 						name: 'velocity', 								version: "$velocity_version"
+    compile group: 'slf4j', 						name: 'slf4j', 								version: "$slf4j_version"
+    compile group: 'yacron4j', 						name: 'yacron4j', 								version: "$yacron4j_version"
+    compile group: 'joda-time', 					name: 'joda-time', 								version: "$joda_time_version"
+}
+
+println '---------------------------'
+println 'dependency jars:'
+println '---------------------------'
+configurations.compile.each { File file -> println file.absolutePath }
+println '---------------------------'
+
+// name of jar file
+jar.baseName = 'wrapper'
+
+// TODO generate manifest instead of editing
+jar {
+    manifest {
+        from '../../MANIFEST.MF'
+    }
+    exclude 'org/rzo/yajsw/app/AbstractWrapperJVMMain*'
+    exclude 'org/rzo/yajsw/app/WrapperGroovyMain*'
+    exclude 'org/rzo/yajsw/app/WrapperJVMMain*'
+    exclude 'org/rzo/yajsw/app/WrapperMainServiceUnix*'
+    exclude 'org/rzo/yajsw/app/WrapperMainServiceWin*'
+    exclude 'org/rzo/yajsw/app/WrapperManager.class'
+    exclude 'org/rzo/yajsw/app/WrapperManagerClassLoader*'
+    exclude 'org/rzo/yajsw/app/WrapperManagerProxy*'
+}

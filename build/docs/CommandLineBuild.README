@@ -1,0 +1,93 @@
+#!/bin/bash
+# Sample script to build by command line without Jenkins.
+
+# Set to your site.
+export AWIPSII_BUILD_SITE=Dev_Org
+
+# Set this to the base workspace directory.
+# Your workspace should contain the Git repos in $WORKSPACE/git/
+export WORKSPACE=
+
+########################################
+# Build Version                        #
+########################################
+export AWIPSII_RELEASE=
+export AWIPSII_VERSION=
+
+########################################
+# Branch Versions                      #
+# See Jenkins.README for corresponding #
+# Git Repo mappings.                   #
+########################################
+export AWIPSII_BRANCH=
+export UFCORE_BRANCH=
+export UFCORE_FOSS_BRANCH=
+export FOSS_BRANCH=
+export BUILD_BRANCH=
+export STATIC_BRANCH=
+export NCEP_BRANCH=
+export OGC_BRANCH=
+export HAZARD_SERVICES_BRANCH=
+export GOES_R_BRANCH=
+export BMH_BRANCH=
+export BMH_COTS_BRANCH=
+export OHD_BRANCH=
+export GSD_BRANCH=
+export X_BAND_RADAR_BRANCH=
+export CIMSS_BRANCH=
+export COLLABORATION_BRANCH=
+export DATA_DELIVERY_BRANCH=
+export NWS_BRANCH=
+export NASA_SPORT_BRANCH=
+export NATIVELIB_BRANCH=
+export RADARSERVER_BRANCH=
+
+########################################
+# Advanced options                     #
+########################################
+
+# Setting this will build just the specified RPM.
+# Leave unset for a full build.
+# Examples:
+#   buildRPM awips2-common-base
+#   buildRPM awips2
+#   buildCAVE
+#   buildEDEX
+#   buildRPM awips2-alertviz
+export RPMS=
+
+# Setting this will rsync the artifacts to a secondary location.
+# Leave unset to let them in the workspace.
+export SYNC_DEST=
+
+# Setting this will move the Windows CAVE zip to a staging area for the Windows Installer build to use.
+# Leave unset to leave it in the workspace.
+export WINDOWS_STAGING=
+
+########################################
+# No changes required below this point #
+########################################
+BUILD_FILE=$WORKSPACE/git/AWIPS2_build/build/windows/build.sh
+
+chmod a+x $BUILD_FILE
+if [ $? -ne 0 ]; then
+   exit 1
+fi
+
+/bin/bash $BUILD_FILE
+if [ $? -ne 0 ]; then
+   exit 1
+fi
+
+BUILD_FILE=$WORKSPACE/git/AWIPS2_build/build/linux/build.sh
+
+chmod a+x $BUILD_FILE
+if [ $? -ne 0 ]; then
+   exit 1
+fi
+
+/bin/bash $BUILD_FILE
+if [ $? -ne 0 ]; then
+   exit 1
+fi
+

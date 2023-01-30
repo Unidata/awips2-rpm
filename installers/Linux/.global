@@ -1,0 +1,196 @@
+# This is the global variables file to be used within AWIPS2 scripts.
+
+newEdexVersion=$( rpm -qpi /data/fxa/INSTALL/awips2/noarch/awips2-1[2-9].*.rpm|grep Version|cut -f2 -d:|sed -e "s/[[:space:]]*//g" -e "s/Vendor.*$//g"|tail -1 )
+newEdexRelease=$( rpm -qpi /data/fxa/INSTALL/awips2/noarch/awips2-1[2-9].*.rpm|grep Release|cut -f2 -d:|sed -e "s/[[:space:]]*//g" -e "s/Build.*$//g"|tail -1 )
+newEdexBuild="${newEdexVersion}-${newEdexRelease}"
+newLDMVersion=$( rpm -qpi /data/fxa/INSTALL/awips2/i386/awips2-ldm*.rpm|grep Version|cut -f2 -d:|sed -e "s/[[:space:]]*//g" -e "s/Vendor.*$//g"|tail -1 )
+newLDMRelease=$( rpm -qpi /data/fxa/INSTALL/awips2/i386/awips2-ldm*.rpm|grep Release|cut -f2 -d:|sed -e "s/[[:space:]]*//g" -e "s/Build.*$//g"|tail -1 )
+curRelease=$( rpm -q awips2 | cut -d- -f2 )
+INSTALL=/data/fxa/INSTALL/awips2
+baseScripts=${INSTALL}/scripts
+runDir=${INSTALL}/REHOST_CODE
+logDir=/data/fxa/INSTALL/a2logs/${newEdexBuild}
+todaysDateShort=$( date +%Y%m%d )
+todaysDateLong=$( date +%Y%m%d_%H%M%S )
+hostName=$( hostname | cut -d- -f1  )
+hostErr=0
+hbErr=0
+shopt -s extglob	# enables pattern lists like +(...|...)
+ddCaseArray='+(bcq|ehu|vuy|vhw|bou|oax|abq|chs|eka|mfr|nhda|tbw3|tbw4|tbdr|tbdw|tbwo|ctbn|ntca|ntcb|ntcc|ntcd|wncf|arcn|opga|pbp|fwr|afc|btv|gum|sto|tbw|arcn|bro|pah|apx|twc|cae|hfon|mso|vrh)'
+rfcCaseArray='+(rha|rsa|alr|tua|orn|ptr|msr|acr|fwr|krf|str|tar|tir|tbdr|nhor|ntcc|nmtr)'
+tncfCaseArray='+(ctbn|tbw3|tbw4|tbdw|tbdr|tbwo|fslc|ntca|ntcb|ntcc|nhda|nmtw|nmtr|nhor)'
+ncepCaseArray='+(opcn|hpcn|ntbn|ctbn|spcn|nhcn|awcn|swpn|wnaw|spcw|nhcr|nhcw|tcpn|ccbn)'
+tbedCaseArray='+(tbw3|tbw4|tbdw|tbdr|ctbn|tbwo)'
+remCPCaseArray='+(vrh)'
+bmhCaseArray='+(tbdw|tbw3|nhda|ntca|ntcb|ntcd|nmtw|gsp|afc|bro|gum|pqr|oax|vef)'
+centralCaseArray='+(ancf|bncf|tncf|olaf)'
+if [ ! -d ${logDir} ]; then
+   mkdir -p ${logDir}
+   chmod 777 ${logDir}
+fi
+case ${hostName} in
+   d[vx][12])	grepArray="egrep -v 'LD_PRELOAD|preun|ldm|edexBridge|role|ValueError'" ;;
+   d[vx][345678]|p[vx][34])
+		grepArray="egrep -v 'LD_PRELOAD|preun|NOTE|ValueError'" ;;
+   cpv[12]|cpsbn[12])	grepArray="egrep -v 'LD_PRELOAD|preun|scriptlet|error.o|error.c|ldmfail|strerror|ErrorLogADS|ValueError'" ;;
+   *)		;;
+esac
+if ypcat hosts|grep -q ax-; then
+   AX="ax-${SITE_IDENTIFIER}"
+elif ypcat hosts|grep -q ax1-; then
+   AX="ax1-${SITE_IDENTIFIER} ax2-${SITE_IDENTIFIER}"
+else
+   AX=
+fi
+function rootCheck {
+   if [ "`whoami`" != "root" ]; then
+      echo -e "\t\t\033[1;31mThis script can only be run as root. \033[0m"
+      echo -e "\t\t\033[1;31mPlease change to the root user and re-run this script. \033[0m"
+      echo "END_SCRIPT"
+      exit 1
+   fi
+}
+function runHostCheck {
+   case `hostname | cut -d- -f1` in
+      d[vx][12] )       ;;
+      *         )       echo -e "\t\t\033[1;31mThis script can only be run on dv1 or dv2. \033[0m"
+                      echo -e "\t\t\033[1;31mPlease ssh to dv1 and re-run this script. \033[0m"
+                      echo "END_SCRIPT"
+                      exit 1
+                      ;;
+   esac
+}
+function workstationCheck {
+   case ${hostName} in
+     d[vx]*|p[vx]*|cp*|ls*|rp*|ax)
+	echo ERROR: caveRun.sh can only be run on an LX or XT
+	echo "END_SCRIPT"
+	exit 1
+	;;
+     *)	;;
+   esac
+}
+function edexHostCheck {
+   case ${hostName} in
+     d[vx][345678]|p[vx][34] ) ;;
+     * ) echo -ne "\t\033[1;31mERROR: edexInstall.sh can only be run on dv3 or dv4, or dv5 or dv6 at NCEP sites \033[0m\n"
+	 echo "END_SCRIPT"
+         exit 1
+         ;;
+   esac
+}
+function cpHostCheck {
+   case ${hostName} in
+     cp* )	;;
+     * )	"\t\033[1;31mERROR: Script can only be run on a cpv device \033[0m\n"
+	        echo "END_SCRIPT"
+		exit 1
+		;;
+   esac
+}
+function rehostCheck {
+   case ${hostName} in
+     p[vx][12]|rp[12] )
+        ;;
+     *)	echo ERROR: rehostRun.sh can only be run on pv1/2 or rp1/2
+        echo "END_SCRIPT"
+        exit 1
+        ;;
+   esac
+}
+function raxHostCheck {
+     if [ "$hostName" != "ax" ] || [ "$SITE_TYPE" != "rfc" ]; then
+        echo -ne "\t\033[1;31mERROR: raxRun.sh can only be run on RFC ax \033[0m\n"
+        echo "END_SCRIPT"
+        exit 1
+     fi
+}
+function finalHostCheck {
+   if [[ "${machines}" = "" ]] ; then
+     echo -e "\033[1;31mERROR: No hosts to launch, exiting.\033[0m"
+     echo "END_SCRIPT"
+     exit 1
+   elif [[ "${hostErr}" != 0 ]] ; then
+     echo -e "\n\nThere were errors found in the host check. Do you wish to continue? (y|N) \c"
+     read _answer
+     if [[ "${_answer}" = "y" ]] ; then
+	echo -e "\nHost list: ${machines}"
+     else
+	echo -e "\nPlease rerun script when you are ready to proceed.\n"
+        echo "END_SCRIPT"
+	exit 1
+     fi
+   else
+     echo -e "Host list: ${machines}"
+   fi
+}
+function hbErrorPrompt {
+   if [[ "${hbErr}" != 0 ]] ; then
+     echo -e "\n\nThere were errors found in the heartbeat check. Do you wish to continue? (y|N) \c"
+     read _answer
+     if [[ "${_answer}" != "y" ]] ; then
+	echo -e "\nPlease rerun script when you are ready to proceed.\n"
+        echo "END_SCRIPT"
+	exit 1
+     fi
+   fi
+}
+function hbChk {
+   case $( echo ${host}|cut -d- -f1 ) in
+     cpsbn1)	f=cp1f
+		i=cp1
+		;;
+     cpv1)	f=cpv1
+		i=cp1
+		;;
+     cpsbn2)	f=cp2f
+		i=cp2
+		;;
+     cpv2)	f=cpv2
+		i=cp2
+		;;
+     *)		i=$( echo ${host}|cut -d- -f1 )
+		f=${i}
+		;;
+   esac
+   echo -ne "\t\e[1;34ma2${i}apps\e[0m heartbeat package is \t"
+   if ! ssh -q ${f} ls /var/lib/heartbeat/rsctmp/a2${i}apps > /dev/null 2>&1; then
+     echo -ne "\e[1;31mSTOPPED\e[0m\n"
+     hbErr=$((hbErr+1))
+   else
+     echo -ne "\e[1;32mRUNNING\e[0m\t"
+     if [[ "$( echo ${host}|cut -d- -f1 )-${SITE_IDENTIFIER}" != "$( ssh -o ConnectTimeout=10 -q ${f} hostname )" ]]; then
+	echo -ne "\e[1;31mon $( ssh -q ${f} hostname )\e[0m\n"
+	hbErr=$((hbErr+1))
+     else
+	echo -ne "\e[1;32mon $( ssh -q ${f} hostname )\e[0m\n"
+     fi
+   fi
+}
+function progress {
+   while true ; do
+      echo -ne '     \\ \r'
+      sleep 1
+      echo -ne '     | \r'
+      sleep 1
+      echo -ne '     / \r'
+      sleep 1
+      echo -ne '     - \r'
+      sleep 1
+   done
+}
+function finishRunScript {
+   if egrep -i 'error|fail' ${logDir}/a2${hostName}.${newEdexBuild}.${todaysDateLong}.log|${grepArray} > /dev/null; then
+     echo -e "\t\033[1;31mInstallation completed on ${hostName}, but with errors. Please contact the NCF. \033[0m"
+   else
+     echo -e "\t\033[1;32mInstallation successfully completed on ${hostName}. \033[0m"
+   fi
+}
+function finishInstallScript {
+   echo -e "$(date):\tInstallation summary:\n"
+   for host in $machines; do
+     hostName=$( echo ${host}|cut -d- -f1 )
+     finishRunScript ${1}
+   done
+   echo -e "$(date):\tFor more details please see the log directory at ${logDir}\n"
+}

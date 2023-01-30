@@ -1,0 +1,188 @@
+// Any changes made in this configuration file also need to be
+//  made in the base config.json to ensure these files stay in sync
+
+{
+  "id" : "7ad03759-7578-4b31-bf24-17d6cf4872a5",
+  "lastUpdatedBy" : "webadmin",
+  "createdBy" : null,
+  "modelVersion" : "7.1",
+  "name" : "Broker",
+  "createdTime" : 0,
+  "lastUpdatedTime" : 1415109313371,
+  "authenticationproviders" : [ {
+    "id" : "344f28bd-938a-4b2e-b063-56c357fadffa",
+    "name" : "ExternalAuthentication",
+    "type" : "External",
+    "lastUpdatedBy" : "webadmin",
+    "lastUpdatedTime" : 1484862963101,
+    "createdBy" : "webadmin",
+    "createdTime" : 1484862963101
+  } ],
+  "brokerloggers" : [ {
+    "id" : "70369e8d-e38b-4d62-acce-2d9c762ea93f",
+    "name" : "logfile",
+    "type" : "File",
+    "durable" : true,
+    "compressOldFiles" : true,
+    "maxFileSize" : "500",
+    "maxHistory" : 30,
+    "rollDaily" : true,
+    "rollOnRestart" : false,
+    "virtualHostLogEventExcluded" : false,
+    "brokerloginclusionrules" : [ {
+      "id" : "d90e9426-a6d8-468f-ad8b-f6b1de947da4",
+      "level" : "INFO",
+      "name" : "Operational",
+      "loggerName" : "qpid.message.*",
+      "type" : "NameAndLevel"
+    }, {
+      "id" : "f14ea963-8903-44d0-845e-dc2ceb21e29a",
+      "level" : "INFO",
+      "name" : "Qpid",
+      "loggerName" : "org.apache.qpid.*",
+      "type" : "NameAndLevel"
+    }, {
+      "id" : "0669671a-ee9c-44d4-8ae1-6756cbeeee94",
+      "level" : "WARN",
+      "name" : "Root",
+      "loggerName" : "ROOT",
+      "type" : "NameAndLevel"
+    }, {
+      "id" : "3aab80e4-9462-4d09-a1eb-4572890f9db1",
+      "level" : "INFO",
+      "name" : "statistics-logfile",
+      "loggerName" : "qpid.statistics.*",
+      "type" : "NameAndLevel"
+    } ]
+  }, {
+    "id" : "2f29e5e9-3430-49a7-b7f9-2534e2680e91",
+    "name" : "memory",
+    "type" : "Memory",
+    "brokerloginclusionrules" : [ {
+      "id" : "67ff338b-c702-4a4c-bb01-e80345f10168",
+      "level" : "INFO",
+      "name" : "Operational",
+      "loggerName" : "qpid.message.*",
+      "type" : "NameAndLevel"
+    }, {
+      "id" : "18d6cdf3-fa0a-4bcc-bbd1-f8564bc61c7c",
+      "level" : "INFO",
+      "name" : "Qpid",
+      "loggerName" : "org.apache.qpid.*",
+      "type" : "NameAndLevel"
+    }, {
+      "id" : "5cdb54d3-ca11-49a3-8d0f-ce04985d4543",
+      "level" : "WARN",
+      "name" : "Root",
+      "loggerName" : "ROOT",
+      "type" : "NameAndLevel"
+    }, {
+      "id" : "5685e75b-3908-49a9-aa24-4f3b72434e0e",
+      "level" : "INFO",
+      "name" : "statistics-memory",
+      "loggerName" : "qpid.statistics.*",
+      "type" : "NameAndLevel"
+    } ]
+  } ],
+  "keystores" : [ {
+    "id" : "09de2301-8474-4d76-8c11-4ef87017bf02",
+    "name" : "ServerFileKeyStore",
+    "type" : "NonJavaKeyStore",
+    "certificateUrl" : "${qpid.home_dir}${file.separator}tls${file.separator}server.crt",
+    "privateKeyUrl" : "${qpid.home_dir}${file.separator}tls${file.separator}server.key",
+    "lastUpdatedBy" : "webadmin",
+    "lastUpdatedTime" : 1484862963101,
+    "createdBy" : "webadmin",
+    "createdTime" : 1484862963101
+  } ],
+  "plugins" : [ {
+    "id" : "4357e8d6-e3f9-4e64-ba48-949fd72cdbcb",
+    "name" : "httpManagement",
+    "type" : "MANAGEMENT-HTTP",
+    "httpSaslAuthenticationEnabled" : false,
+    "httpsSaslAuthenticationEnabled" : false,
+    "lastUpdatedBy" : "webadmin",
+    "lastUpdatedTime" : 1415109366402,
+    "createdBy" : null,
+    "createdTime" : 0
+  } ],
+  "ports" : [ {
+    "id" : "786a4fc3-1e27-4234-af79-f3d06e6c776b",
+    "name" : "AMQP",
+    "authenticationProvider" : "ExternalAuthentication",
+    "bindingAddress" : "*",
+    "keyStore" : "ServerFileKeyStore",
+    "needClientAuth" : true,
+    "port" : "5672",
+    "sendBufferSize" : "16384",
+    "receiveBufferSize" : "32768",
+    "protocols" : [ "AMQP_0_10", "AMQP_0_8", "AMQP_0_9", "AMQP_0_9_1", "AMQP_1_0" ],
+    "transports" : [ "SSL" ],
+    "trustStores" : [ "RootFileTrustStore" ],
+    "lastUpdatedBy" : "webadmin",
+    "lastUpdatedTime" : 1415108748413,
+    "createdBy" : null,
+    "createdTime" : 0,
+    "virtualhostaliases" : [ {
+      "id" : "1c043385-713b-4ee1-97b6-7c63fe69c637",
+      "name" : "defaultAlias",
+      "type" : "defaultAlias"
+    }, {
+      "id" : "54e43800-036e-46e8-904f-89625fcc5d35",
+      "name" : "hostnameAlias",
+      "type" : "hostnameAlias"
+    }, {
+      "id" : "c50e7a70-75f0-4fa1-827f-7773d1165dee",
+      "name" : "nameAlias",
+      "type" : "nameAlias"
+    } ]
+  }, {
+    "id" : "457ee187-92b4-4a8d-b803-7d58a895a14c",
+    "name" : "HTTP",
+    "authenticationProvider" : "ExternalAuthentication",
+    "bindingAddress" : "*",
+    "keyStore" : "ServerFileKeyStore",
+    "needClientAuth" : true,
+    "port" : "8180",
+    "protocols" : [ "HTTP" ],
+    "transports" : [ "SSL" ],
+    "trustStores" : [ "RootFileTrustStore" ],
+    "lastUpdatedBy" : "webadmin",
+    "lastUpdatedTime" : 1415108827134,
+    "createdBy" : null,
+    "createdTime" : 0
+  } ],
+  "truststores" : [ {
+    "id" : "c6452178-7af4-45ce-96ad-11c082c66c80",
+    "name" : "RootFileTrustStore",
+    "type" : "NonJavaTrustStore",
+    "certificatesUrl" : "${qpid.home_dir}${file.separator}tls${file.separator}root.crt",
+    "lastUpdatedBy" : "webadmin",
+    "lastUpdatedTime" : 1484862963101,
+    "createdBy" : "webadmin",
+    "createdTime" : 1484862963101
+  } ],
+  "virtualhostnodes" : [ {
+    "id" : "07f16d09-e729-4f9c-958f-e7b1fd96ca61",
+    "name" : "edex",
+    "type" : "JSON",
+    "desiredState" : "ACTIVE",
+    "lastUpdatedBy" : "ANONYMOUS",
+    "createdBy" : "ANONYMOUS",
+    "createdTime" : 1415109567133,
+    "lastUpdatedTime" : 1415109572970,
+    "defaultVirtualHostNode" : "true",
+    "virtualHostInitialConfiguration" : "{\"type\" : \"DERBY\", \"storePath\" : \"${qpid.home_dir}${file.separator}edexMessageStore\"}"
+  }, {
+    "id" : "caf2a2a7-e489-4331-8b03-57024040bc28",
+    "name" : "edex-alr",
+    "type" : "JSON",
+    "desiredState" : "ACTIVE",
+    "lastUpdatedBy" : "ANONYMOUS",
+    "lastUpdatedTime" : 1439319374989,
+    "createdBy" : "ANONYMOUS",
+    "createdTime" : 1439319374963,
+    "defaultVirtualHostNode" : "false",
+    "virtualHostInitialConfiguration" : "{\"type\" : \"DERBY\", \"storePath\" : \"${qpid.home_dir}${file.separator}edexalrMessageStore\"}"
+  } ]
+}

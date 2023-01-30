@@ -1,0 +1,4 @@
+The HDF5 tar file located in this directory is for H5PY 1.3.0 to correct a segfault in
+the Pypies application. This should be removed in the merge conflict of H5PY 2.9.0.
+
+File: hdf5-1.8.4-patch1-linux-x86_64-shared.tar.gz

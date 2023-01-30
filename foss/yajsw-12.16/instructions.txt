@@ -1,0 +1,25 @@
+Upgrading YAJSW
+
+You will need ant. To install, use the command: yum install awips2-ant
+
+1) Download new yajsw zip file from YAJSW website.
+2) Unzip new yajsw zip file in AWIPS2_build/foss. 
+3) Rename the new yajsw directory according to AWIPS foss naming conventions (yajsw-#.##).
+4) Copy the following from the old yajsw directory into the new yajsw directory: 
+   - build.xml
+   - patches/
+5) Move the old yajsw directory somewhere safe, out AWIPS2_build, in case you need it later.
+6) Push the changes that you have so far to GIT, without any patches applied.
+7) Apply the patches in the patches directory.
+8) Delete the following lib directories:
+- lib/extended/commons
+- lib/extended/glazedlists
+- lib/extended/keystore
+- lib/extended/sigar
+- lib/extended/vfs-dbx
+- lib/extended/vfs-webdav
+- lib/extended/yajsw
+
+9) Run the command "ant" in the same directory as build.xml. Ant will build YAJSW and create the zip file.
+10) Push all the patches and zip file to GIT in a separate commit.
+

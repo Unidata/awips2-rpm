@@ -1,0 +1,181 @@
+// Any changes made in this configuration file also need to be
+//  made in initialConfig.json.alr to ensure these files stay in sync
+
+{
+  "id" : "7ad03759-7578-4b31-bf24-17d6cf4872a5",
+  "name" : "Broker",
+  "modelVersion" : "7.1",
+  "lastUpdatedBy" : "webadmin",
+  "lastUpdatedTime" : 1415109313371,
+  "createdBy" : null,
+  "createdTime" : 0,
+  "authenticationproviders" : [ {
+    "id" : "344f28bd-938a-4b2e-b063-56c357fadffa",
+    "name" : "ExternalAuthentication",
+    "type" : "External",
+    "lastUpdatedBy" : "webadmin",
+    "lastUpdatedTime" : 1484862963101,
+    "createdBy" : "webadmin",
+    "createdTime" : 1484862963101
+  } ],
+  "brokerloggers" : [ {
+    "id" : "5ce44a8e-86d0-4f59-b3e3-086ea12ee578",
+    "name" : "logfile",
+    "type" : "File",
+    "durable" : true,
+    "compressOldFiles" : true,
+    "maxFileSize" : "500",
+    "maxHistory" : 30,
+    "rollDaily" : true,
+    "rollOnRestart" : false,
+    "virtualHostLogEventExcluded" : false,
+    "lastUpdatedBy" : "ANONYMOUS",
+    "lastUpdatedTime" : 1579547173213,
+    "createdBy" : null,
+    "createdTime" : 1579546949577,
+    "brokerloginclusionrules" : [ {
+      "id" : "386510e6-34ca-4530-92ef-ba986038a937",
+      "level" : "INFO",
+      "name" : "Operational",
+      "loggerName" : "qpid.message.*",
+      "type" : "NameAndLevel"
+    }, {
+      "id" : "31009a9c-095d-429c-be1a-b531bc4708c5",
+      "level" : "INFO",
+      "name" : "Qpid",
+      "loggerName" : "org.apache.qpid.*",
+      "type" : "NameAndLevel"
+    }, {
+      "id" : "583b0bf2-6967-4952-884d-1967cec92adf",
+      "level" : "WARN",
+      "name" : "Root",
+      "loggerName" : "ROOT",
+      "type" : "NameAndLevel"
+    }, {
+      "id" : "a20d326d-74d5-4bf4-8c45-713f7f49d5e8",
+      "level" : "INFO",
+      "name" : "statistics-logfile",
+      "loggerName" : "qpid.statistics.*",
+      "type" : "NameAndLevel"
+    } ]
+  }, {
+    "id" : "7ada556f-2cbc-4d72-bcc4-025f5ee55d33",
+    "name" : "memory",
+    "type" : "Memory",
+    "brokerloginclusionrules" : [ {
+      "id" : "d705f9c0-6a5e-4b42-8d05-518b5abceea1",
+      "level" : "INFO",
+      "name" : "Operational",
+      "loggerName" : "qpid.message.*",
+      "type" : "NameAndLevel"
+    }, {
+      "id" : "6e32b16c-47f0-465d-91b5-c5f17e386080",
+      "level" : "INFO",
+      "name" : "Qpid",
+      "loggerName" : "org.apache.qpid.*",
+      "type" : "NameAndLevel"
+    }, {
+      "id" : "59cd3528-2282-48b4-b3c0-25fc60f9b4f8",
+      "level" : "WARN",
+      "name" : "Root",
+      "loggerName" : "ROOT",
+      "type" : "NameAndLevel"
+    }, {
+      "id" : "7c705cef-67dc-4dea-9be9-374b7ffddf09",
+      "level" : "INFO",
+      "name" : "statistics-memory",
+      "loggerName" : "qpid.statistics.*",
+      "type" : "NameAndLevel"
+    } ]
+  } ],
+  "keystores" : [ {
+    "id" : "09de2301-8474-4d76-8c11-4ef87017bf02",
+    "name" : "ServerFileKeyStore",
+    "type" : "NonJavaKeyStore",
+    "certificateUrl" : "${qpid.home_dir}${file.separator}tls${file.separator}server.crt",
+    "privateKeyUrl" : "${qpid.home_dir}${file.separator}tls${file.separator}server.key",
+    "lastUpdatedBy" : "webadmin",
+    "lastUpdatedTime" : 1484862963101,
+    "createdBy" : "webadmin",
+    "createdTime" : 1484862963101
+  } ],
+  "plugins" : [ {
+    "id" : "4357e8d6-e3f9-4e64-ba48-949fd72cdbcb",
+    "name" : "httpManagement",
+    "type" : "MANAGEMENT-HTTP",
+    "httpSaslAuthenticationEnabled" : false,
+    "httpsSaslAuthenticationEnabled" : false,
+    "lastUpdatedBy" : "webadmin",
+    "lastUpdatedTime" : 1415109366402,
+    "createdBy" : null,
+    "createdTime" : 0
+  } ],
+  "ports" : [ {
+    "id" : "786a4fc3-1e27-4234-af79-f3d06e6c776b",
+    "name" : "AMQP",
+    "authenticationProvider" : "ExternalAuthentication",
+    "bindingAddress" : "*",
+    "keyStore" : "ServerFileKeyStore",
+    "needClientAuth" : true,
+    "port" : "5672",
+    "sendBufferSize" : "65536",
+    "receiveBufferSize" : "65536",
+    "protocols" : [ "AMQP_0_10", "AMQP_0_8", "AMQP_0_9", "AMQP_0_9_1", "AMQP_1_0" ],
+    "transports" : [ "SSL" ],
+    "trustStores" : [ "RootFileTrustStore" ],
+    "lastUpdatedBy" : "webadmin",
+    "lastUpdatedTime" : 1415108748413,
+    "createdBy" : null,
+    "createdTime" : 0,
+    "virtualhostaliases" : [ {
+      "id" : "1c043385-713b-4ee1-97b6-7c63fe69c637",
+      "name" : "defaultAlias",
+      "type" : "defaultAlias"
+    }, {
+      "id" : "54e43800-036e-46e8-904f-89625fcc5d35",
+      "name" : "hostnameAlias",
+      "type" : "hostnameAlias"
+    }, {
+      "id" : "c50e7a70-75f0-4fa1-827f-7773d1165dee",
+      "name" : "nameAlias",
+      "type" : "nameAlias"
+    } ]
+  }, {
+    "id" : "457ee187-92b4-4a8d-b803-7d58a895a14c",
+    "name" : "HTTP",
+    "authenticationProvider" : "ExternalAuthentication",
+    "bindingAddress" : "*",
+    "keyStore" : "ServerFileKeyStore",
+    "needClientAuth" : true,
+    "port" : "8180",
+    "protocols" : [ "HTTP" ],
+    "transports" : [ "SSL" ],
+    "trustStores" : [ "RootFileTrustStore" ],
+    "lastUpdatedBy" : "webadmin",
+    "lastUpdatedTime" : 1415108827134,
+    "createdBy" : null,
+    "createdTime" : 0
+  } ],
+  "truststores" : [ {
+    "id" : "c6452178-7af4-45ce-96ad-11c082c66c80",
+    "name" : "RootFileTrustStore",
+    "type" : "NonJavaTrustStore",
+    "certificatesUrl" : "${qpid.home_dir}${file.separator}tls${file.separator}root.crt",
+    "lastUpdatedBy" : "webadmin",
+    "lastUpdatedTime" : 1484862963101,
+    "createdBy" : "webadmin",
+    "createdTime" : 1484862963101
+  } ],
+  "virtualhostnodes" : [ {
+    "id" : "07f16d09-e729-4f9c-958f-e7b1fd96ca61",
+    "name" : "edex",
+    "type" : "JSON",
+    "desiredState" : "ACTIVE",
+    "lastUpdatedBy" : "ANONYMOUS",
+    "lastUpdatedTime" : 1415109572970,
+    "createdBy" : "ANONYMOUS",
+    "createdTime" : 1415109567133,
+    "defaultVirtualHostNode" : "true",
+    "virtualHostInitialConfiguration" : "{\"type\" : \"DERBY\", \"storePath\" : \"${qpid.home_dir}${file.separator}edexMessageStore\"}"
+  } ]
+}

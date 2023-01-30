@@ -1,0 +1,6 @@
+--- ../../yajsw-12.16_unmodified/build/gradle/settings.gradle	2021-04-19 16:10:42.000000000 -0400
++++ ../build/gradle/settings.gradle	2021-08-19 11:30:36.450642102 -0400
+@@ -1,2 +1,2 @@
+ // defines a list of subprojects
+-include "wrapper", "wrapper-app", "ahessian", "hessian4", "srvmgr", "groovy-patch"
++include "wrapper", "wrapper-app", "ahessian", "hessian4", "groovy-patch"

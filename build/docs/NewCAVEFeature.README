@@ -1,0 +1,52 @@
+Adding a new feature to CAVE.
+
+This should be the structure of the new additions:
+
+EXAMPLE_REPO
+├── viz
+│   └── com.external.viz.newdata
+│       ├── build.properties
+│       ├── META-INF
+│       │   └── MANIFEST.MF
+│       └── src
+│           └── com
+│               └── external
+│                   └── viz
+│                       └── newdata
+│                           └── DataExample.java
+└── features
+    └── com.example.viz.newdata.feature
+        ├── build.properties
+        └── feature.xml
+
+1. In Eclipse select File->New->Project and select Plug-in Project to make a new plugin called com.external.viz.newdata
+
+2. In Eclipse select File->New->Project and select Feature Project to make a new feature called com.example.viz.newdata.feature 
+
+3. Add the plugins that are required for this new feature, in this case add com.external.viz.newdata
+
+4. To build the new feature edit AWIPS2_build/build/linux/build.sh
+
+5. Add the following after the last sync block:
+( If EXAMPLE_REPO already existed, add only the 'Create properties file for' part to the existing sync block! )
+
+##################################
+# Sync the EXAMPLE_REPO Repo
+##################################
+if [ ! -z "$EXAMPLE_BRANCH" ]; then
+   repo=$repo_dir/EXAMPLE_REPO
+   parts_to_sync=( 'viz/*' 'features/*')
+   $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $EXAMPLE_BRANCH $baseline ${parts_to_sync[*]}
+   if [ $? -ne 0 ]; then
+      exit 1
+   fi
+
+   ##################################
+   # Create properties file for EXAMPLE
+   ##################################
+   echo "com.external.viz.newdata.feature" >> ${WORKSPACE}/baseline/build/features.txt
+fi
+
+6. In the build configuration setup a new property or variable called EXAMPLE_BRANCH and set it to the version required for the build.
+
+7. In the output of the build there should be a com.external.viz.newdata.feature.zip file that can be installed into CAVE.

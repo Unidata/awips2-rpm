@@ -1,0 +1,9 @@
+Build instructions for these libraries are on the AWIPS2 wiki at: https://cm1.omaha.us.ray.com/redmine/projects/awips2-development/wiki/Python_Native_Libraries_Build
+
+By default, this will build the x86-64 versions of these libraries. 
+
+If 32-bit libraries are needed modify the following:
+  1. /AWIPS2_nativelib/ncep_grib2module/.cproject: the compiler and linker flags
+  2. /AWIPS2_nativelib/gridslice/.cproject: the compiler and linker flags
+  3. /AWIPS2_nativelib/rary.cots.jasper: the CFLAGS passed to the configure script
+

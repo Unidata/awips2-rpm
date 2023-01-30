@@ -1,0 +1,47 @@
+Reference: EclipseSetup.README
+
+A list of AWIPS2 groups currently available can be retrieved with the following command:
+
+yum grouplist AWIPS2\*
+
+The list should include:
+
+   AWIPS II BMH
+   AWIPS II DPA Server
+   AWIPS II Database Server
+   AWIPS II Message Broker Server
+   AWIPS II Processing Server
+   AWIPS II Registry Server
+   AWIPS II Rehost Server
+   AWIPS II Standalone
+   AWIPS II Visualize
+
+
+Typically, the process to install EDEX on a development workstation is:
+
+yum groupinstall 'AWIPS II Message Broker Server' 'AWIPS II Processing Server' 'AWIPS II Database Server'
+
+or
+
+yum groupinstall 'AWIPS II Standalone'
+
+
+The AWIPS II Standalone group provides all RPMs required in the Message Broker, Processing and Database Server groups, but also includes a modified
+/awips2/database/data/postgresql.conf file.  This file specifies a reduced memory setting. 
+
+The CAVE RPMs are not installed, as a development build of CAVE is tested by launching the developer.project application.  
+Though EDEX components are installed by the yum method, they are updated from development using the deploy-install.xml Ant build.  
+
+
+Depending on the RPM installation, the set of RPMs can be updated to a new release using the groupupdate yum command.  
+
+If the target repo is updated with a newer release and the install used the AWIPS II Standalone group, 
+the set of AWIPS2 RPMs would be updated to the newer release using:
+
+yum groupupdate 'AWIPS II Standalone'
+
+
+To remove this group, run the following:
+
+yum groupremove 'AWIPS II Standalone'
+

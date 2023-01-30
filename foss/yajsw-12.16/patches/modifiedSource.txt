@@ -1,0 +1,16 @@
+Below is a list of YAJSW files that need to be patched with AWIPS2-related changes.
+
+Use this file like a checklist.
+
+src/yajsw/src/main/java/org/rzo/yajsw/WrapperExe.java
+src/yajsw/src/main/java/org/rzo/yajsw/app/WrapperManagerImpl.java
+src/yajsw/src/main/java/org/rzo/yajsw/os/posix/PosixProcess.java
+src/yajsw/src/main/java/org/rzo/yajsw/os/posix/bsd/AppStarter.java
+src/yajsw/src/main/java/org/rzo/yajsw/os/posix/bsd/BSDProcess.java
+src/yajsw/src/main/java/org/rzo/yajsw/wrapper/AbstractWrappedProcess.java
+src/yajsw/src/main/java/org/rzo/yajsw/wrapper/WrappedJavaProcess.java
+src/yajsw/src/main/java/org/rzo/yajsw/script/AbstractScript.java
+src/groovy-patch/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java
+
+./build/gradle/build.gradle
+./build/gradle/settings.gradle

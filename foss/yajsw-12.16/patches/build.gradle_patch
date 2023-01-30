@@ -1,0 +1,13 @@
+--- ../../yajsw-12.16_unmodified/build/gradle/build.gradle	2021-04-19 16:10:42.000000000 -0400
++++ ../build/gradle/build.gradle	2021-08-11 12:41:32.495046285 -0400
+@@ -65,8 +65,8 @@
+ 
+ 
+ 
+-sourceCompatibility = 1.7
+-targetCompatibility = 1.7
++sourceCompatibility = 1.8
++targetCompatibility = 1.8
+ //options.bootClasspath = "${System.getProperty('java6.home')}/jre/lib/rt.jar"
+ version = ''
+ 

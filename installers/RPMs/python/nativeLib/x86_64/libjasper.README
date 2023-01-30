@@ -1,0 +1,5 @@
+Jasper - Updated 10/3/17
+
+Version: 1.900.29
+With the following compile flags: -g -O3
+Libs were compiled from source code found at: AWIPS2_nativelib/rary.cots.jasper
