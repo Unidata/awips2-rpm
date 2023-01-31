@@ -17,7 +17,7 @@ BuildArch: %{_build_arch}
 URL: N/A
 License: N/A
 Distribution: N/A
-Vendor: Raytheon
+Vendor: %{_build_vendor}
 Packager: %{_build_site}
 
 AutoReq: no
@@ -96,7 +96,7 @@ fi
 popd > /dev/null
 
 %install
-# Copies the standard Raytheon licenses into a license directory for the
+# Copies the standard licenses into a license directory for the
 # current component.
 function copyLegal()
 {
@@ -149,7 +149,7 @@ FOSS_LAPACK_DIR="%{_baseline_workspace}/foss/lapack-%{_lapack_version}/packaged"
 LAPACK_TAR="lapack-%{_lapack_version}.tgz"
 LAPACK_PATCH="lapack.patch1"
 
-# The Raytheon-built native (nativeLib) libraries.
+# The %{_build_vendor}-built native (nativeLib) libraries.
 cp -vP ${PYTHON_PROJECT_NATIVE_DIR}/%{_build_arch}/grib2.so \
        ${PYTHON_PROJECT_NATIVE_DIR}/%{_build_arch}/gridslice.so \
        %{_build_root}/awips2/python/lib/python3.6

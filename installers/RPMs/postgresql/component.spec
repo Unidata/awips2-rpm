@@ -22,7 +22,7 @@ BuildArch: %{_build_arch}
 URL: N/A
 License: N/A
 Distribution: N/A
-Vendor: Raytheon
+Vendor: %{_build_vendor}
 Packager: %{_build_site}
 
 AutoReq: no
@@ -97,7 +97,7 @@ cd %{_postgres_build_loc}/postgresql-%{_postgresql_version}/doc
 make || exit 1
 
 %install
-# Copies the standard Raytheon licenses into a license directory for the
+# Copies the standard %{_build_vendor} licenses into a license directory for the
 # current component.
 function copyLegal()
 {

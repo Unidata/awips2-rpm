@@ -16,7 +16,7 @@ Prefix: /awips2/ant
 URL: N/A
 License: N/A
 Distribution: N/A
-Vendor: Raytheon
+Vendor: %{_build_vendor}
 Packager: %{_build_site}
 
 AutoReq: no
@@ -40,7 +40,7 @@ mkdir -p %{_build_root}
 %build
 
 %install
-# Copies the standard Raytheon licenses into a license directory for the
+# Copies the standard licenses into a license directory for the
 # current component.
 function copyLegal()
 {

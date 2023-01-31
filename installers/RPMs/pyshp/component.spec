@@ -17,7 +17,7 @@ BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
 URL: https://github.com/GeospatialPython/pyshp
 License: N/A
-Vendor: Raytheon
+Vendor: %{_build_vendor}
 
 AutoReq: no
 Requires: awips2-python = %{_installed_python}
