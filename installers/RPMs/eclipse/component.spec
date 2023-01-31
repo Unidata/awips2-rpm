@@ -58,6 +58,7 @@ TMP_BUILD_DIR="/tmp/eclipse-build/"
 
 CORE_PROJECT_DIR="%{_baseline_workspace}/foss"
 ECLIPSE_BIN_DIR="${CORE_PROJECT_DIR}/eclipse-%{version}/packaged"
+ECLIPSE_STATIC_DIR="/awips2/repo/awips2-static/eclipse"
 ECLIPSE_TAR_FILE="eclipse-rcp-%{ECLIPSE_VER}-linux-gtk-x86_64.tar.gz"
 ECLIPSE_DELTA_FILE="eclipse-%{ECLIPSE_VER}-delta-pack.zip"
 
@@ -86,14 +87,14 @@ unzip -o ${ECLIPSE_BIN_DIR}/${ECLIPSE_DELTA_FILE} \
    -d ${TMP_BUILD_DIR}/awips2
 
 #CDT_ZIP_FILE
-unzip  ${ECLIPSE_BIN_DIR}/%{CDT_RCP_ZIP_FILE} -d ${REPOSITORY}/cdt-rcp
+unzip  ${ECLIPSE_STATIC_DIR}/%{CDT_RCP_ZIP_FILE} -d ${REPOSITORY}/cdt-rcp
 ${COMMON_CMD} ${INSTALL_ARG} com.sun.xml.bind,org.eclipse.launchbar.core,org.eclipse.cdt.dsf.ui,org.eclipse.cdt.dsf.gdb.ui ${REPO}/cdt-rcp/
 if [ $? -ne 0 ]; then
    exit 1
 fi
 rm -rf ${REPOSITORY}/cdt-rcp
 
-unzip  ${ECLIPSE_BIN_DIR}/%{CDT_ZIP_FILE} -d ${REPOSITORY}/cdt
+unzip  ${ECLIPSE_STATIC_DIR}/%{CDT_ZIP_FILE} -d ${REPOSITORY}/cdt
 ${COMMON_CMD} ${INSTALL_ARG} org.eclipse.cdt.feature.group ${REPO}/cdt/
 if [ $? -ne 0 ]; then
    exit 1
@@ -101,7 +102,7 @@ fi
 rm -rf ${REPOSITORY}/cdt
 
 #MEMORY_ANALYZER_ZIP_FILE
-unzip  ${ECLIPSE_BIN_DIR}/%{MEMORY_ANALYZER_ZIP_FILE} -d ${REPOSITORY}/ma
+unzip  ${ECLIPSE_STATIC_DIR}/%{MEMORY_ANALYZER_ZIP_FILE} -d ${REPOSITORY}/ma
 ${COMMON_CMD} ${INSTALL_ARG} org.eclipse.mat.feature.feature.group ${REPO}/ma/
 if [ $? -ne 0 ]; then
    exit 1
@@ -109,7 +110,7 @@ fi
 rm -rf ${REPOSITORY}/ma
 
 #PYDEV_ZIP_FILE
-unzip  ${ECLIPSE_BIN_DIR}/%{PYDEV_ZIP_FILE} -d ${REPOSITORY}/pydev
+unzip  ${ECLIPSE_STATIC_DIR}/%{PYDEV_ZIP_FILE} -d ${REPOSITORY}/pydev
 ${COMMON_CMD} ${INSTALL_ARG} org.python.pydev.feature.feature.group ${REPO}/pydev/
 if [ $? -ne 0 ]; then
    exit 1
@@ -117,7 +118,7 @@ fi
 rm -rf ${REPOSITORY}/pydev
 
 #WTP_ZIP_FILE
-unzip  ${ECLIPSE_BIN_DIR}/%{WTP_ZIP_FILE} -d ${REPOSITORY}/wtp
+unzip  ${ECLIPSE_STATIC_DIR}/%{WTP_ZIP_FILE} -d ${REPOSITORY}/wtp
 ${COMMON_CMD} ${INSTALL_ARG} org.eclipse.wst.xml_ui.feature.feature.group ${REPO}/wtp/
 if [ $? -ne 0 ]; then
    exit 1
