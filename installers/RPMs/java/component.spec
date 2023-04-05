@@ -64,7 +64,7 @@ JAVA_COMMON_DIR="${INSTALLER_JAVA}/common"
 JAVA_SCRIPTS_DIR="%{_baseline_workspace}/installers/RPMs/java/scripts"
 
 pushd . > /dev/null
-cd ${JAVA_SRC_DIR}
+#cd ${JAVA_SRC_DIR}
 /bin/tar -xvf /awips2/repo/awips2-static/java/${jdk_tar} -C %{_java_build_loc}
 if [ $? -ne 0 ]; then
    exit 1

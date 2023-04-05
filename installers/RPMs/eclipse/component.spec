@@ -79,11 +79,11 @@ fi
 mkdir -p ${TMP_BUILD_DIR}/awips2/eclipse
 
 # Extract Eclipse
-tar -xf ${ECLIPSE_BIN_DIR}/${ECLIPSE_TAR_FILE} \
+tar -xf ${ECLIPSE_STATIC_DIR}/${ECLIPSE_TAR_FILE} \
    -C ${TMP_BUILD_DIR}/awips2
 
 # Extract the Eclipse Delta Pack
-unzip -o ${ECLIPSE_BIN_DIR}/${ECLIPSE_DELTA_FILE} \
+unzip -o ${ECLIPSE_STATIC_DIR}/${ECLIPSE_DELTA_FILE} \
    -d ${TMP_BUILD_DIR}/awips2
 
 #CDT_ZIP_FILE
