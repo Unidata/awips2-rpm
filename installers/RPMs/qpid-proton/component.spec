@@ -132,12 +132,24 @@ if [ $? -ne 0 ]; then
 fi
 popd > /dev/null 2>&1
 
+# Our profile.d scripts.
+mkdir -p %{_build_root}/etc/profile.d
+QPID_PROJECT_DIR="%{_baseline_workspace}/installers/RPMs/qpid-proton"
+QPID_SCRIPTS_DIR="${QPID_PROJECT_DIR}/scripts"
+QPID_PROFILED_DIR="${QPID_SCRIPTS_DIR}/profile.d"
+cp -v ${QPID_PROFILED_DIR}/* %{_build_root}/etc/profile.d
+if [ $? -ne 0 ]; then
+   exit 1
+fi
+
 %clean
 rm -rf %{_build_root}
 rm -rf %{_qpid_build_loc}
 
 %files
 %defattr(644,awips,fxalpha,755)
+%attr(755,root,root) /etc/profile.d/awips2QPID.sh
+%attr(755,root,root) /etc/profile.d/awips2QPID.csh
 %dir %{_prefix}
 %dir %{_includedir}
 %{_includedir}/*
