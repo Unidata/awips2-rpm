@@ -529,7 +529,7 @@ fi
 # create ram drive
 hasRamdrive=$( grep -c hdf5_locks /etc/fstab )
 if [ $hasRamdrive == 0 ]; then
-    echo "tmfps       /awips2/hdf5_locks/ tmpfs   nodev,nosuid,noexec,size=10M    0 0" >> /etc/fstab
+    echo "tmpfs       /awips2/hdf5_locks/ tmpfs   nodev,nosuid,noexec,size=10M,nofail    0 0" >> /etc/fstab
 fi
 
 # mount and fix perms
