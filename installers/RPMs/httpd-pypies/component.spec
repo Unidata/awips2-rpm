@@ -34,8 +34,8 @@ Provides: mod_dav = %{version}-%{release}, httpd-suexec = %{version}-%{release}
 Provides: %name-mmn = %{mmn}
 Requires: %name-tools >= %{version}-%{release}
 Requires: awips2-pypies
-Requires: awips2-hdf5, awips2-python, awips2-python-dynamicserialize, awips2-python-h5py
-Requires: awips2-python-numpy, awips2-python-thrift, awips2-python-ufpy, awips2-python-werkzeug
+Requires: awips2-hdf5, awips2-python, awips2-python-awips, awips2-python-h5py
+Requires: awips2-python-numpy, awips2-python-werkzeug
 Requires: awips2-watchdog
 Packager: %{_build_site}
 
