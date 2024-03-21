@@ -1,5 +1,5 @@
 %define _build_arch %(uname -i)
-%define _qpid_proton_version 0.27.1
+%define _qpid_proton_version 0.38.0
 %define _qpid_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 %define _prefix /awips2/qpid
 %define _qpid_source_dir %{_baseline_workspace}/foss/qpid-proton-%{version}
@@ -11,7 +11,7 @@
 Name: awips2-qpid-proton
 Summary: AWIPS II QPID Proton Distribution
 Version: %{_qpid_proton_version}
-Release: 2%{?dist}
+Release: 1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
@@ -56,26 +56,26 @@ if [ "%{_build_root}" = "" ]; then
 fi
 
 if [ -d %{_build_root} ]; then
-   rm -rf %{_build_root}
+   rm --recursive --force %{_build_root}
 fi
 if [ -d %{_qpid_build_loc} ]; then
-   rm -rf %{_qpid_build_loc}
+   rm --recursive --force %{_qpid_build_loc}
 fi
-mkdir -p %{_qpid_build_loc}
+mkdir --parents %{_qpid_build_loc}
 if [ $? -ne 0 ]; then
    exit 1
 fi
 
 QPID_SOURCE_FILE="qpid-proton-%{version}.tar.gz"
 
-cp -v %{_qpid_source_dir}/${QPID_SOURCE_FILE} %{_qpid_build_loc}
+cp --verbose %{_qpid_source_dir}/${QPID_SOURCE_FILE} %{_qpid_build_loc}
 if [ $? -ne 0 ]; then
    exit 1
 fi
 
 pushd . > /dev/null 2>&1
 cd %{_qpid_build_loc}
-tar -xvf ${QPID_SOURCE_FILE}
+tar --extract --verbose --file=${QPID_SOURCE_FILE}
 if [ $? -ne 0 ]; then
    exit 1
 fi
@@ -85,7 +85,7 @@ popd > /dev/null 2>&1
 %build
 pushd . > /dev/null 2>&1
 
-mkdir -p %{_qpid_build_loc}/qpid-proton-%{version}/build
+mkdir --parents %{_qpid_build_loc}/qpid-proton-%{version}/build
 if [ $? -ne 0 ]; then
    exit 1
 fi
@@ -97,14 +97,15 @@ if [ ! %{_build_arch} = "x86_64" ]; then
    LIB_ARCH="lib"
 fi
 
-%cmake .. %{_qpid_build_loc}/qpid-proton-%{version} \
+LDFLAGS=-Wl,-rpath=/awips2/qpid/${LIB_ARCH} %cmake .. %{_qpid_build_loc}/qpid-proton-%{version} \
     -DSYSINSTALL_BINDINGS=ON  \
     -DBUILD_CPP=ON \
     -DBUILD_CPP_03=OFF -DBUILD_PYTHON=OFF -DBUILD_RUBY=OFF \
     -DSWIG_DIR=/usr/share/swig/2.0.10 \
     -DSWIG_EXECUTABLE=/usr/bin/swig \
     -DOPENSSL_CRYPTO_LIBRARY=/usr/${LIB_ARCH}/libcrypto.so \
-    -DOPENSSL_SSL_LIBRARY=/usr/${LIB_ARCH}/libssl.so
+    -DOPENSSL_SSL_LIBRARY=/usr/${LIB_ARCH}/libssl.so \
+    -DPYTHON_EXECUTABLE=/awips2/python/bin/python3
 if [ $? -ne 0 ]; then
    exit 1
 fi
@@ -112,12 +113,12 @@ fi
 popd > /dev/null 2>&1
 
 %install
-mkdir -p %{_build_root}%{_prefix}
+mkdir --parents %{_build_root}%{_prefix}
 if [ $? -ne 0 ]; then
    exit 1
 fi
 
-mkdir -p %{_build_root}%{_prefix}%{_includedir}
+mkdir --parents %{_build_root}%{_prefix}%{_includedir}
 
 if [ $? -ne 0 ]; then
    exit 1
@@ -132,7 +133,7 @@ if [ $? -ne 0 ]; then
 fi
 popd > /dev/null 2>&1
 
-# Our profile.d scripts.
+# Unidata profile.d scripts.
 mkdir -p %{_build_root}/etc/profile.d
 QPID_PROJECT_DIR="%{_baseline_workspace}/installers/RPMs/qpid-proton"
 QPID_SCRIPTS_DIR="${QPID_PROJECT_DIR}/scripts"
@@ -143,8 +144,8 @@ if [ $? -ne 0 ]; then
 fi
 
 %clean
-rm -rf %{_build_root}
-rm -rf %{_qpid_build_loc}
+rm --recursive --force %{_build_root}
+rm --recursive --force %{_qpid_build_loc}
 
 %files
 %defattr(644,awips,fxalpha,755)

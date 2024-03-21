@@ -23,7 +23,7 @@ Requires: awips2-java
 AWIPS II Groovy Distribution - Contains Groovy %{_groovy_version}.
 
 # disable jar repacking
-%global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-java-repack-jars[[:space:]].*$!!g')
+%global __jar_repack 0
 
 %prep
 # Ensure that a "buildroot" has been specified.

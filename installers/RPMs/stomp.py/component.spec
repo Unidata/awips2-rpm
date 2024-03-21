@@ -3,7 +3,6 @@
 %define _build_arch %(uname -i)
 %define _python_pkgs_dir "%{_baseline_workspace}/pythonPackages"
 %define _python_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-%define _installed_python %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c 'import sys; print(".".join(map(str, sys.version_info[:3])))'; else echo 0; fi)
 %define _installed_python_short %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))'; else echo 0; fi)
 
 #
@@ -12,8 +11,9 @@
 
 Name: awips2-python-stomp.py
 Summary: AWIPS II Python stomp.py Distribution
+Epoch: 1
 Version: 4.1.22
-Release: %{_installed_python}.1%{?dist}
+Release: %{_installed_python_short}.1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: noarch
@@ -24,11 +24,9 @@ Vendor: %{_build_vendor}
 Packager: %{_build_site}
 
 AutoReq: no
-Requires: awips2-python = %{_installed_python}
-Provides: awips2-python-stomp.py = %{version}
+Requires: awips2-python >= %{_installed_python_short}
 
 BuildRequires: awips2-python
-BuildRequires: awips2-python-setuptools
 
 %description
 AWIPS II Python stomp.py Site-Package
@@ -97,6 +95,12 @@ if [ ${RC} -ne 0 ]; then
    exit 1
 fi
 popd > /dev/null
+
+# Merge lib64 into lib to avoid problems with installing into the virtualenv
+if [ -d "%{_build_root}/awips2/python/lib64/" ]; then
+    rsync -a %{_build_root}/awips2/python/lib64/ %{_build_root}/awips2/python/lib || exit 1
+    rm -rf %{_build_root}/awips2/python/lib64
+fi
 
 %clean
 rm -rf %{_build_root}

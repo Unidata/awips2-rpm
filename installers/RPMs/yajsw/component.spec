@@ -28,7 +28,7 @@ AWIPS II yajsw Distribution - A custom compilation of yajsw %{_yajsw_version} us
 by several AWIPS II components.
 
 # disable jar repacking
-%global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-java-repack-jars[[:space:]].*$!!g')
+%global __jar_repack 0
 
 %prep
 # Ensure that a "buildroot" has been specified.

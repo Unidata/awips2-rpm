@@ -1,0 +1,13 @@
+--- scipy-1.10.1/scipy/__init__.py	1969-12-31 18:00:00.000000000 -0600
++++ scipy-1.10.1-patched/scipy/__init__.py	2023-08-07 15:54:19.700408718 -0500
+@@ -193,9 +193,8 @@
+     def __dir__():
+         return __all__
+ 
+-    import importlib as _importlib
+-
+     def __getattr__(name):
++        import importlib as _importlib
+         if name in submodules:
+             return _importlib.import_module(f'scipy.{name}')
+         else:

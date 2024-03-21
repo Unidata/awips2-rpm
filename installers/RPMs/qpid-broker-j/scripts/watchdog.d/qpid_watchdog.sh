@@ -12,15 +12,15 @@ err=0
 case "$1" in
     # what watchdog calls when testing the script
     test)
-        service_action "status" "qpidd" 60
+        systemd_action "status" "qpidd" 60
         err=$?
     ;;
 
     # what watchdog calls when a tested script returns non-zero
     repair)
         # qpidd was reported as down; restart and check status
-        service_action "restart" "qpidd" 60
-        service_action "status" "qpidd" 60
+        systemd_action "restart" "qpidd" 60
+        systemd_action "status" "qpidd" 60
         err=$?
     ;;
 

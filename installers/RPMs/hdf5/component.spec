@@ -1,4 +1,4 @@
-%global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')
+%global _python_bytecompile_extra 0
 %define _build_arch %(uname -i)
 %define _hdf5_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 %define _szip_version 2.1.1
@@ -8,7 +8,8 @@
 #
 Name: awips2-hdf5
 Summary: AWIPS II HDF5 Distribution
-Version: 1.8.20
+# Can't use variables here since this line is parsed by SetupEnvironment.sh
+Version: 1.14.1
 Release: %{_component_version}.%{_component_release}%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
@@ -59,9 +60,8 @@ fi
 mkdir -p %{_hdf5_build_loc}
 
 %build
-LZF_TAR="lzf.tar.gz"
-HDF5_TAR="hdf5-%{version}.tar"
-HDF5_SRC_DIR="%{_baseline_workspace}/foss/hdf5-%{version}/packaged"
+HDF5_TAR_GZ="hdf5-%{version}-2.tar.gz"
+HDF5_SRC_DIR="%{_baseline_workspace}/foss/hdf5-%{version}-2/packaged"
 
 SZIP_TAR="szip-%{_szip_version}.tar"
 SZIP_TAR_GZ="${SZIP_TAR=}.gz"
@@ -106,21 +106,22 @@ fi
 
 popd > /dev/null
 
-cp -v ${HDF5_SRC_DIR}/${HDF5_TAR} %{_hdf5_build_loc}
-cp -v ${HDF5_SRC_DIR}/${LZF_TAR} %{_hdf5_build_loc}
+cp -v ${HDF5_SRC_DIR}/${HDF5_TAR_GZ} %{_hdf5_build_loc}
 
 pushd . > /dev/null
 # Untar the source.
 cd %{_hdf5_build_loc}
-tar -xf ${HDF5_TAR}
-tar -xf ${LZF_TAR}
+tar -xzvf ${HDF5_TAR_GZ}
 
 pushd . > /dev/null
-cd %{_hdf5_build_loc}/hdf5-%{version}
+cd %{_hdf5_build_loc}/hdf5-%{version}-2
 
+# Setting enable-build-mode for v1.12.0 due to bug.
+#   Will be resolved in 1.12.1 and can be removed.
 LDFLAGS='-Wl,-rpath,/awips2/hdf5/lib' ./configure \
    --prefix=/awips2/hdf5 \
-   --with-szlib=%{_hdf5_build_loc}/awips2/hdf5
+   --with-szlib=%{_hdf5_build_loc}/awips2/hdf5 \
+   --enable-build-mode=production
 RC=$?
 if [ ${RC} -ne 0 ]; then
    exit 1
@@ -128,21 +129,6 @@ fi
 
 make %{?_smp_mflags}
 if [ ${RC} -ne 0 ]; then
-   exit 1
-fi
-popd > /dev/null
-
-pushd . > /dev/null 2>&1
-# build lzf
-cd %{_hdf5_build_loc}/lzf
-gcc -O2 -I%{_hdf5_build_loc}/hdf5-%{version}/src \
-   -fPIC \
-   -shared lzf/*.c lzf_filter.c \
-   -L %{_hdf5_build_loc}/hdf5-%{version}/src/.libs \
-   -lhdf5 \
-   -Wl,-rpath,/awips2/hdf5/lib \
-   -o liblzf_filter.so
-if [ $? -ne 0 ]; then
    exit 1
 fi
 popd > /dev/null
@@ -159,17 +145,13 @@ fi
 popd > /dev/null
 
 pushd . > /dev/null
-cd %{_hdf5_build_loc}/hdf5-%{version}
+cd %{_hdf5_build_loc}/hdf5-%{version}-2
 make install prefix=%{_build_root}/awips2/hdf5
 RC=$?
 if [ ${RC} -ne 0 ]; then
    exit 1
 fi
 popd > /dev/null
-
-# Copy the lzf library to tools/lib
-cp %{_hdf5_build_loc}/lzf/*.so \
-   %{_build_root}/awips2/hdf5/lib
 
 # Our profile.d scripts.
 mkdir -p %{_build_root}/etc/profile.d

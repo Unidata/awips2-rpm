@@ -23,7 +23,7 @@ ncepCaseArray='+(opcn|hpcn|ntbn|ctbn|spcn|nhcn|awcn|swpn|wnaw|spcw|nhcr|nhcw|tcp
 tbedCaseArray='+(tbw3|tbw4|tbdw|tbdr|ctbn|tbwo)'
 remCPCaseArray='+(vrh)'
 bmhCaseArray='+(tbdw|tbw3|nhda|ntca|ntcb|ntcd|nmtw|gsp|afc|bro|gum|pqr|oax|vef)'
-centralCaseArray='+(ancf|bncf|tncf|olaf)'
+centralCaseArray='+(ancf|bncf|cncf|tncf|olaf)'
 if [ ! -d ${logDir} ]; then
    mkdir -p ${logDir}
    chmod 777 ${logDir}

@@ -1,0 +1,85 @@
+# Change the brp-python-bytecompile script to use the AWIPS2 version of Python. #7237
+%global __os_install_post %(echo '%{__os_install_post}' | sed -e 's/\/usr\/bin\/python/\/awips2\/python\/bin\/python/g')
+%define _installed_python_short %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))'; else echo 0; fi)
+
+
+#
+# AWIPS II Python importlib-metadata Spec File
+#
+
+Name: awips2-python-importlib-metadata
+Summary: AWIPS II Python importlib-metadata module
+Epoch: 1
+Version: 6.6.0
+Release: %{_installed_python_short}.1%{?dist}
+Group: AWIPSII
+BuildRoot: %{_build_root}
+BuildArch: noarch
+URL: N/A
+License: N/A
+Distribution: N/A
+Vendor: ${_build_vendor}
+Packager: %{_build_site}
+
+AutoReq: no
+Requires: awips2-python >= %{_installed_python_short}
+Requires: awips2-python-zipp >= 0.5
+
+BuildRequires: awips2-python
+BuildRequires: awips2-python-setuptools
+
+%description
+AWIPS II Python importlib-metadata Site-Package
+
+%prep
+# Verify That The User Has Specified A BuildRoot.
+if [ "%{_build_root}" = "" ]
+then
+   echo "A Build Root has not been specified."
+   echo "Unable To Continue ... Terminating"
+   exit 1
+fi
+
+rm --recursive --force %{_build_root}
+mkdir --parents %{_build_root}
+
+
+%build
+
+
+%install
+pushd . > /dev/null
+SRC_DIR="%{_baseline_workspace}/foss/importlib-metadata-%{version}/packaged"
+PACKAGE_FILE="importlib_metadata-%{version}-py3-none-any.whl"
+/awips2/python/bin/pip3 install \
+   --disable-pip-version-check --verbose --no-deps --ignore-installed --no-index \
+   --root %{_build_root} --prefix /awips2/python \
+   "${SRC_DIR}/${PACKAGE_FILE}"
+RC=$?
+if [ ${RC} -ne 0 ]; then
+   exit 1
+fi
+popd > /dev/null
+
+# Merge lib64 into lib to avoid problems with installing into the virtualenv
+if [ -d "%{_build_root}/awips2/python/lib64/" ]; then
+    rsync --archive %{_build_root}/awips2/python/lib64/ %{_build_root}/awips2/python/lib || exit 1
+    rm --recursive --force %{_build_root}/awips2/python/lib64
+fi
+
+
+%clean
+rm --recursive --force %{_build_root}
+
+
+%files
+%defattr(644,awips,fxalpha,755)
+/awips2/python/lib/python%{_installed_python_short}/site-packages/importlib_metadata
+/awips2/python/lib/python%{_installed_python_short}/site-packages/importlib_metadata-%{version}.dist-info
+%exclude /awips2/python/lib/python%{_installed_python_short}/site-packages/importlib_metadata/__pycache__
+
+%changelog
+* Wed May 31 2023 Tom Gurney <thomas.gurney@rtx.com>
+- Upgrade to 6.6.0 to support Python 3.11
+* Thu Jul 15 2021 Lisa Singh <lisa.e.singh@raytheon.com> 
+- Initial package creation.

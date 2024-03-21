@@ -1,8 +1,7 @@
-%global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')
+%global _python_bytecompile_extra 0
 %define _build_arch %(uname -i)
 %define _python_pkgs_dir "%{_baseline_workspace}/pythonPackages"
 %define _python_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-%define _installed_python %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c 'import sys; print(".".join(map(str, sys.version_info[:3])))'; else echo 0; fi)
 %define _installed_python_short %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))'; else echo 0; fi)
 
 #
@@ -10,8 +9,9 @@
 #
 Name: awips2-python-pyshp
 Summary: AWIPS II Python Shapefile Library Distribution
-Version: 1.2.11
-Release: 2.%{_installed_python}%{?dist}
+Epoch: 1
+Version: 2.1.3
+Release: %{_installed_python_short}.1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
@@ -20,11 +20,9 @@ License: N/A
 Vendor: %{_build_vendor}
 
 AutoReq: no
-Requires: awips2-python = %{_installed_python}
-Provides: awips2-python-pyshp = %{version}
+Requires: awips2-python >= %{_installed_python_short}
 
 BuildRequires: awips2-python
-BuildRequires: awips2-python-setuptools
 
 %description
 AWIPS II Python Shapefile Library Site-Package
@@ -89,6 +87,12 @@ if [ ${RC} -ne 0 ]; then
    exit 1
 fi
 popd > /dev/null
+
+# Merge lib64 into lib to avoid problems with installing into the virtualenv
+if [ -d "%{_build_root}/awips2/python/lib64/" ]; then
+    rsync -a %{_build_root}/awips2/python/lib64/ %{_build_root}/awips2/python/lib || exit 1
+    rm -rf %{_build_root}/awips2/python/lib64
+fi
 
 %pre
 

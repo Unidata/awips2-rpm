@@ -1,0 +1,22 @@
+# This file should be installed as a systemd unit into /etc/systemd/system/ or 
+# /lib/systemd/system/.
+
+[Unit]
+Description=Apache QPID Broker-J for AWIPS2
+After=network-online.target
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+User=awips
+Group=fxalpha
+Type=simple
+Restart=always
+ExecStartPre=/bin/bash -c '\
+	source /etc/watchdog.d/utilities/watchdogutils.sh; \
+	remove_watchdog_bypass qpidd'
+ExecStart=/awips2/qpid/bin/qpid-wrapper -noConsole
+ExecStop=/bin/bash -c '\
+	source /etc/watchdog.d/utilities/watchdogutils.sh; \
+	bypass_watchdog qpidd'

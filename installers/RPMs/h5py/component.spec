@@ -1,9 +1,7 @@
 # Change the brp-python-bytecompile script to use the AWIPS2 version of Python. #7237
 %global __os_install_post %(echo '%{__os_install_post}' | sed -e 's/\/usr\/bin\/python/\/awips2\/python\/bin\/python/g')
 %define _build_arch %(uname -i)
-%define _python_pkgs_dir "%{_baseline_workspace}/pythonPackages"
 %define _python_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-%define _installed_python %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c 'import sys; print(".".join(map(str, sys.version_info[:3])))'; else echo 0; fi)
 %define _installed_python_numpy %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c "import numpy; print(numpy.__version__)"; else echo 0; fi)
 %define _installed_python_short %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))'; else echo 0; fi)
 
@@ -12,8 +10,9 @@
 #
 Name: awips2-python-h5py
 Summary: AWIPS II Python h5py Distribution
-Version: 2.9.0
-Release: %{_installed_python}.%{_installed_python_numpy}.1%{?dist}
+Epoch: 1
+Version: 3.8.0
+Release: %{_installed_python_short}.%{_installed_python_numpy}.1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
@@ -25,21 +24,21 @@ Packager: %{_build_site}
 
 AutoReq: no
 Requires: awips2-hdf5
-Requires: awips2-python = %{_installed_python}
-Requires: awips2-python-numpy = %{_installed_python_numpy}
-Requires: awips2-python-six
+Requires: awips2-python >= %{_installed_python_short}
+Requires: awips2-python-numpy
 Requires: libz.so.1
-Provides: awips2-python-h5py = %{version}
 
 BuildRequires: awips2-hdf5
 BuildRequires: awips2-hdf5-devel
 BuildRequires: awips2-python
-BuildRequires: awips2-python-setuptools
 BuildRequires: awips2-python-pkgconfig
 BuildRequires: awips2-python-cython
 BuildRequires: awips2-python-numpy
-BuildRequires: awips2-python-six
 BuildRequires: gcc
+BuildRequires: python%{_installed_python_short}-pip
+BuildRequires: awips2-python-setuptools
+BuildRequires: python%{_installed_python_short}-six
+BuildRequires: python%{_installed_python_short}-wheel
 
 %description
 AWIPS II Python h5py Site-Package
@@ -72,6 +71,9 @@ fi
 mkdir -p %{_python_build_loc}
 
 %build
+
+
+%install
 H5PY_SRC_DIR="%{_baseline_workspace}/foss/h5py-%{version}/packaged/"
 
 # Copy the h5py source.
@@ -88,27 +90,17 @@ if [ $? -ne 0 ]; then
    exit 1
 fi
 
-cd h5py-%{version}
-/awips2/python/bin/python setup.py configure \
-   --hdf5=/awips2/hdf5
-if [ $? -ne 0 ]; then
-   exit 1
-fi
-
-/awips2/python/bin/python setup.py build
-if [ $? -ne 0 ]; then
-   exit 1
-fi
-popd > /dev/null
-
-%install
-pushd . > /dev/null
 cd %{_python_build_loc}/h5py-%{version}
-
-/awips2/python/bin/python setup.py install \
-   --root=%{_build_root} \
-   --prefix=/awips2/python
+HDF5_DIR=/awips2/hdf5 H5PY_SETUP_REQUIRES=0 /awips2/python/bin/pip3 install \
+   --disable-pip-version-check --verbose --no-deps --ignore-installed --no-index --no-build-isolation \
+   --root %{_build_root} --prefix /awips2/python .
 popd > /dev/null
+
+# Merge lib64 into lib to avoid problems with installing into the virtualenv
+if [ -d "%{_build_root}/awips2/python/lib64/" ]; then
+    rsync -a %{_build_root}/awips2/python/lib64/ %{_build_root}/awips2/python/lib || exit 1
+    rm -rf %{_build_root}/awips2/python/lib64
+fi
 
 %clean
 rm -rf ${RPM_BUILD_ROOT}

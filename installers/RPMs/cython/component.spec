@@ -3,7 +3,6 @@
 %define _build_arch %(uname -i)
 %define _python_pkgs_dir "%{_baseline_workspace}/pythonPackages"
 %define _python_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-%define _installed_python %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c 'import sys; print(".".join(map(str, sys.version_info[:3])))'; else echo 0; fi)
 %define _installed_python_short %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))'; else echo 0; fi)
 
 #
@@ -11,8 +10,9 @@
 #
 Name: awips2-python-cython
 Summary: AWIPS II Python Cython Distribution
-Version: 0.29.17
-Release: %{_installed_python}.1%{?dist}
+Epoch: 1
+Version: 0.29.34
+Release: %{_installed_python_short}.1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
@@ -23,11 +23,9 @@ Vendor: %{_build_vendor}
 Packager: %{_build_site}
 
 AutoReq: no
-Requires: awips2-python = %{_installed_python}
-Provides: awips2-python-cython = %{version}
+Requires: awips2-python >= %{_installed_python_short}
 
 BuildRequires: awips2-python
-BuildRequires: awips2-python-setuptools
 BuildRequires: gcc
 
 %description
@@ -42,23 +40,23 @@ then
    exit 1
 fi
 
-rm -rf %{_build_root}
-mkdir -p %{_build_root}
+rm --recursive --force %{_build_root}
+mkdir --parents %{_build_root}
 
-rm -rf %{_build_root}
-mkdir -p %{_build_root}
+rm --recursive --force %{_build_root}
+mkdir --parents %{_build_root}
 if [ -d %{_python_build_loc} ]; then
-   rm -rf %{_python_build_loc}
+   rm --recursive --force %{_python_build_loc}
 fi
-mkdir -p %{_python_build_loc}
+mkdir --parents %{_python_build_loc}
 
 %build
 CYTHON_SRC_DIR="%{_baseline_workspace}/foss/cython-%{version}/packaged"
 
-cp -rv ${CYTHON_SRC_DIR}/Cython-%{version}.tar.gz %{_python_build_loc}
+cp --recursive --verbose ${CYTHON_SRC_DIR}/Cython-%{version}.tar.gz %{_python_build_loc}
 pushd . > /dev/null
 cd %{_python_build_loc}
-tar xf Cython-%{version}.tar.gz
+tar --extract --file=Cython-%{version}.tar.gz
 cd Cython-%{version}
 
 /awips2/python/bin/python setup.py build
@@ -80,9 +78,15 @@ if [ ${RC} -ne 0 ]; then
 fi
 popd > /dev/null
 
+# Merge lib64 into lib to avoid problems with installing into the virtualenv
+if [ -d "%{_build_root}/awips2/python/lib64/" ]; then
+    rsync -a %{_build_root}/awips2/python/lib64/ %{_build_root}/awips2/python/lib || exit 1
+    rm -rf %{_build_root}/awips2/python/lib64
+fi
+
 %clean
-rm -rf %{_build_root}
-rm -rf %{_python_build_loc}
+rm --recursive --force %{_build_root}
+rm --recursive --force %{_python_build_loc}
 
 %files
 %defattr(644,awips,fxalpha,755)

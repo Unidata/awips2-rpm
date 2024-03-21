@@ -1,0 +1,22 @@
+# This file should be installed as a systemd unit into /lib/systemd/system/
+# This is a template, so httpd-pypies-logging can be enabled with the command:
+# sudo systemctl enable httpd-pypies-logging
+
+[Unit]
+Description=Logging Service for httpd-pypies
+BindsTo=httpd-pypies.service
+
+[Service]
+Type=forking
+EnvironmentFile=/awips2/httpd_pypies/bin/httpd_pypies_env
+
+ExecStart=/bin/bash -c ' \
+        /awips2/httpd_pypies/bin/pypies_logging_service.sh start'
+ExecStop=/bin/bash -c '\
+        /awips2/httpd_pypies/bin/pypies_logging_service.sh stop'
+
+KillSignal=SIGKILL
+KillMode=mixed
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,11 @@
+diff -ur thrift-0.14.1/lib/cpp/src/thrift/transport/THttpTransport.cpp thrift-0.14.1-chunked-encoding-fix/lib/cpp/src/thrift/transport/THttpTransport.cpp
+--- thrift-0.14.1/lib/cpp/src/thrift/transport/THttpTransport.cpp	2021-02-04 18:07:31.000000000 -0500
++++ thrift-0.14.1-chunked-encoding-fix/lib/cpp/src/thrift/transport/THttpTransport.cpp	2021-06-04 14:41:41.280984341 -0400
+@@ -112,6 +112,7 @@
+   uint32_t chunkSize = parseChunkSize(line);
+   if (chunkSize == 0) {
+     readChunkedFooters();
++    readHeaders_ = true;
+   } else {
+     // Read data content
+     length += readContent(chunkSize);

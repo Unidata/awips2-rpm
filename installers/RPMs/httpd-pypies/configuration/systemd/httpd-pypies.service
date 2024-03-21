@@ -1,0 +1,31 @@
+# This file should be installed as a systemd unit into /lib/systemd/system/
+# This is a template, so httpd-pypies can be enabled with the command:
+# sudo systemctl enable httpd-pypies
+
+[Unit]
+Description=The Apache HTTP Server Configured for PyPIES
+Wants=httpd-init.service
+Requires=httpd-pypies-logging.service
+After=network.target remote-fs.target nss-lookup.target httpd-init.service
+
+[Service]
+Type=forking
+EnvironmentFile=/awips2/httpd_pypies/bin/httpd_pypies_env
+PIDFile=/run/httpd_pypies/httpd.pid
+ExecStartPre=+mkdir -p /run/httpd_pypies/
+ExecStartPre=+chown -R awips:fxalpha /run/httpd_pypies/
+ExecStartPre=+restorecon -r /awips2/hdf5_locks
+ExecStart=/usr/sbin/httpd $OPTIONS -f \
+        /awips2/httpd_pypies/etc/httpd/conf/httpd.conf
+ExecStop=/usr/sbin/httpd -f \
+        /awips2/httpd_pypies/etc/httpd/conf/httpd.conf \
+        -k graceful-stop
+ExecReload=/usr/sbin/httpd -f \
+        /awips2/httpd_pypies/etc/httpd/conf/httpd.conf \
+        -k graceful
+# Send SIGWINCH for graceful stop
+KillSignal=SIGWINCH
+KillMode=mixed
+
+[Install]
+WantedBy=multi-user.target

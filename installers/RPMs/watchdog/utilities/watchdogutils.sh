@@ -45,6 +45,30 @@ build_service_line ()
     fi
 }
 
+# arg1 - service action
+# arg2 - service name
+# arg3 - uptime to allow before assuming bad service
+systemd_action ()
+{
+    check_for_bypass $2
+
+    if [ $? -eq 0 ]; then
+
+        if [ "$1" == "status" ]; then
+            /usr/bin/systemctl is-active "$2" &>/dev/null
+        else
+            echo "INFO `date_cmd` attempting to $1 $2"
+            /usr/bin/systemctl "$1" "$2" &>/dev/null
+        fi
+
+        check_for_uptime $? $2 $3
+
+        return $?
+    fi
+
+    return 0
+}
+
 # arg1 - return value of service command
 # arg2 - service name
 # arg2 - uptime to check

@@ -1,10 +1,9 @@
 %global __os_install_post %(echo '%{__os_install_post}' | sed -e 's/\/usr\/bin\/python/\/awips2\/python\/bin\/python/g')
 %define _build_arch %(uname -i)
-%define _qpid_proton_version 0.27.1
+%define _qpid_proton_version 0.38.0
 %define _qpid_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 %define _prefix /awips2/qpid
 %define _qpid_source_dir %{_baseline_workspace}/foss/qpid-proton-%{version}
-%define _installed_python %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c 'import sys; print(".".join(map(str, sys.version_info[:3])))'; else echo 0; fi)
 %define _installed_python_short %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))'; else echo 0; fi)
 
 #
@@ -13,8 +12,9 @@
 
 Name: awips2-qpid-proton-python
 Summary: AWIPS II QPID Proton Distribution
+Epoch: 1
 Version: %{_qpid_proton_version}
-Release: %{_installed_python}.2%{?dist}
+Release: %{_installed_python_short}.4%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
@@ -25,7 +25,7 @@ Packager: %{_build_site}
 
 AutoReq: no
 Provides: awips2-qpid-proton-python = %{_qpid_proton_version}
-Requires: awips2-python = %{_installed_python}
+Requires: awips2-python >= %{_installed_python_short}
 Requires: awips2-qpid-proton
 Requires: libuuid
 Requires: swig
@@ -53,26 +53,26 @@ if [ "%{_build_root}" = "" ]; then
 fi
 
 if [ -d %{_build_root} ]; then
-   rm -rf %{_build_root}
+   rm --recursive --force %{_build_root}
 fi
 if [ -d %{_qpid_build_loc} ]; then
-   rm -rf %{_qpid_build_loc}
+   rm --recursive --force %{_qpid_build_loc}
 fi
-mkdir -p %{_qpid_build_loc}
+mkdir --parents %{_qpid_build_loc}
 if [ $? -ne 0 ]; then
    exit 1
 fi
 
 QPID_SOURCE_FILE="qpid-proton-%{version}.tar.gz"
 
-cp -v %{_qpid_source_dir}/${QPID_SOURCE_FILE} %{_qpid_build_loc}
+cp --verbose %{_qpid_source_dir}/${QPID_SOURCE_FILE} %{_qpid_build_loc}
 if [ $? -ne 0 ]; then
    exit 1
 fi
 
 pushd . > /dev/null 2>&1
 cd %{_qpid_build_loc}
-tar -xvf ${QPID_SOURCE_FILE}
+tar --extract --verbose --file=${QPID_SOURCE_FILE}
 if [ $? -ne 0 ]; then
    exit 1
 fi
@@ -82,7 +82,7 @@ popd > /dev/null 2>&1
 %build
 pushd . > /dev/null 2>&1
 
-mkdir -p %{_qpid_build_loc}/qpid-proton-%{version}/build
+mkdir --parents %{_qpid_build_loc}/qpid-proton-%{version}/build
 if [ $? -ne 0 ]; then
    exit 1
 fi
@@ -92,14 +92,12 @@ cd %{_qpid_build_loc}/qpid-proton-%{version}/build
 %cmake .. \
 	-DSYSINSTALL_BINDINGS=ON \
     -DBUILD_PYTHON=ON \
-    -DBUILD_CPP=OFF -DBUILD_RUBY=OFF -DBUILD_CPP_03=OFF \
-    -DPYTHON_INCLUDE_DIR=/awips2/python/include/python3.6m \
-    -DPYTHON_LIBRARY=/awips2/python/lib/libpython3.6m.so
+    -DBUILD_CPP=OFF -DBUILD_RUBY=OFF -DBUILD_CPP_03=OFF
 if [ $? -ne 0 ]; then
    exit 1
 fi
 
-make
+LDFLAGS=-Wl,-rpath=/awips2/qpid/lib64 make
 if [ $? -ne 0 ]; then
    exit 1
 fi
@@ -134,36 +132,42 @@ QPID_QUEUE_COUNT_SCRIPT="qpid-queue-count"
 QPID_MONITOR_SCRIPT="monitor_qpid_host.sh"
 QPID_DISPLAY_FORMATTER="disp.py"
 
-mkdir -p %{_build_root}/awips2/python/bin
+mkdir --parents %{_build_root}/awips2/python/bin
 if [ $? -ne 0 ]; then
    exit 1
 fi
 
 # Copy the stats script to bin
-cp -v %{_qpid_source_dir}/bin/${QPID_STAT_SCRIPT} \
+cp --verbose %{_qpid_source_dir}/bin/${QPID_STAT_SCRIPT} \
    %{_build_root}/awips2/python/bin
 if [ $? -ne 0 ]; then
    exit 1
 fi
 
 # Copy the queue-counting script to bin
-cp -v %{_qpid_source_dir}/bin/${QPID_QUEUE_COUNT_SCRIPT} \
+cp --verbose %{_qpid_source_dir}/bin/${QPID_QUEUE_COUNT_SCRIPT} \
    %{_build_root}/awips2/python/bin
 if [ $? -ne 0 ]; then
    exit 1
 fi
 
 # Copy the monitoring script to bin
-cp -v %{_qpid_source_dir}/bin/${QPID_MONITOR_SCRIPT} \
+cp --verbose %{_qpid_source_dir}/bin/${QPID_MONITOR_SCRIPT} \
    %{_build_root}/awips2/python/bin
 
 # Copy the display formatter to bin
-cp -v %{_qpid_source_dir}/bin/${QPID_DISPLAY_FORMATTER} \
+cp --verbose %{_qpid_source_dir}/bin/${QPID_DISPLAY_FORMATTER} \
    %{_build_root}/awips2/python/bin
 
+# Merge lib64 into lib to avoid problems with installing into the virtualenv
+if [ -d "%{_build_root}/awips2/python/lib64/" ]; then
+    rsync --archive %{_build_root}/awips2/python/lib64/ %{_build_root}/awips2/python/lib || exit 1
+    rm --recursive --force %{_build_root}/awips2/python/lib64
+fi
+
 %clean
-rm -rf %{_build_root}
-rm -rf %{_qpid_build_loc}
+rm --recursive --force %{_build_root}
+rm --recursive --force %{_qpid_build_loc}
 
 %files
 %defattr(644,awips,fxalpha,755)

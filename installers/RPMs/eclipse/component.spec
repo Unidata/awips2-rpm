@@ -2,17 +2,19 @@
 # AWIPS II Eclipse Spec File
 #
 
-%define ECLIPSE_VER 2020-09-R
-%define CDT_ZIP_FILE cdt-10.0.0.zip
-%define CDT_RCP_ZIP_FILE cdt-rcp-10.0.0.zip
-%define MEMORY_ANALYZER_ZIP_FILE MemoryAnalyzer-1.10.0.202002252112.zip
-%define PYDEV_ZIP_FILE PyDev-8.0.0.zip
-%define WTP_ZIP_FILE wtp-repo-R-3.19.0-20200828030223.zip
+%define ECLIPSE_VER 2021-09-R
+%define CDT_ZIP_FILE cdt-10.4.1.zip
+%define MEMORY_ANALYZER_ZIP_FILE MemoryAnalyzer-1.12.0.202106020830.zip
+%define PYDEV_ZIP_FILE PyDev-9.1.0.zip
+%define WTP_ZIP_FILE wtp-repo-R-3.23.0-20210822084517.zip
+# Disabling build ID links prevents conflicts with other packages that include
+# Eclipse binaries.
+%define _build_id_links none
 
 Name: awips2-eclipse
 Summary: AWIPS II Eclipse Distribution
-Version: 4.17
-Release: 1%{?dist}
+Version: 4.21
+Release: 3%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 URL: N/A
@@ -33,10 +35,12 @@ BuildRequires: awips2-java
 %description
 AWIPS II Eclipse Distribution - Contains the AWIPS II Eclipse Distribution.
 
-# Turn off the brp-python-bytecompile script
-%global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')
+# disable python byte compile
+%global _python_bytecompile_extra 0
 # disable jar repacking
-%global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-java-repack-jars[[:space:]].*$!!g')
+%global __jar_repack 0
+# disable stripping of binaries, required to prevent "JAR has been tampered" error during CAVE build
+%global __strip /bin/true
 
 %prep
 # Verify That The User Has Specified A BuildRoot.
@@ -58,7 +62,7 @@ TMP_BUILD_DIR="/tmp/eclipse-build/"
 
 CORE_PROJECT_DIR="%{_baseline_workspace}/foss"
 ECLIPSE_BIN_DIR="${CORE_PROJECT_DIR}/eclipse-%{version}/packaged"
-ECLIPSE_STATIC_DIR="/awips2/repo/awips2-static/eclipse"
+ECLIPSE_STATIC_DIR="/awips2/repo/awips2-static/eclipse-%{version}/packaged"
 ECLIPSE_TAR_FILE="eclipse-rcp-%{ECLIPSE_VER}-linux-gtk-x86_64.tar.gz"
 ECLIPSE_DELTA_FILE="eclipse-%{ECLIPSE_VER}-delta-pack.zip"
 
@@ -85,14 +89,6 @@ tar -xf ${ECLIPSE_STATIC_DIR}/${ECLIPSE_TAR_FILE} \
 # Extract the Eclipse Delta Pack
 unzip -o ${ECLIPSE_STATIC_DIR}/${ECLIPSE_DELTA_FILE} \
    -d ${TMP_BUILD_DIR}/awips2
-
-#CDT_ZIP_FILE
-unzip  ${ECLIPSE_STATIC_DIR}/%{CDT_RCP_ZIP_FILE} -d ${REPOSITORY}/cdt-rcp
-${COMMON_CMD} ${INSTALL_ARG} com.sun.xml.bind,org.eclipse.launchbar.core,org.eclipse.cdt.dsf.ui,org.eclipse.cdt.dsf.gdb.ui ${REPO}/cdt-rcp/
-if [ $? -ne 0 ]; then
-   exit 1
-fi
-rm -rf ${REPOSITORY}/cdt-rcp
 
 unzip  ${ECLIPSE_STATIC_DIR}/%{CDT_ZIP_FILE} -d ${REPOSITORY}/cdt
 ${COMMON_CMD} ${INSTALL_ARG} org.eclipse.cdt.feature.group ${REPO}/cdt/
@@ -124,6 +120,10 @@ if [ $? -ne 0 ]; then
    exit 1
 fi
 rm -rf ${REPOSITORY}/wtp
+
+# Remove jetty and log4j due to security vulnerabilities
+rm -f ${TMP_BUILD_DIR}/awips2/eclipse/plugins/org.eclipse.*jetty*.jar
+rm -f ${TMP_BUILD_DIR}/awips2/eclipse/plugins/org.apache.*log4j*.jar
 
 # Move the complete application and remove the temp folder.
 mv ${TMP_BUILD_DIR}/awips2 %{_build_root}

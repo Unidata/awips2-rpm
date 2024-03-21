@@ -2,7 +2,6 @@
 %global __os_install_post %(echo '%{__os_install_post}' | sed -e 's/\/usr\/bin\/python/\/awips2\/python\/bin\/python/g')
 %define _build_arch %(uname -i)
 %define _python_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-%define _installed_python %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c 'import sys; print(".".join(map(str, sys.version_info[:3])))'; else echo 0; fi)
 %define _installed_python_short %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))'; else echo 0; fi)
 
 #
@@ -10,8 +9,9 @@
 #
 Name: awips2-python-tpg
 Summary: AWIPS II Python tpg Distribution
-Version: 3.2.2
-Release: %{_installed_python}.1%{?dist}
+Epoch: 1
+Version: 3.2.4
+Release: %{_installed_python_short}.1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: noarch
@@ -22,7 +22,7 @@ Vendor: %{_build_vendor}
 Packager: %{_build_site}
 
 AutoReq: no
-requires: awips2-python = %{_installed_python}
+Requires: awips2-python >= %{_installed_python_short}
 provides: awips2-python-tpg = %{version}
 
 BuildRequires: awips2-python
@@ -48,7 +48,7 @@ mkdir -p %{_python_build_loc}
 
 %build
 TPG_SRC_DIR="%{_baseline_workspace}/foss/tpg-%{version}/packaged"
-TPG_TAR="TPG-%{version}.tar.gz"
+TPG_TAR="tpg-%{version}.tar.gz"
 cp -v ${TPG_SRC_DIR}/${TPG_TAR} \
    %{_python_build_loc}
 RC=$?
@@ -65,10 +65,10 @@ if [ ${RC} -ne 0 ]; then
 fi
 rm -fv ${TPG_TAR}
 if [ ! -d TPG-%{version} ]; then
-   file TPG-%{version}
+   file tpg-%{version}
    exit 0
 fi
-cd TPG-%{version}
+cd tpg-%{version}
 /awips2/python/bin/python setup.py build
 RC=$?
 if [ ${RC} -ne 0 ]; then
@@ -78,7 +78,7 @@ popd > /dev/null
 
 %install
 pushd . > /dev/null
-cd %{_python_build_loc}/TPG-%{version}
+cd %{_python_build_loc}/tpg-%{version}
 /awips2/python/bin/python setup.py install \
    --root=%{_build_root} \
    --prefix=/awips2/python
@@ -87,6 +87,12 @@ if [ ${RC} -ne 0 ]; then
    exit 1
 fi
 popd > /dev/null
+
+# Merge lib64 into lib to avoid problems with installing into the virtualenv
+if [ -d "%{_build_root}/awips2/python/lib64/" ]; then
+    rsync -a %{_build_root}/awips2/python/lib64/ %{_build_root}/awips2/python/lib || exit 1
+    rm -rf %{_build_root}/awips2/python/lib64
+fi
 
 %clean
 rm -rf %{_build_root}

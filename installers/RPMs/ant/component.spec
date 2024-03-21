@@ -1,7 +1,8 @@
+# disable python byte compile
+%global _python_bytecompile_extra 0
 # disable jar repacking
-%global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-java-repack-jars[[:space:]].*$!!g')
-# Turn off the brp-python-bytecompile script
-%global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')
+%global __jar_repack 0
+
 #
 # AWIPS II Ant Spec File
 #
@@ -40,7 +41,7 @@ mkdir -p %{_build_root}
 %build
 
 %install
-# Copies the standard licenses into a license directory for the
+# Copies the standard Raytheon licenses into a license directory for the
 # current component.
 function copyLegal()
 {
@@ -78,6 +79,8 @@ tar -xf ${ANT_BIN_DIR}/${ANT_TAR_FILE} \
 cp -r %{_build_root}/awips2/apache-ant-%{version}/* \
    %{_build_root}/awips2/ant 
 rm -rf %{_build_root}/awips2/apache-ant-%{version}
+
+sed -i 's/^#!\/usr\/bin\/python/#!\/usr\/bin\/python2/g' %{_build_root}/awips2/ant/bin/runant.py
 
 cp ${ANT_LIB_DIR}/* %{_build_root}/awips2/ant/lib
 

@@ -3,7 +3,6 @@
 %define _build_arch %(uname -i)
 %define _python_pkgs_dir "%{_baseline_workspace}/pythonPackages"
 %define _python_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-%define _installed_python %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c 'import sys; print(".".join(map(str, sys.version_info[:3])))'; else echo 0; fi)
 %define _installed_python_short %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))'; else echo 0; fi)
 
 #
@@ -11,8 +10,9 @@
 #
 Name: awips2-python-numpy
 Summary: AWIPS II Python numpy Distribution
-Version: 1.16.2
-Release: %{_installed_python}.1%{?dist}
+Epoch: 1
+Version: 1.23.5
+Release: %{_installed_python_short}.1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
@@ -23,16 +23,17 @@ Vendor: %{_build_vendor}
 Packager: %{_build_site}
 
 AutoReq: no
-Requires: compat-libf2c-34(x86-64) >= 3.4.6-19.el7
 Requires: libgfortran(x86-64) >= 4.4.7-3.el7
-Requires: awips2-python = %{_installed_python}
+Requires: awips2-python >= %{_installed_python_short}
+Requires: blas
+Requires: lapack
 Provides: awips2-python-numpy = %{version}
 
+BuildRequires: blas-devel
+BuildRequires: lapack-devel
 BuildRequires: awips2-python
-BuildRequires: awips2-python-setuptools
-BuildRequires: compat-libf2c-34(x86-64) >= 3.4.6-19.el7
-BuildRequires: gcc
 BuildRequires: libgfortran(x86-64) >= 4.4.7-3.el7
+BuildRequires: gcc
 
 %description
 AWIPS II Python numpy Site-Package
@@ -46,65 +47,48 @@ then
    exit 1
 fi
 
-rm -rf %{_build_root}
-mkdir -p %{_build_root}
+rm --recursive --force %{_build_root} || exit 1
+mkdir --parents %{_build_root} || exit 1
 if [ -d %{_python_build_loc} ]; then
-   rm -rf %{_python_build_loc}
+   rm --recursive --force %{_python_build_loc} || exit 1
 fi
-mkdir -p %{_python_build_loc}
+mkdir --parents %{_python_build_loc} || exit 1
 
 %build
 NUMPY_SRC_DIR="%{_baseline_workspace}/foss/numpy-%{version}/packaged"
-NUMPY_TAR="numpy-%{version}.tar.gz"
-cp -v ${NUMPY_SRC_DIR}/${NUMPY_TAR} \
-   %{_python_build_loc}
-RC=$?
-if [ ${RC} -ne 0 ]; then
-   exit 1
-fi
+NUMPY_PKG="numpy-%{version}.tar.gz"
+cp --verbose ${NUMPY_SRC_DIR}/${NUMPY_PKG} %{_python_build_loc} || exit 1
 
 pushd . > /dev/null
 cd %{_python_build_loc}
-tar -xvf ${NUMPY_TAR}
-RC=$?
-if [ ${RC} -ne 0 ]; then
-   exit 1
-fi
-rm -fv ${NUMPY_TAR}
+tar --extract --file="${NUMPY_PKG}" || exit 1
+rm --force --verbose ${NUMPY_PKG} || exit 1
 if [ ! -d numpy-%{version} ]; then
    echo "Directory numpy-%{version} not found!"
    exit 1
 fi
-source /etc/profile.d/awips2Python.sh
-RC=$?
-if [ ${RC} -ne 0 ]; then
-   exit 1
-fi
-cd numpy-%{version}
-/awips2/python/bin/python setup.py build
-RC=$?
-if [ ${RC} -ne 0 ]; then
-   exit 1
-fi
+source /etc/profile.d/awips2Python.sh || exit 1
+cd numpy-%{version} || exit 1
+/awips2/python/bin/python setup.py build || exit 1
 popd > /dev/null
 
 %install
-NUMPY_SRC_DIR="%{_python_pkgs_dir}/numpy"
-
 pushd . > /dev/null
-cd %{_python_build_loc}/numpy-%{version}
+cd %{_python_build_loc}/numpy-%{version} || exit 1
 /awips2/python/bin/python setup.py install \
    --root=%{_build_root} \
-   --prefix=/awips2/python
-RC=$?
-if [ ${RC} -ne 0 ]; then
-   exit 1
-fi
+   --prefix=/awips2/python || exit 1
 popd > /dev/null
 
+# Merge lib64 into lib to avoid problems with installing into the virtualenv
+if [ -d "%{_build_root}/awips2/python/lib64/" ]; then
+    rsync --archive %{_build_root}/awips2/python/lib64/ %{_build_root}/awips2/python/lib || exit 1
+    rm --recursive --force %{_build_root}/awips2/python/lib64
+fi
+
 %clean
-rm -rf %{_build_root}
-rm -rf %{_python_build_loc}
+rm --recursive --force %{_build_root}
+rm --recursive --force %{_python_build_loc}
 
 %files
 %defattr(644,awips,fxalpha,755)

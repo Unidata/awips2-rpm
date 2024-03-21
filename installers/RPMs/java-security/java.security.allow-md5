@@ -1,0 +1,10 @@
+# This file is only used by EDEX running in BMH mode. It is necessary because
+# the SSL certificates on the DACs are signed using MD5. The two properties set
+# in this file are the same as the Java 11 defaults, but with MD5 enabled.
+
+jdk.certpath.disabledAlgorithms=MD2, SHA1 jdkCA & usage TLSServer, \
+    RSA keySize < 1024, DSA keySize < 1024, EC keySize < 224
+
+jdk.tls.disabledAlgorithms=SSLv3, RC4, DH keySize < 1024, \
+    EC keySize < 224, DES40_CBC, RC4_40, 3DES_EDE_CBC
+

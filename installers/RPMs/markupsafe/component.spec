@@ -1,0 +1,86 @@
+# Change the brp-python-bytecompile script to use the AWIPS2 version of Python. #7237
+%global __os_install_post %(echo '%{__os_install_post}' | sed -e 's/\/usr\/bin\/python/\/awips2\/python\/bin\/python/g')
+%define _build_arch %(uname -i)
+%define _python_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+%define _installed_python_short %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))'; else echo 0; fi)
+
+#
+# AWIPS II Python MarkupSafe Spec File
+#
+Name: awips2-python-markupsafe
+Summary: AWIPS II Python MarkupSafe Distribution
+Version: 2.1.3
+Release: %{_installed_python_short}.0%{?dist}
+Group: AWIPSII
+BuildRoot: %{_build_root}
+BuildArch: %{_build_arch}
+URL: https://palletsprojects.com/p/markupsafe/
+License: BSD
+Distribution: N/A
+Vendor: ${_build_vendor}
+Packager: %{_build_site}
+
+AutoReq: no
+Requires: awips2-python = %{_installed_python_short}
+
+BuildRequires: awips2-python
+BuildRequires: gcc
+
+%description
+AWIPS II Python MarkupSafe Site-Package
+
+%prep
+# Verify That The User Has Specified A BuildRoot.
+if [ "%{_build_root}" = "" ]
+then
+   echo "A Build Root has not been specified."
+   echo "Unable To Continue ... Terminating"
+   exit 1
+fi
+
+rm --recursive --force %{_build_root} || exit 1
+mkdir --parents %{_build_root} || exit 1
+if [ -d %{_python_build_loc} ]; then
+   rm --recursive --force %{_python_build_loc} || exit 1
+fi
+mkdir --parents %{_python_build_loc} || exit 1
+
+%build
+SRC_DIR="%{_baseline_workspace}/foss/markupsafe-%{version}/packaged"
+SRC_ZIP="MarkupSafe-%{version}.tar.gz"
+cp -v ${SRC_DIR}/${SRC_ZIP} %{_python_build_loc} || exit 1
+
+pushd . > /dev/null
+cd %{_python_build_loc}
+tar --extract --verbose --gzip --file="${SRC_ZIP}" || exit 1
+rm --force --verbose ${SRC_ZIP} || exit 1
+if [ ! -d MarkupSafe-%{version} ]; then
+   echo "Directory MarkupSafe-%{version} not found!"
+   exit 1
+fi
+source /etc/profile.d/awips2Python.sh || exit 1
+cd MarkupSafe-%{version} || exit 1
+/awips2/python/bin/python setup.py build || exit 1
+popd > /dev/null
+
+%install
+pushd . > /dev/null
+cd %{_python_build_loc}/MarkupSafe-%{version} || exit 1
+/awips2/python/bin/python setup.py install \
+   --root=%{_build_root} \
+   --prefix=/awips2/python || exit 1
+popd > /dev/null
+
+# Merge lib64 into lib to avoid problems with installing into the virtualenv
+if [ -d "%{_build_root}/awips2/python/lib64/" ]; then
+    rsync --archive %{_build_root}/awips2/python/lib64/ %{_build_root}/awips2/python/lib || exit 1
+    rm --recursive --force %{_build_root}/awips2/python/lib64
+fi
+
+%clean
+rm --recursive --force %{_build_root}
+rm --recursive --force %{_python_build_loc}
+
+%files
+%defattr(644,awips,fxalpha,755)
+/awips2/python/lib/python%{_installed_python_short}/site-packages/*

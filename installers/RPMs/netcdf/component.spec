@@ -1,6 +1,11 @@
-%global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')
+%global _python_bytecompile_extra 0
 %define _build_arch %(uname -i)
 %define _netcdf_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+%ifarch x86_64
+%define _prefix /awips2/netcdf
+%else
+%define _prefix /awips2/netcdf32
+%endif
 
 #
 # AWIPS II netCDF Spec File
@@ -8,7 +13,7 @@
 Name: awips2-netcdf
 Summary: AWIPS II NETCDF Distribution
 Version: 4.6.1
-Release: %{_component_version}.%{_component_release}%{?dist}
+Release: %{_component_version}.%{_component_release}.2%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
@@ -20,7 +25,9 @@ Packager: %{_build_site}
 
 AutoReq: no
 Provides: %{name} = %{version}
+%ifarch x86_64
 Requires: awips2-hdf5
+%endif
 
 BuildRequires: awips2-hdf5-devel
 BuildRequires: binutils
@@ -47,6 +54,9 @@ Summary: Header files, libraries and development documentation for %{name}.
 Group: Development/Libraries
 Requires: %{name} = %{version}-%{release}
 Requires: pkgconfig
+%ifarch x86_64
+Requires: awips2-hdf5-devel
+%endif
 
 %description devel
 AWIPS II NETCDF-DEVEL Distribution
@@ -61,29 +71,31 @@ then
    exit 1
 fi
 
-rm -rf %{_build_root}
-mkdir -p %{_build_root}/awips2/netcdf
+rm --recursive --force %{_build_root}
+mkdir --parents %{_build_root}/awips2/netcdf
 if [ -d %{_netcdf_build_loc} ]; then
-   rm -rf %{_netcdf_build_loc}
+   rm --recursive --force %{_netcdf_build_loc}
 fi
-mkdir -p %{_netcdf_build_loc}
+mkdir --parents %{_netcdf_build_loc}
 
 %build
 NETCDF_TAR="netcdf-%{version}.tar.gz"
 FOSS_NETCDF_DIR="%{_baseline_workspace}/foss/netcdf-%{version}/packaged"
 
-cp -v ${FOSS_NETCDF_DIR}/${NETCDF_TAR} %{_netcdf_build_loc}
+cp --verbose ${FOSS_NETCDF_DIR}/${NETCDF_TAR} %{_netcdf_build_loc}
 
 pushd . > /dev/null
 
 # Untar the source.
 cd %{_netcdf_build_loc}
-tar -zxf ${NETCDF_TAR}
+tar --extract --gzip --file=${NETCDF_TAR}
 
 cd netcdf-%{version}
-
-CPPFLAGS=-I/awips2/hdf5/include LDFLAGS='-L/awips2/hdf5/lib -Wl,-rpath,/awips2/hdf5/lib,-rpath,/awips2/netcdf/lib' ./configure \
-   --prefix=/awips2/netcdf
+if [ %{_build_arch} = "x86_64" ]; then
+   CPPFLAGS=-I/awips2/hdf5/include LDFLAGS='-L/awips2/hdf5/lib -Wl,-rpath,/awips2/hdf5/lib,-rpath,/awips2/netcdf/lib' ./configure --prefix=%{_prefix}
+else
+   CFLAGS=-m32 CXXFLAGS=-m32 LDFLAGS=-m32 ./configure --prefix=%{_prefix} --build=i686-pc-linux-gnu --disable-netcdf-4
+fi
 RC=$?
 if [ ${RC} -ne 0 ]; then
    exit 1
@@ -99,7 +111,7 @@ popd > /dev/null
 pushd . > /dev/null
 
 cd %{_netcdf_build_loc}/netcdf-%{version}
-make install prefix=%{_build_root}/awips2/netcdf
+make install prefix=%{_build_root}%{_prefix}
 RC=$?
 if [ ${RC} -ne 0 ]; then
    exit 1
@@ -108,37 +120,39 @@ fi
 popd > /dev/null
 
 %clean
-rm -rf %{_build_root}
-rm -rf %{_netcdf_build_loc}
+rm --recursive --force %{_build_root}
+rm --recursive --force %{_netcdf_build_loc}
 
 %files
 %defattr(-, awips, fxalpha, 0755)
-%dir /awips2/netcdf
-%dir /awips2/netcdf/share
-%dir /awips2/netcdf/share/man
-%dir /awips2/netcdf/share/man/man?
-%doc /awips2/netcdf/share/man/man?/*
+%dir %{_prefix}
+%dir %{_prefix}/share
+%dir %{_prefix}/share/man
+%dir %{_prefix}/share/man/man?
+%doc %{_prefix}/share/man/man?/*
 
 %defattr(755,awips,fxalpha,755)
-%dir /awips2/netcdf/bin
-/awips2/netcdf/bin/nccopy
-/awips2/netcdf/bin/ncdump
-/awips2/netcdf/bin/ncgen
-/awips2/netcdf/bin/ncgen3
-/awips2/netcdf/bin/ocprint
+%dir %{_prefix}/bin
+%{_prefix}/bin/nccopy
+%{_prefix}/bin/ncdump
+%{_prefix}/bin/ncgen
+%{_prefix}/bin/ncgen3
+%{_prefix}/bin/ocprint
 %defattr(644,awips,fxalpha,755)
-%dir /awips2/netcdf/lib
-/awips2/netcdf/lib/libnetcdf.so.*
-/awips2/netcdf/lib/libbzip2.so
-/awips2/netcdf/lib/libmisc.so
+%dir %{_prefix}/lib
+%{_prefix}/lib/libnetcdf.so.*
+%ifarch x86_64
+%{_prefix}/lib/libbzip2.so
+%{_prefix}/lib/libmisc.so
+%endif
 
 %files devel
 %defattr(644,awips,fxalpha,755)
-/awips2/netcdf/bin/nc-config
-%dir /awips2/netcdf/include
-/awips2/netcdf/include/netcdf*
-/awips2/netcdf/lib/libnetcdf.so
-/awips2/netcdf/lib/pkgconfig/*.pc
-%exclude /awips2/netcdf/lib/*.a
-%exclude /awips2/netcdf/lib/*.la
-%exclude /awips2/netcdf/lib/libnetcdf.settings
+%{_prefix}/bin/nc-config
+%dir %{_prefix}/include
+%{_prefix}/include/netcdf*
+%{_prefix}/lib/libnetcdf.so
+%{_prefix}/lib/pkgconfig/*.pc
+%exclude %{_prefix}/lib/*.a
+%exclude %{_prefix}/lib/*.la
+%exclude %{_prefix}/lib/libnetcdf.settings

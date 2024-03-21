@@ -1,8 +1,8 @@
 %define _qpid_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-   
+
 Name:           awips2-qpid-broker-j
 Version:        7.1.12
-Release:        1%{?dist}
+Release:        9%{?dist}
 Summary:        Java implementation of Apache Qpid Broker
 License:        Apache Software License
 Group:          Development/Java
@@ -11,7 +11,9 @@ BuildRoot:      %{_build_root}
 BuildArch:      noarch
 Requires:       awips2-yajsw
 Requires:       awips2-java
+Requires:       awips2-java-security
 Requires:       awips2-watchdog
+BuildRequires:  awips2-ant
 Packager:       %{_build_site}
 Obsoletes:      awips2-qpid-java-broker
 Obsoletes:      awips2-qpid-java-common
@@ -40,7 +42,7 @@ If you desire to enable SJU hydro processing, you need to
 install this package on top of the base broker package.
 
 # disable jar repacking
-%global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-java-repack-jars[[:space:]].*$!!g')
+%global __jar_repack 0
 
 %prep
 # Ensure that a "buildroot" has been specified.
@@ -51,12 +53,12 @@ if [ "%{_build_root}" = "" ]; then
 fi
 
 if [ -d %{_build_root} ]; then
-   rm -rf %{_build_root}
+   rm --recursive --force %{_build_root}
 fi
 if [ -d %{_qpid_build_loc} ]; then
-   rm -rf %{_qpid_build_loc}
+   rm --recursive --force %{_qpid_build_loc}
 fi
-mkdir -p %{_qpid_build_loc}
+mkdir --parents %{_qpid_build_loc}
 if [ $? -ne 0 ]; then
    exit 1
 fi
@@ -64,26 +66,31 @@ fi
 QPID_SOURCE_DIR="%{_baseline_workspace}/foss/qpid-broker-j-%{version}/packaged"
 QPID_SOURCE_FILE="apache-qpid-broker-j-%{version}-bin.tar.gz"
 
-cp -v ${QPID_SOURCE_DIR}/${QPID_SOURCE_FILE} %{_qpid_build_loc}
+/bin/cp --verbose ${QPID_SOURCE_DIR}/${QPID_SOURCE_FILE} %{_qpid_build_loc}
 if [ $? -ne 0 ]; then
    exit 1
 fi
+
+%build
+QPID_SOURCE_DIR="%{_baseline_workspace}/foss/qpid-broker-j-%{version}/packaged"
+QPID_SOURCE_FILE="apache-qpid-broker-j-%{version}-bin.tar.gz"
 
 pushd . > /dev/null 2>&1
 cd %{_qpid_build_loc}
-tar -xvf ${QPID_SOURCE_FILE}
+tar --extract --verbose --file="${QPID_SOURCE_FILE}"
 if [ $? -ne 0 ]; then
    exit 1
 fi
 
+cd "${QPID_SOURCE_DIR}/../src/patch/qpid-broker-j/extensions/org.apache.qpid.server.derby.repack" || exit 1
+/awips2/ant/bin/ant jar || exit 1
+/bin/cp qpid-broker-plugins-derby-repacking-store.jar %{_qpid_build_loc}/qpid-broker/%{version}/lib/ || exit 1
 popd > /dev/null 2>&1
 
-%build
-
 %install
-rm -rf %{buildroot}
+rm --recursive --force %{buildroot}
 
-mkdir -p %{buildroot}/awips2/qpid/bin
+mkdir --parents %{buildroot}/awips2/qpid/bin
 if [ $? -ne 0 ]; then
    exit 1
 fi
@@ -93,11 +100,11 @@ cd %{_qpid_build_loc}/qpid-broker/%{version}
 
 QPID_PATCH_DIR=%{_baseline_workspace}/foss/qpid-broker-j-%{version}/src/patch/qpid-broker-j
 
-/bin/cp -rv bin/* %{buildroot}/awips2/qpid/bin
+/bin/cp --recursive --verbose bin/* %{buildroot}/awips2/qpid/bin
 
-mkdir -p %{buildroot}/awips2/qpid/lib
-/bin/cp -rv lib/*.jar %{buildroot}/awips2/qpid/lib
-/bin/cp -rv lib/*.zip %{buildroot}/awips2/qpid/lib
+mkdir --parents %{buildroot}/awips2/qpid/lib
+/bin/cp --recursive --verbose lib/*.jar %{buildroot}/awips2/qpid/lib
+/bin/cp --recursive --verbose lib/*.zip %{buildroot}/awips2/qpid/lib
 
 #Apply derby patch
 /bin/rm %{buildroot}/awips2/qpid/lib/derby-10.13.1.1.jar
@@ -105,35 +112,73 @@ mkdir -p %{buildroot}/awips2/qpid/lib
 /bin/cp ${QPID_PATCH_DIR}/lib/derbyshared-10.15.2.0.jar %{buildroot}/awips2/qpid/lib
 /bin/cp ${QPID_PATCH_DIR}/lib/derbytools-10.15.2.0.jar %{buildroot}/awips2/qpid/lib
 
+#Remove deprecated bonecp jars
+/bin/rm %{buildroot}/awips2/qpid/lib/bonecp-0.7.1.RELEASE.jar
+/bin/rm %{buildroot}/awips2/qpid/lib/qpid-broker-plugins-jdbc-provider-bone-%{version}.jar
+
+#Apply bcel patch
+/bin/rm %{buildroot}/awips2/qpid/lib/bcel-6.2.jar
+/bin/cp ${QPID_PATCH_DIR}/lib/bcel-6.6.1.jar %{buildroot}/awips2/qpid/lib
+
+#Apply guava patch
+/bin/rm %{buildroot}/awips2/qpid/lib/guava-30.0-jre.jar
+/bin/cp ${QPID_PATCH_DIR}/lib/guava-32.0.0-jre.jar %{buildroot}/awips2/qpid/lib
+
+#Apply jetty patch
+/bin/rm %{buildroot}/awips2/qpid/lib/jetty-continuation-9.4.35.v20201120.jar
+/bin/rm %{buildroot}/awips2/qpid/lib/jetty-http-9.4.35.v20201120.jar
+/bin/rm %{buildroot}/awips2/qpid/lib/jetty-io-9.4.35.v20201120.jar
+/bin/rm %{buildroot}/awips2/qpid/lib/jetty-security-9.4.35.v20201120.jar
+/bin/rm %{buildroot}/awips2/qpid/lib/jetty-server-9.4.35.v20201120.jar
+/bin/rm %{buildroot}/awips2/qpid/lib/jetty-servlet-9.4.35.v20201120.jar
+/bin/rm %{buildroot}/awips2/qpid/lib/jetty-servlets-9.4.35.v20201120.jar
+/bin/rm %{buildroot}/awips2/qpid/lib/jetty-util-9.4.35.v20201120.jar
+/bin/rm %{buildroot}/awips2/qpid/lib/jetty-util-ajax-9.4.35.v20201120.jar
+/bin/cp ${QPID_PATCH_DIR}/lib/jetty-continuation-9.4.53.v20231009.jar %{buildroot}/awips2/qpid/lib
+/bin/cp ${QPID_PATCH_DIR}/lib/jetty-http-9.4.53.v20231009.jar %{buildroot}/awips2/qpid/lib
+/bin/cp ${QPID_PATCH_DIR}/lib/jetty-io-9.4.53.v20231009.jar %{buildroot}/awips2/qpid/lib
+/bin/cp ${QPID_PATCH_DIR}/lib/jetty-security-9.4.53.v20231009.jar %{buildroot}/awips2/qpid/lib
+/bin/cp ${QPID_PATCH_DIR}/lib/jetty-server-9.4.53.v20231009.jar %{buildroot}/awips2/qpid/lib
+/bin/cp ${QPID_PATCH_DIR}/lib/jetty-servlet-9.4.53.v20231009.jar %{buildroot}/awips2/qpid/lib
+/bin/cp ${QPID_PATCH_DIR}/lib/jetty-servlets-9.4.53.v20231009.jar %{buildroot}/awips2/qpid/lib
+/bin/cp ${QPID_PATCH_DIR}/lib/jetty-util-9.4.53.v20231009.jar %{buildroot}/awips2/qpid/lib
+/bin/cp ${QPID_PATCH_DIR}/lib/jetty-util-ajax-9.4.53.v20231009.jar %{buildroot}/awips2/qpid/lib
+
+#Apply jackson patch
+/bin/rm %{buildroot}/awips2/qpid/lib/jackson-annotations-2.12.1.jar
+/bin/rm %{buildroot}/awips2/qpid/lib/jackson-core-2.12.1.jar
+/bin/rm %{buildroot}/awips2/qpid/lib/jackson-databind-2.12.1.jar
+/bin/cp ${QPID_PATCH_DIR}/lib/jackson-annotations-2.15.2.jar %{buildroot}/awips2/qpid/lib
+/bin/cp ${QPID_PATCH_DIR}/lib/jackson-core-2.15.2.jar %{buildroot}/awips2/qpid/lib
+/bin/cp ${QPID_PATCH_DIR}/lib/jackson-databind-2.15.2.jar %{buildroot}/awips2/qpid/lib
+
 mkdir -p %{buildroot}/awips2/qpid/etc
 /bin/cp -rv ${QPID_PATCH_DIR}/etc/* %{buildroot}/awips2/qpid/etc
 
 
-mkdir -p %{buildroot}/awips2/qpid/tls
-/bin/cp -rv ${QPID_PATCH_DIR}/base/root.crt %{buildroot}/awips2/qpid/tls
-/bin/cp -rv ${QPID_PATCH_DIR}/base/root.key %{buildroot}/awips2/qpid/tls
-/bin/cp -rv ${QPID_PATCH_DIR}/base/initialConfig.json %{buildroot}/awips2/qpid
-/bin/cp -rv ${QPID_PATCH_DIR}/base/initialConfigAlr.json %{buildroot}/awips2/qpid
+mkdir --parents %{buildroot}/awips2/qpid/tls
+/bin/cp --recursive --verbose ${QPID_PATCH_DIR}/base/root.crt %{buildroot}/awips2/qpid/tls
+/bin/cp --recursive --verbose ${QPID_PATCH_DIR}/base/root.key %{buildroot}/awips2/qpid/tls
+/bin/cp --recursive --verbose ${QPID_PATCH_DIR}/base/initialConfig.json %{buildroot}/awips2/qpid
+/bin/cp --recursive --verbose ${QPID_PATCH_DIR}/base/initialConfigAlr.json %{buildroot}/awips2/qpid
 
 # license & notice
-/bin/cp -rv LICENSE %{buildroot}/awips2/qpid
-/bin/cp -rv NOTICE %{buildroot}/awips2/qpid
+/bin/cp --recursive --verbose LICENSE %{buildroot}/awips2/qpid
+/bin/cp --recursive --verbose NOTICE %{buildroot}/awips2/qpid
 
 # install the wrapper script
-/bin/cp -rv ${QPID_PATCH_DIR}/wrapper/qpid-wrapper %{buildroot}/awips2/qpid/bin
+/bin/cp --recursive --verbose ${QPID_PATCH_DIR}/wrapper/qpid-wrapper %{buildroot}/awips2/qpid/bin
 
 # service script
-mkdir -p %{buildroot}/etc/init.d
-/bin/cp -rv %{_baseline_workspace}/installers/RPMs/qpid-broker-j/scripts/init.d/qpidd %{buildroot}/etc/init.d
+mkdir --parents ${RPM_BUILD_ROOT}/%{_unitdir}/
+/bin/cp --verbose %{_baseline_workspace}/installers/RPMs/qpid-broker-j/scripts/systemd/qpidd.service ${RPM_BUILD_ROOT}/%{_unitdir}/ 
 
 # watchdog test/repair script
-mkdir -p %{buildroot}/etc/watchdog.d
-/bin/cp -rv %{_baseline_workspace}/installers/RPMs/qpid-broker-j/scripts/watchdog.d/qpid_watchdog.sh %{buildroot}/etc/watchdog.d
+mkdir --parents %{buildroot}/etc/watchdog.d
+/bin/cp --recursive --verbose %{_baseline_workspace}/installers/RPMs/qpid-broker-j/scripts/watchdog.d/qpid_watchdog.sh %{buildroot}/etc/watchdog.d
 
 # logs directory
-mkdir -p %{buildroot}/awips2/qpid/log
-
-/bin/cp -v ${WORKSPACE}/installers/Linux/.global %{buildroot}/awips2/qpid
+mkdir --parents %{buildroot}/awips2/qpid/log
 
 mkdir --parents %{buildroot}/data/fxa/qpid
 if [ $? -ne 0 ]; then
@@ -143,23 +188,7 @@ fi
 
 %post
 # Register and turn on the qpidd service
-/sbin/chkconfig --add qpidd
-/sbin/chkconfig qpidd on --level 35
-
-source /awips2/qpid/.global 2>/dev/null
-if [ -e /data/fxa/INSTALL/awips2/scripts/.global ]; then
-    source /data/fxa/INSTALL/awips2/scripts/.global
-fi
-case $SITE_IDENTIFIER in
-    ${centralCaseArray} )
-        rm -f /awips2/qpid/etc/wrapper.conf
-        cp /awips2/qpid/etc/wrapper.conf.centralRegistry /awips2/qpid/etc/wrapper.conf
-        ;;
-    *)  ;;
-esac
-
-rm -f /awips2/qpid/etc/wrapper.conf.centralRegistry
-rm -f /awips2/qpid/.global
+/bin/systemctl enable --quiet qpidd.service
 
 tls_dir="/awips2/qpid/tls"
 if [ ! -e "${tls_dir}/server.crt" ]; then
@@ -201,22 +230,21 @@ rm "${tls_dir}/root.key"
 
 %preun
 if [ ${1} = 0 ]; then
-    /sbin/service qpidd stop > /dev/null 2>&1
-    /sbin/chkconfig --del qpidd
+    # stop the service and disable the service script
+    /bin/systemctl disable --now --quiet qpidd.service
 fi
 
 %post -n %name-alr
-sed -ie "s/initialConfig.json/initialConfigAlr.json/" /awips2/qpid/etc/wrapper.conf
+sed --in-place --expression="s/initialConfig.json/initialConfigAlr.json/" /awips2/qpid/etc/wrapper.conf
 
 %clean
-rm -rf %{buildroot}
+rm --recursive --force %{buildroot}
 
 %files
 %defattr(644,awips,fxalpha,755)
 %dir /awips2/qpid
 %doc /awips2/qpid/LICENSE
 %doc /awips2/qpid/NOTICE
-/awips2/qpid/.global
 /awips2/qpid/initialConfig.json
 %dir /data/fxa/qpid
 
@@ -228,7 +256,6 @@ rm -rf %{buildroot}
 %defattr(644,awips,fxalpha,755)
 %dir /awips2/qpid/etc
 /awips2/qpid/etc/wrapper.conf
-/awips2/qpid/etc/wrapper.conf.centralRegistry
 
 %dir /awips2/qpid/lib
 /awips2/qpid/lib/*.jar
@@ -240,8 +267,7 @@ rm -rf %{buildroot}
 %dir /awips2/qpid/bin
 /awips2/qpid/bin/*
 
-%defattr(755,root,root,755)
-/etc/init.d/qpidd
+%attr(644,root,root) %{_unitdir}/qpidd.service
 
 %attr(744,root,root) /etc/watchdog.d/qpid_watchdog.sh
 
@@ -250,15 +276,40 @@ rm -rf %{buildroot}
 /awips2/qpid/initialConfigAlr.json
 
 %changelog
+* Wed Dec 07 2023 Freddy Camacho <freddy.camacho@noaa.gov> - 7.1.12-8
+- Updated spec to manually patch jetty-continuation-9.4.53.v20231009.jar, jetty-http-9.4.53.v20231009.jar, jetty-io-9.4.53.v20231009.jar, jetty-security-9.4.53.v20231009.jar, jetty-server-9.4.53.v20231009.jar, jetty-servlet-9.4.53.v20231009.jar, jetty-servlets-9.4.53.v20231009.jar, jetty-util-9.4.53.v20231009.jar, jetty-util-ajax-9.4.53.v20231009.jar
+* Wed Oct 03 2023 Sarah Johnston <sarah.johnston@noaa.gov> - 7.1.12-8
+- Updated spec to manually patch jetty-continuation-9.4.52.v20230823.jar, jetty-http-9.4.52.v20230823.jar, jetty-io-9.4.52.v20230823.jar, jetty-security-9.4.52.v20230823.jar, jetty-server-9.4.52.v20230823.jar, jetty-servlet-9.4.52.v20230823.jar, jetty-servlets-9.4.52.v20230823.jar, jetty-util-9.4.52.v20230823.jar, jetty-util-ajax-9.4.52.v20230823.jar
+* Wed Sep 06 2023 Ada Lockleigh <ada.lockleigh@noaa.gov> - 7.1.12-7
+- Updated spec to manually patch jetty-continuation-9.4.51.v20230217.jar, jetty-http-9.4.51.v20230217.jar, jetty-io-9.4.51.v20230217.jar, jetty-security-9.4.51.v20230217.jar, jetty-server-9.4.51.v20230217.jar, jetty-servlet-9.4.51.v20230217.jar, jetty-servlets-9.4.51.v20230217.jar, jetty-util-9.4.51.v20230217.jar, jetty-util-ajax-9.4.51.v20230217.jar
+* Thu Aug 31 2023 Mark Peters <mark.a.peters@rtx.com> - 7.1.12-6
+- Remove central registry configuration
+* Mon Aug 07 2023 Zachary Alberts <zachary.alberts@raytheon.com> - 7.1.12-6
+- Updated spec to manually patch jackson-annotations-2.15.2.jar, jackson-core-2.15.2.jar, jackson-databind-2.15.2.jar
+* Tue Jun 06 2023 Sarah Johnston <sarah.johnston@raytheon.com> - 7.1.12-5
+- Updated spec to manually patch guava 32.0.0-jre jar
+* Wed May 17 2023 Nate Jensen <nate.jensen@raytheon.com> - 7.1.12-4
+- Updated spec to manually patch guava 31.1-jre jar
+* Wed Dec 14 2022 Derek Haines <derek.haines@noaa.gov> - 7.1.12-4
+- Updated spec to manually patch bcel 6.6.1 jar
+* Tue Nov 25 2022 Tom Huggins <thomas.huggins@raytheon.com> - 7.1.12-3
+- Updated spec to remove deprecated bonecp jars.
+* Thu Sep 22 2022 Nate Jensen <nate.jensen@raytheon.com> - 7.1.12-2
+- Add in derby repacking message store jar
 * Wed May 25 2022 Lisa Singh <lisa.e.singh@raytheon.com> - 7.1.12
 - Updated spec to manually patch derby 10.15.2.0 jars.
+* Fri May 06 2022 Tom Gurney <tom.gurney@raytheon.com> 7.1.8-8
+- Add dependency on awips2-java-security package
+* Thu Jan 27 2022 David Gillingham <david.gillingham@raytheon.com> 7.1.8-8
+- Migrated to systemd service units.
+- Expanded command arguments for readability.
 * Tue Aug 24 2021 Srinivas Moorthy <srinivas.moorthy@noaa.gov> 7.1.8-6
 - within apache-qpid-broker-j-7.1.8-bin.tar.gz, added derbyshared-10.15.2.0.jar, derby-10.15.2.0.jar, and derbytools-10.15.2.0.jar
 - removed derby-10.13.1.1.jar
 - modified NOTICE with Derby copyright info from 10.15.2.0
 * Tue Apr 20 2021 David Gillingham <david.gillingham@raytheon.com> 7.1.8-5
 - Set ownership of /data/fxa/qpid/ to awips:fxalpha.
-* Mon Dec 10 2020 Tom Gurney <tom.gurney@raytheon.com> 7.1.8-3
+* Thu Dec 10 2020 Tom Gurney <tom.gurney@raytheon.com> 7.1.8-3
 - Move TLS-related stuff to /awips2/qpid/tls
 * Mon Jul 27 2020 Ron Anderson <ron.anderson@raytheon.com> - 7.1.8-2
 - Specify initial configuration in initialConfig.json
