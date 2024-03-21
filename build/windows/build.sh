@@ -10,6 +10,7 @@
 # Date          Ticket#  Engineer    Description
 # ------------- -------- ----------- -----------------------------
 # Mar 10, 2016  4734     dlovely     Initial creation
+# Apr 11, 2023  2028208  dlovely     Updated Repo names to match VLab
 
 ####################################################################
 # Usage
@@ -64,7 +65,7 @@ fi
 ##################################
 # sync repos to baseline directory
 ##################################
-repo=$repo_dir/AWIPS2_baseline
+repo=$repo_dir/AWIPS2_Dev_Baseline
 parts_to_sync=( 'edexOsgi/*' 'cave/*' 'localization/*' 'rpms' )
 $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $AWIPSII_BRANCH $baseline ${parts_to_sync[*]}
 if [ $? -ne 0 ]; then
@@ -80,21 +81,21 @@ fi
 
 touch ${WORKSPACE}/baseline/build.edex/features.txt
 
-repo=$repo_dir/ufcore
+repo=$repo_dir/AWIPS2_Core
 parts_to_sync=( 'common/*' 'edex/*' 'features/*' 'viz/*' )
 $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $UFCORE_BRANCH $baseline ${parts_to_sync[*]}
 if [ $? -ne 0 ]; then
    exit 1
 fi
 
-repo=$repo_dir/ufcore-foss
+repo=$repo_dir/AWIPS2_Core_FOSS
 parts_to_sync=( 'lib/*' )
 $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $UFCORE_FOSS_BRANCH $baseline ${parts_to_sync[*]}
 if [ $? -ne 0 ]; then
    exit 1
 fi
 
-repo=$repo_dir/AWIPS2_foss
+repo=$repo_dir/AWIPS2_FOSS
 parts_to_sync=( 'lib/*' )
 $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $FOSS_BRANCH $baseline ${parts_to_sync[*]}
 if [ $? -ne 0 ]; then
@@ -139,6 +140,12 @@ if [ ! -z "$NWS_BRANCH" ]; then
    echo "gov.noaa.nws.ocp.edex.climate.feature" >> ${WORKSPACE}/baseline/build.edex/features.txt
 
    ####################################
+   # Create properties file for cwagenerator
+   ####################################
+   echo "gov.noaa.nws.ocp.viz.cwagenerator.feature" >> ${WORKSPACE}/baseline/build/features.txt
+   echo "gov.noaa.nws.ocp.edex.cwagenerator.feature" >> ${WORKSPACE}/baseline/build.edex.features.txt
+
+   ####################################
    # Create properties file for psh
    ####################################
    echo "gov.noaa.nws.ocp.viz.psh.feature" >> ${WORKSPACE}/baseline/build/features.txt
@@ -161,8 +168,8 @@ fi
 # Sync the OGC Repo
 ##################################
 if [ ! -z "$OGC_BRANCH" ]; then
-   repo=$repo_dir/OGC
-   parts_to_sync=( 'edex/*' 'foss/*' 'features/*')
+   repo=$repo_dir/AWIPS2_OGC
+   parts_to_sync=( 'edex/*' 'features/*')
    $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $OGC_BRANCH $baseline ${parts_to_sync[*]}
    if [ $? -ne 0 ]; then
       exit 1
@@ -241,6 +248,7 @@ cp -rv ${baseline}/*.feature* ${baseline}/build/cave/tmp/features/
 ##################################
 # Build Thinclient
 ##################################
+source ${WORKSPACE}/git/AWIPS2_build/installers/RPMs/java/scripts/profile.d/awips2Java.sh
 /awips2/ant/bin/ant -f baseline/build/build.xml \
 -Dbuild.product=${WORKSPACE}/baseline/com.raytheon.viz.product.awips/thinclient.product \
 -Dbuild.os=win32 \

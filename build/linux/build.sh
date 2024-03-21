@@ -16,6 +16,9 @@
 # Jan 17, 2019  VLb59210 jburks      Added Gridded NUCAPS to AWIPS2_NWS for inclusion
 # Jun 01, 2019  7862     dlovely     Added Local Apps Foss to the build process
 # Sep 26, 2019  7923     randerso    Added rehost-irt repo to build process
+# Aug 13, 2021  8437     tgurney     Run "sync workspace" operations only once
+# Dec 09, 2021  8719     dlovely     Added WA Package support to AWIPS2_NWS
+# Apr 11, 2023  2028208  dlovely     Updated Repo names to match VLab
 
 ####################################################################
 # Usage
@@ -44,16 +47,13 @@ cd ${WORKSPACE}
 if [ $? -ne 0 ]; then
    exit 1
 fi
-if [ -d baseline ]; then
-   rm -rf baseline
-   if [ $? -ne 0 ]; then
-      exit 1
-   fi
-fi
 
 # Set baseline directory.
 baseline=${WORKSPACE}/baseline
-mkdir $baseline
+if [[ "$AWIPS2_BUILD_SYNCED_WORKSPACE" == "" && -d "$baseline" ]]; then
+    rm -rf "$baseline"
+fi
+mkdir -p $baseline
 
 # Set the repository directory.
 repo_dir=$WORKSPACE/git
@@ -75,10 +75,14 @@ if [ $? -ne 0 ]; then
    exit 1
 fi
 
+if [[ "$AWIPS2_BUILD_SYNCED_WORKSPACE" == "" ]]; then
+export AWIPS2_BUILD_SYNCED_WORKSPACE=1
+# if-block continues until "#end AWIPS2_BUILD_SYNCED_WORKSPACE"
+
 ##################################
 # sync repos to baseline directory
 ##################################
-repo=$repo_dir/AWIPS2_baseline
+repo=$repo_dir/AWIPS2_Dev_Baseline
 parts_to_sync=( 'build/*' 'edexOsgi/*' 'cave/*' 'localization/*' \
    'javaUtilities/*' 'rpms' 'pythonPackages' )
 $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $AWIPSII_BRANCH $baseline ${parts_to_sync[*]}
@@ -100,21 +104,21 @@ touch ${WORKSPACE}/baseline/build.edex/features.txt
 #   "common-base" is required to be ignored by default.
 echo "common-base" > ${WORKSPACE}/baseline/build.edex/component.ignore.txt
 
-repo=$repo_dir/ufcore
+repo=$repo_dir/AWIPS2_Core
 parts_to_sync=( 'common/*' 'edex/*' 'features/*' 'viz/*' 'ignite/*' )
 $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $UFCORE_BRANCH $baseline ${parts_to_sync[*]}
 if [ $? -ne 0 ]; then
    exit 1
 fi
 
-repo=$repo_dir/ufcore-foss
+repo=$repo_dir/AWIPS2_Core_FOSS
 parts_to_sync=( 'lib/*' )
 $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $UFCORE_FOSS_BRANCH $baseline ${parts_to_sync[*]}
 if [ $? -ne 0 ]; then
    exit 1
 fi
 
-repo=$repo_dir/AWIPS2_foss
+repo=$repo_dir/AWIPS2_FOSS
 parts_to_sync=( 'lib/*' )
 $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $FOSS_BRANCH $baseline ${parts_to_sync[*]}
 if [ $? -ne 0 ]; then
@@ -179,7 +183,7 @@ fi
 ##################################
 if [ ! -z "$NWS_BRANCH" ]; then
    repo=$repo_dir/AWIPS2_NWS
-   parts_to_sync=( 'common/*' 'edex/*' 'features/*' 'viz/*')
+   parts_to_sync=( 'common/*' 'edex/*' 'features/*' 'viz/*' 'rpms-nws' 'apps' )
    $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $NWS_BRANCH $baseline ${parts_to_sync[*]}
    if [ $? -ne 0 ]; then
       exit 1
@@ -235,6 +239,12 @@ if [ ! -z "$NWS_BRANCH" ]; then
    echo "gov.noaa.nws.ocp.edex.climate.feature" >> ${WORKSPACE}/baseline/build.edex/features.txt
 
    ####################################
+   # Create properties file for cwagenerator
+   ####################################
+   echo "gov.noaa.nws.ocp.viz.cwagenerator.feature" >> ${WORKSPACE}/baseline/build/features.txt
+   echo "gov.noaa.nws.ocp.edex.cwagenerator.feature" >> ${WORKSPACE}/baseline/build.edex/features.txt
+
+   ####################################
    # Create properties file for psh
    ####################################
    echo "gov.noaa.nws.ocp.viz.psh.feature" >> ${WORKSPACE}/baseline/build/features.txt
@@ -245,6 +255,21 @@ if [ ! -z "$NWS_BRANCH" ]; then
    ####################################
    echo "gov.noaa.nws.sti.mdl.viz.griddednucaps.feature" >> ${WORKSPACE}/baseline/build/features.txt
    echo "gov.noaa.nws.sti.mdl.edex.griddednucaps.feature" >> ${WORKSPACE}/baseline/build.edex/features.txt
+
+   ####################################
+   # Create properties file for NSEA
+   ####################################
+   echo "gov.noaa.nws.edex.nsea.feature" >> ${WORKSPACE}/baseline/build.edex/features.txt
+
+   ####################################
+   # Create properties file for ODIM
+   ####################################
+   echo "gov.noaa.nws.ocp.viz.odim.feature" >> ${WORKSPACE}/baseline/build/features.txt
+   echo "gov.noaa.nws.ocp.edex.odim.feature" >> ${WORKSPACE}/baseline/build.edex/features.txt
+   # Create properties file for ATCF
+   ####################################
+   echo "gov.noaa.nws.ocp.viz.atcf.feature" >> ${WORKSPACE}/baseline/build/features.txt
+   echo "gov.noaa.nws.ocp.edex.atcf.feature" >> ${WORKSPACE}/baseline/build.edex/features.txt
 
 fi
 
@@ -268,8 +293,8 @@ fi
 # Sync the OGC Repo
 ##################################
 if [ ! -z "$OGC_BRANCH" ]; then
-   repo=$repo_dir/OGC
-   parts_to_sync=( 'edex/*' 'foss/*' 'features/*')
+   repo=$repo_dir/AWIPS2_OGC
+   parts_to_sync=( 'edex/*' 'features/*')
    $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $OGC_BRANCH $baseline ${parts_to_sync[*]}
    if [ $? -ne 0 ]; then
       exit 1
@@ -303,7 +328,7 @@ fi
 # Sync the 13.3 GEOS-R Repo
 ##################################
 if [ ! -z "$GOES_R_BRANCH" ]; then
-   repo=$repo_dir/13.3-GOES-R
+   repo=$repo_dir/AWIPS2_GOES-R
    parts_to_sync=( 'cave/*' 'cots/*' 'edexOsgi/*')
    $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $GOES_R_BRANCH $baseline ${parts_to_sync[*]}
    if [ $? -ne 0 ]; then
@@ -409,7 +434,7 @@ fi
 # Sync the Collaboration Repo
 ##################################
 if [ ! -z "$COLLABORATION_BRANCH" ]; then
-   repo=$repo_dir/Collaboration
+   repo=$repo_dir/AWIPS2_Collaboration
    parts_to_sync=( 'viz/*' 'features/*' 'common/*' 'openfire/*' 'rpms-Collaboration' 'foss')
    $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $COLLABORATION_BRANCH $baseline ${parts_to_sync[*]}
    if [ $? -ne 0 ]; then
@@ -425,7 +450,7 @@ fi
 # Sync the Data Delivery Repo
 ##################################
 if [ ! -z "$DATA_DELIVERY_BRANCH" ]; then
-   repo=$repo_dir/Data_Delivery
+   repo=$repo_dir/AWIPS2_Data_Delivery
    parts_to_sync=( 'common/*' 'edex/*' 'features/*' 'viz/*' 'rpms-Data_Delivery' )
    $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $DATA_DELIVERY_BRANCH $baseline ${parts_to_sync[*]}
    if [ $? -ne 0 ]; then
@@ -495,13 +520,27 @@ fi
 # Sync the Local Apps FOSS Repo
 ##################################
 if [ ! -z "$LOCAL_APPS_FOSS_BRANCH" ]; then
-   repo=$repo_dir/AWIPS2_local_apps_foss
+   repo=$repo_dir/AWIPS2_Local_Apps_FOSS
    parts_to_sync=( 'foss' 'rpms-LocalAppsFoss')
    $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $LOCAL_APPS_FOSS_BRANCH $baseline ${parts_to_sync[*]}
    if [ $? -ne 0 ]; then
       exit 1
    fi
 fi
+
+##################################
+# Sync the graphidss Repo
+##################################
+if [ ! -z "$GRAPHIDSS_BRANCH" ]; then
+   repo=$repo_dir/graphidss
+   parts_to_sync=( '../graphidss' 'rpms-graphidss')
+   $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $GRAPHIDSS_BRANCH $baseline ${parts_to_sync[*]}
+   if [ $? -ne 0 ]; then
+      exit 1
+   fi
+fi
+
+fi #end AWIPS2_BUILD_SYNCED_WORKSPACE
 
 export _component_release=$BUILD_NUMBER
 export _component_version=$AWIPSII_VERSION

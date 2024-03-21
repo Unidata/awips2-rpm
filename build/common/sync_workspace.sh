@@ -9,6 +9,8 @@
 # Date          Ticket#  Engineer    Description
 # ------------- -------- ----------- -----------------------------
 # Mar 10, 2016  4734     dlovely     Initial import from awipscm
+# Apr 20, 2021  8437     tgurney     Add NO_MODIFY_GIT_REPOS variable to be
+#                                    used by developer builds
 
 repo="$1"
 shift
@@ -32,23 +34,25 @@ parts_to_synch="$*"
 echo "Git Repository $repo"
 cd $repo
 
-echo "Reset workspace to HEAD"
-git reset --hard HEAD
+if [[ -z "$NO_MODIFY_GIT_REPOS" ]]; then
+    echo "Reset workspace to HEAD"
+    git reset --hard HEAD
 
-echo "Clean workspace"
-git clean -df
+    echo "Clean workspace"
+    git clean -df
 
-echo "Checkout $repo:${git_branch}"
-git checkout ${git_branch}
-if [ $? -ne 0 ]; then
-   popd
-   exit 1
-fi
+    echo "Checkout $repo:${git_branch}"
+    git checkout ${git_branch}
+    if [ $? -ne 0 ]; then
+        popd
+        exit 1
+    fi
 
-git pull
-if [ $? -ne 0 ]; then
-   popd
-   exit 1
+    git pull
+    if [ $? -ne 0 ]; then
+        popd
+        exit 1
+    fi
 fi
 
 # Show the current HEAD for this repo.

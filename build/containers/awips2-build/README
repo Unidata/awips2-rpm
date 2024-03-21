@@ -1,0 +1,264 @@
+========================
+AWIPS II Build Container
+========================
+
+DEVELOPER SETUP INSTRUCTIONS
+1. Install podman if you haven't already
+2. Put all git repos in $HOME/builddirs/git
+3. Set up build directory structure using setup-build-dirs.sh
+4. If you are behind a proxy, add TLS certificates to image-data/certs
+5. Build the container image using build-image.sh
+6. Set up build variables in env.sh
+7. Add build user config to $HOME/builddirs/home-data
+8. Start the build using new-awips2-build.sh
+
+TROUBLESHOOTING
+1. Disk usage
+2. Image build failing
+
+OTHER TOPICS
+1. Maven builds
+
+
+============================
+DEVLOPER SETUP INSTRUCTIONS
+============================
+
+----------------------------------
+Install podman on your workstation
+----------------------------------
+
+You need it to run and manage containers and container images:
+
+    $ sudo -E yum install podman
+
+Note: If no podman is found by yum try the following command,
+      and then repeat the podman install command:
+
+sudo subscription-manager refresh
+
+Note: You may need to enable workstation extras also and re-run refresh
+
+RHEL7 Laptop:
+sudo -E subscription-manager repos --enable=rhel-7-workstation-extras-rpms
+
+RHEL8 Laptop:
+sudo -E subscription-manager repos --enable=rhel-8-workstation-extras-rpms
+
+You are assumed to know how to use podman to start and stop containers, build
+and delete container images, and execute commands in a running container.
+
+Podman documentation is available here:
+http://docs.podman.io/en/latest/index.html
+
+A few useful podman commands.
+
+Podman help:
+sudo podman --help
+sudo podman container --help
+sudo podman image --help
+
+List all podman containers/images:
+sudo podman container list -a
+sudo podman image list -a
+
+Prune, remove/delete exited/un-used containers/images:
+sudo podman container prune
+sudo podman image prune
+
+Remove containers/images:
+sudo podman container rm [container name/id]
+sudo podman image rm [image name/id]
+
+Start podman container:
+sudo podman start -ai [container name/id]
+
+Run a command from outside of a container:
+sudo podman run imageID ls -al /home/build/
+
+----------------
+Set up git repos
+----------------
+
+By default, the helper scripts provided will look for your git repos in
+$HOME/builddirs/git. Create the directory $HOME/builddirs if it does not exist.
+You can symlink $HOME/builddirs/git to the directory where your git repos are
+actually located.
+
+At minimum, you need to have the AWIPS2_build and AWIPS2_baseline repos.  If
+you just want to build a particular baseline FOSS package (for example:
+PostgreSQL or Qpid broker), these two repos will be sufficient.
+
+If you are doing a build of AWIPS that includes any part of CAVE or EDEX, you
+need to have at least the following repos in $HOME/builddirs/git:
+
+    AWIPS2_build
+    AWIPS2_static
+    ufcore
+    ufcore-foss
+    AWIPS2_foss
+    AWIPS2_baseline
+    AWIPS2_NCEP
+
+
+------------------------
+Set up build directories
+------------------------
+
+Run setup-build-dirs.sh. This script will set up the directory structure used
+by the build in $HOME/builddirs. It will also copy the default env.sh into
+$HOME/builddirs/home-data. env.sh is sourced inside the container each time you
+run the build. It contains environment variables that determine build behavior.
+
+
+--------------------
+Add TLS certificates
+--------------------
+
+If you are behind a proxy, copy all TLS certificates for the proxy into
+image-data/certs. Otherwise the image build will be unable to access the
+internet to download packages.
+
+
+-------------------------
+Build the container image
+-------------------------
+
+Run build-image.sh and provide the type of container image you want to build as
+the argument to the script. You can run the script without arguments to see
+what image types are available. Note that if your workstation does not have a
+Red Hat subscription, You will not be able to build Red Hat container images.
+You can still build Rocky Linux container images.
+
+You can rerun build-image.sh to rebuild the container image if you make changes
+to the Dockerfile.
+
+example:
+./build-image.sh rocky8
+or
+./build-image.sh rhel8
+
+
+--------------------------------
+Set up build variables in env.sh
+--------------------------------
+
+Variables in $HOME/builddirs/home-data/env.sh determine which git repos are
+included in the build, as well as which RPM packages are produced. You may edit
+this file according to the directions in the file, to enable/disable specific
+git repos, or to only build a single package or list of packages.
+
+IMPORTANT: Make sure env.sh contains this line:
+
+     export NO_MODIFY_GIT_REPOS=1
+
+Otherwise any uncommitted changes in your git repos may be overwritten when you
+start the build.
+
+
+----------------------------------
+Add build user config to home-data
+----------------------------------
+
+If you need to add anything to the home directory of the build user (such as
+.ssh, .gitconfig, or .m2), copy it into $HOME/builddirs/home-data. Each time
+you run the build, the contents of this directory are copied directly into
+/home/build inside the container.
+
+
+---------------
+Start the build
+---------------
+
+To start a new build container, run ./new-awips2-build.sh followed by the type
+of image you want to create the container from. You can run the script without
+arguments to see which image types are available. A new container will be
+created and a bash shell will start. To start the build, run $HOME/run_build.sh
+inside the container. If you exit the bash shell, the container will terminate.
+To start the container again, you may run "podman start -ai [container-id]".
+
+Built RPMs are located inside the container in /home/build/workspace/rpmbuild.
+To access them from outside the container, you may copy them to either
+/home/build/git or /home/build/home-data. There is also the option of modifying
+new-awips2-build.sh to your build container with /home/build/workspace as a
+mounted volume corresponding to (for example) $HOME/builddirs/workspace outside
+the container. Read up on the --volume (or -v) option of the "podman run"
+command here:
+http://docs.podman.io/en/latest/markdown/podman-run.1.html
+
+
+===============
+TROUBLESHOOTING
+===============
+
+----------
+Disk usage
+----------
+
+Container images and containers can use up a huge amount of disk space. If you
+are running podman as a non-root user then this disk space will be used up in
+your home directory. Currently, however, we only support running as root, so
+this space will be used up on whatever volume contains /var, which is likely
+the root volume. This may threaten the stability of your system.
+
+Potential fixes for running out of space:
+
+- Delete unused objects with "podman system prune". Or, if you really want to
+  start fresh, you can wipe out all containers and container images with the
+  following two commands:
+
+    $ podman rm -af
+    $ podman rmi -af
+
+- When running as root, podman stores container data in /var/lib/containers.
+  This directory can be many GB in size. If you need to free up space in your
+  root volume, and you have plenty of space on a different volume, you may want
+  to move that directory to the more spacious volume and make
+  /var/lib/containers a symlink to the new location. Don't do this while you
+  have any containers running.
+
+
+-------------------
+Image build failing
+-------------------
+
+If your image build is failing due to it being unable to connect to the
+internet, and you are behind a proxy, the problem is likely proxy-related.
+Things to try:
+
+- Make sure you have the following variables correctly set in in your
+  environment:
+
+    http_proxy
+    https_proxy
+    ftp_proxy
+    no_proxy
+
+- Make sure image-data/certs contains all the certificates you need to validate
+  the proxy.
+
+- Last resort is to get out from behind the proxy to run your image build, if
+  you can.
+
+If you are building a RHEL container image and it's failing to download
+repomd.xml, you may need to run "subscription-manager refresh" on your
+workstation as root.
+
+
+============
+OTHER TOPICS
+============
+
+------------
+Maven builds
+------------
+
+As you may know, Maven looks in $HOME/.m2 for cached packages, and if any
+packages it needs aren't there, it tries to download them from the Internet.
+If you have to build something that uses Maven, and you are unable to connect
+to the Internet from within the container for whatever reason, you need to
+provide an .m2 directory containing all the packages needed by Maven, so that
+it does not have to access the Internet at all.  You can put that directory in
+/home/builddirs/home-data outside the container.  Each time you start the
+build, the contents of home-data are rsync'd into /home/build.
+

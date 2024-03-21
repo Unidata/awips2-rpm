@@ -8,6 +8,8 @@
 # Date          Ticket#  Engineer    Description
 # ------------- -------- ----------- -----------------------------
 # Mar 10, 2016  4734     dlovely     Initial import from awipscm
+# Sep 10, 2020  8218     tgurney     Add code to prevent having a double slash
+#                                    in the AWIPSII_BUILD_ROOT path
 
 source ${WORKSPACE}/git/AWIPS2_build/build/common/version_release.sh
 
@@ -30,8 +32,10 @@ fi
 /bin/echo "export AWIPSII_TOP_DIR=\"${WORKSPACE}/rpmbuild\"" >> buildEnvironment.sh
 /bin/echo "export WORKSPACE=\"${WORKSPACE}/baseline\"" >> buildEnvironment.sh
 /bin/echo "export UFRAME_ECLIPSE=\"/awips2/eclipse/\"" >> buildEnvironment.sh
+/bin/echo "export UFRAME_TARGET=\"${WORKSPACE}/baseline/target\"" >> buildEnvironment.sh
 /bin/echo "export AWIPSII_STATIC_FILES=\"${WORKSPACE}/git/AWIPS2_static\"" >> buildEnvironment.sh
-/bin/echo "export AWIPSII_BUILD_ROOT=\"/tmp/$JOB_NAME/awips-component\"" >> buildEnvironment.sh
+awipsii_build_root="$(realpath --canonicalize-missing /tmp/$JOB_NAME/awips-component)"
+/bin/echo "export AWIPSII_BUILD_ROOT=\"${awipsii_build_root}\"" >> buildEnvironment.sh
 /bin/echo "export AWIPSII_BUILD_SITE=\"${AWIPSII_BUILD_SITE}\"" >> buildEnvironment.sh
 /bin/echo "export REPO_DEST=\"${WORKSPACE}/eclipse-repo\"" >> buildEnvironment.sh
 

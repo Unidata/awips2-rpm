@@ -1,0 +1,4 @@
+image-data/certs/*.cer
+image-data/certs/*.crt
+image-data/certs/*.der
+image-data/certs/*.pem
