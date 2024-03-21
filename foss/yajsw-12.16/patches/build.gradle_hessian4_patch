@@ -1,0 +1,20 @@
+diff --git a/foss/yajsw-12.16/build/gradle/hessian4/build.gradle b/foss/yajsw-12.16/build/gradle/hessian4/build.gradle
+index efe4672..3e81ead 100644
+--- a/foss/yajsw-12.16/build/gradle/hessian4/build.gradle
++++ b/foss/yajsw-12.16/build/gradle/hessian4/build.gradle
+@@ -5,7 +5,13 @@ ext{
+ sourceSets.main.java.srcDirs = ["$projectHome/src/hessian/src/main/java"]
+ 
+ dependencies {
+-    compile group: 'netty',                                                    name: 'netty',                                                                          version: "$netty_version"
++    compile group: 'netty-transport',                                                name: 'netty-transport',                                    version: "$netty_version"
++    compile group: 'netty-common',                                                   name: 'netty-common',                                       version: "$netty_version"
++    compile group: 'netty-buffer',                                                   name: 'netty-buffer',                                       version: "$netty_version"
++    compile group: 'netty-codec',                                                    name: 'netty-codec',                                        version: "$netty_version"
++    compile group: 'netty-handler',                                                  name: 'netty-handler',                                      version: "$netty_version"
++    compile group: 'netty-resolver',                                                 name: 'netty-resolver',                                     version: "$netty_version"
++    compile group: 'netty-tcnative-classes',                                         name: 'netty-tcnative-classes',                             version: "$netty_tcnative_classes_version"
+ }
+ 
+ println '---------------------------'
+

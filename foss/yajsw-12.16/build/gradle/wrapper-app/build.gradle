@@ -21,7 +21,13 @@ dependencies {
     compile group: 'commons-io', 					name: 'commons-io', 							version: "$commons_io_version"
     compile group: 'commons-lang3', 				name: 'commons-lang3', 						version: "$commons_lang_version"
     compile group: 'commons-logging', 		name: 'commons-logging', 					version: "$commons_logging_version"
-    compile group: 'netty', 							name: 'netty', 										version: "$netty_version"
+    compile group: 'netty-transport',                                                   name: 'netty-transport',                                        version: "$netty_version"
+    compile group: 'netty-common',                                                   name: 'netty-common',                                        version: "$netty_version"
+    compile group: 'netty-buffer',                                                   name: 'netty-buffer',                                        version: "$netty_version"
+    compile group: 'netty-codec',                                                    name: 'netty-codec',                                        version: "$netty_version"
+    compile group: 'netty-handler',                                                  name: 'netty-handler',                                      version: "$netty_version"
+    compile group: 'netty-resolver',                                                 name: 'netty-resolver',                                     version: "$netty_version"
+    compile group: 'netty-tcnative-classes',                                         name: 'netty-tcnative-classes',                             version: "$netty_tcnative_classes_version"
 }
 
 //println '---------------------------'

@@ -1,0 +1,46 @@
+libg2c.so is a FORTRAN 77 runtime library provided by GCC. This
+distribution of the library is built from GCC 3.4.6, which was the last version
+of GCC that provided it.
+
+The GCC 3.4.6 tarball provided in this directory was downloaded from here in
+Aug 2021:
+
+https://gcc.gnu.org/gcc-3.4/
+
+
+Build steps
+-----------
+
+Run in the current directory:
+
+tar -xf gcc-3.4.6.tar.bz2
+cd gcc-3.4.6
+patch gcc/unwind-dw2.c ../gcc-3.4.6-unwind-dw2.c.patch
+./configure --enable-languages=f77
+make
+cp x86_64-unknown-linux-gnu/libf2c/.libs/libg2c.so.0.0.0 ../x86_64
+cp ./x86_64-unknown-linux-gnu/32/libf2c/.libs/libg2c.so.0.0.0 ../i386
+strip ../x86_64/libg2c.so.0.0.0
+strip ../i386/libg2c.so.0.0.0
+
+
+Notes
+-----
+- This package replaces the compat-libf2c-34 package that was provided by Red
+  Hat in RHEL 7. There is no package in RHEL 8 that provides this library, but
+  at least one AWIPS component (GEMPAK) still requires it.
+- The patch file gcc-3.4.6-unwind-dw2.c.patch is provided by the Raytheon
+  AWIPS team, to enable this old version of GCC to be built using RHEL 8's
+  distribution of GCC.
+- The library has been prebuilt to avoid long build times. Even just the
+  FORTRAN 77 component of GCC takes a while to build, and we only need a small
+  piece of that.
+- Both 32-bit and 64-bit versions of libg2c.so are provided in this
+  package, though it's not clear whether both are still used in AWIPS
+  as of this writing (Aug 2021)
+
+
+Change history
+--------------
+
+Aug 24 2021 Tom Gurney, initial creation.

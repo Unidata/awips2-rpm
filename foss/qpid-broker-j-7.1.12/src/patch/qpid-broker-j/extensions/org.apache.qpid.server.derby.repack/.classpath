@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="lib/qpid-broker-core-7.1.12.jar"/>
+	<classpathentry kind="lib" path="lib/qpid-broker-plugins-derby-store-7.1.12.jar"/>
+	<classpathentry kind="lib" path="lib/qpid-broker-plugins-jdbc-store-7.1.12.jar"/>
+	<classpathentry kind="lib" path="lib/guava-32.0.0-jre.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-api-1.7.30.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

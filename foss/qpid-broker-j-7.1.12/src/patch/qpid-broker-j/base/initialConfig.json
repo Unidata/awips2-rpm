@@ -176,6 +176,6 @@
     "createdBy" : "ANONYMOUS",
     "createdTime" : 1415109567133,
     "defaultVirtualHostNode" : "true",
-    "virtualHostInitialConfiguration" : "{\"type\" : \"DERBY\", \"storePath\" : \"${qpid.home_dir}${file.separator}edexMessageStore\"}"
+    "virtualHostInitialConfiguration" : "{\"type\" : \"DERBY-REPACK\", \"storePath\" : \"${qpid.home_dir}${file.separator}edexMessageStore\"}"
   } ]
 }

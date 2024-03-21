@@ -1,0 +1,20 @@
+The names of subdirectories in this directory follow a specific format that is
+derived from the name of the corresponding RPM package.
+
+The format is <name>-<version>, where <version> is the version number of the
+package, as provided by the upstream vendor.
+
+If the package is a Python package, the <name> is the part of the RPM package
+name that follows "awips2-python-". Otherwise <name> is the part that follows
+"awips2-".
+
+The <name> is case-sensitive.
+
+For example, consider the package awips2-python-numpy version 1.16.2. The name
+of the corresponding FOSS directory must be "numpy-1.16.2".
+
+For a non-Python example, look at awips2-hdf5 version 1.12.0. The FOSS
+directory is called "hdf5-1.12.0".
+
+Failure to follow the above conventions may result in your package failing to
+build.

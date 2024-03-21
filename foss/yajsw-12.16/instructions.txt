@@ -19,7 +19,15 @@ You will need ant. To install, use the command: yum install awips2-ant
 - lib/extended/vfs-dbx
 - lib/extended/vfs-webdav
 - lib/extended/yajsw
-
-9) Run the command "ant" in the same directory as build.xml. Ant will build YAJSW and create the zip file.
-10) Push all the patches and zip file to GIT in a separate commit.
+9) Look through the git commit logs to see if any yajsw dependencies in ./lib need to be 
+   upgraded due to security reasons (for example, netty). If a library needs to be updated, 
+   replace the jar and update the manifest and gradle files (do a grep search).
+10) Run the command "ant" in the same directory as build.xml. 
+   Ant will build YAJSW and create the zip file that packages YAJSW for AWIPS2. 
+   (The build will try to download gradle. VPN can hinder the download, so you can either
+   download gradle manually and place it in ~/.gradle, or you can disconnect from the VPN.)
+11) To test, first backup /awips2/yajsw somewhere safe. Unzip the zip file created in the 
+   previous step, and copy the ./awips2/yajsw directory to /awips2. 
+   Run EDEX to ensure that YAJSW starts up normally.
+12) After testing, push all the patches and zip file to GIT in a separate commit.
 

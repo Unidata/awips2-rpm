@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file that was then modified by njensen.
+              Any modifications will be overwritten if generated again.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. -->
+<project basedir="." default="build" name="org.apache.qpid.server.derby.repack">
+    <property environment="env"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.8"/>
+    <property name="source" value="1.8"/>
+    <path id="org.apache.qpid.server.derby.repack.classpath">
+        <pathelement location="bin"/>
+        <pathelement location="lib/qpid-broker-core-7.1.12.jar"/>
+        <pathelement location="lib/qpid-broker-plugins-derby-store-7.1.12.jar"/>
+        <pathelement location="lib/qpid-broker-plugins-jdbc-store-7.1.12.jar"/>
+        <pathelement location="lib/guava-30.0-jre.jar"/>
+        <pathelement location="lib/slf4j-api-1.7.30.jar"/>
+    </path>
+    <target name="init">
+        <mkdir dir="bin"/>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="src">
+                <exclude name="**/*.launch"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+        <untar src="../../../../../packaged/apache-qpid-broker-j-7.1.12-bin.tar.gz" dest="lib" compression="gzip">
+            <patternset>
+                <include name="**/qpid-broker-core-7.1.12.jar"/>
+                <include name="**/qpid-broker-plugins-derby-store-7.1.12.jar"/>
+                <include name="**/qpid-broker-plugins-jdbc-store-7.1.12.jar"/>
+                <include name="**/guava-30.0-jre.jar"/>
+                <include name="**/slf4j-api-1.7.30.jar"/>
+            </patternset>
+            <mapper type="flatten"/>
+        </untar>
+    </target>
+    <target name="clean">
+        <delete dir="bin"/>
+        <delete dir="lib"/>
+        <delete file="qpid-broker-plugins-derby-repacking-store.jar"/>
+    </target>
+    <target depends="clean" name="cleanall"/>
+    <target depends="build-project" name="build"/>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
+            <src path="src"/>
+            <classpath refid="org.apache.qpid.server.derby.repack.classpath"/>
+        </javac>
+    </target>
+    <target name="jar" depends="build-project">
+        <jar destfile="qpid-broker-plugins-derby-repacking-store.jar" basedir="bin"/>
+    </target>
+</project>

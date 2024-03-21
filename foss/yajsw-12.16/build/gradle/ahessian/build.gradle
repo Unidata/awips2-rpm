@@ -7,7 +7,13 @@ sourceSets.main.java.srcDirs = ["$projectHome/src/ahessian/src/main/java"]
 // this project uses the ahessian sub-project
 dependencies {
 	  compile project(':hessian4')
-    compile group: 'netty', 							name: 'netty', 										version: "$netty_version"
+    compile group: 'netty-transport',                                                   name: 'netty-transport',                                        version: "$netty_version"
+    compile group: 'netty-common',                                                   name: 'netty-common',                                        version: "$netty_version"
+    compile group: 'netty-buffer',                                                   name: 'netty-buffer',                                        version: "$netty_version"
+    compile group: 'netty-codec',                                                    name: 'netty-codec',                                        version: "$netty_version"
+    compile group: 'netty-handler',                                                  name: 'netty-handler',                                      version: "$netty_version"
+    compile group: 'netty-resolver',                                                 name: 'netty-resolver',                                     version: "$netty_version"
+    compile group: 'netty-tcnative-classes',                                         name: 'netty-tcnative-classes',                             version: "$netty_tcnative_classes_version"
 }
 
 println '---------------------------'

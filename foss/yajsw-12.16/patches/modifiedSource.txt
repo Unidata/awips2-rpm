@@ -12,5 +12,11 @@ src/yajsw/src/main/java/org/rzo/yajsw/wrapper/WrappedJavaProcess.java
 src/yajsw/src/main/java/org/rzo/yajsw/script/AbstractScript.java
 src/groovy-patch/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java
 
+./build/MANIFEST.MF
 ./build/gradle/build.gradle
 ./build/gradle/settings.gradle
+./build/gradle/ahessian/build.gradle
+./build/gradle/hessian4/build.gradle
+./build/gradle/wrapper-app/build.gradle
+./build/gradle/wrapper/build.gradle
+./build/MANIFEST.MF

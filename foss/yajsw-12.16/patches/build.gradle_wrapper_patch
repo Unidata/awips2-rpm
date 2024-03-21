@@ -1,0 +1,20 @@
+diff --git a/foss/yajsw-12.16/build/gradle/wrapper/build.gradle b/foss/yajsw-12.16/build/gradle/wrapper/build.gradle
+index 9eca12c..0c4032b 100644
+--- a/foss/yajsw-12.16/build/gradle/wrapper/build.gradle
++++ b/foss/yajsw-12.16/build/gradle/wrapper/build.gradle
+@@ -22,7 +22,13 @@ dependencies {
+     compile group: 'groovy',                                   name: 'groovy',                                                         version: "$groovy_version"
+     compile group: 'jna',                                                              name: 'jna',                                                                                    version: "$jna_version"
+     compile group: 'jna',                                                              name: 'jna-platform',                                           version: "$platform_version"
+-    compile group: 'netty',                                                    name: 'netty',                                                                          version: "$netty_version"
++    compile group: 'netty-transport',                                                  name: 'netty-transport',                                        version: "$netty_version"
++    compile group: 'netty-common',                                                   name: 'netty-common',                                        version: "$netty_version"
++    compile group: 'netty-buffer',                                                   name: 'netty-buffer',                                        version: "$netty_version"
++    compile group: 'netty-codec',                                                    name: 'netty-codec',                                        version: "$netty_version"
++    compile group: 'netty-handler',                                                  name: 'netty-handler',                                      version: "$netty_version"
++    compile group: 'netty-resolver',                                                 name: 'netty-resolver',                                     version: "$netty_version"
++    compile group: 'netty-tcnative-classes',                                         name: 'netty-tcnative-classes',                             version: "$netty_tcnative_classes_version"
+     compile group: 'automaton',                                        name: 'automaton',                                                              version: "$automaton_version"
+     compile group: 'abeille',                                          name: 'formsrt',                                                                        version: "$formsrt_version"
+     compile group: 'forms',                                                    name: 'forms',                                                                          version: "$forms_version"
+
