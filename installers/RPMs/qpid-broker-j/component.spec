@@ -256,6 +256,7 @@ rm --recursive --force %{buildroot}
 %defattr(644,awips,fxalpha,755)
 %dir /awips2/qpid/etc
 /awips2/qpid/etc/wrapper.conf
+/awips2/qpid/etc/wrapper.conf.centralRegistry
 
 %dir /awips2/qpid/lib
 /awips2/qpid/lib/*.jar
