@@ -2,6 +2,7 @@
 %define _build_arch %(uname -i)
 %define _hdf5_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 %define _szip_version 2.1.1
+%define _build_id_links none
 
 #
 # AWIPS II HDF5 Spec File
@@ -9,7 +10,7 @@
 Name: awips2-hdf5
 Summary: AWIPS II HDF5 Distribution
 # Can't use variables here since this line is parsed by SetupEnvironment.sh
-Version: 1.14.1
+Version: 1.14.4
 Release: %{_component_version}.%{_component_release}%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
@@ -60,8 +61,8 @@ fi
 mkdir -p %{_hdf5_build_loc}
 
 %build
-HDF5_TAR_GZ="hdf5-%{version}-2.tar.gz"
-HDF5_SRC_DIR="%{_baseline_workspace}/foss/hdf5-%{version}-2/packaged"
+HDF5_TAR_GZ="hdf5-%{version}-3.tar.gz"
+HDF5_SRC_DIR="%{_baseline_workspace}/foss/hdf5-%{version}-3/packaged"
 
 SZIP_TAR="szip-%{_szip_version}.tar"
 SZIP_TAR_GZ="${SZIP_TAR=}.gz"
@@ -114,7 +115,7 @@ cd %{_hdf5_build_loc}
 tar -xzvf ${HDF5_TAR_GZ}
 
 pushd . > /dev/null
-cd %{_hdf5_build_loc}/hdf5-%{version}-2
+cd %{_hdf5_build_loc}/hdf5-%{version}-3
 
 # Setting enable-build-mode for v1.12.0 due to bug.
 #   Will be resolved in 1.12.1 and can be removed.
@@ -145,7 +146,7 @@ fi
 popd > /dev/null
 
 pushd . > /dev/null
-cd %{_hdf5_build_loc}/hdf5-%{version}-2
+cd %{_hdf5_build_loc}/hdf5-%{version}-3
 make install prefix=%{_build_root}/awips2/hdf5
 RC=$?
 if [ ${RC} -ne 0 ]; then

@@ -1,10 +1,24 @@
+%define contentdir /var/www
+%define suexec_caller apache
+%define mmn 20120211
+
+%define FOSS_DIR "%{_baseline_workspace}/foss"
+%define HTTP_FOSS_DIR "%{_baseline_workspace}/foss/httpd/packaged/"
+%define HTTP_PACKAGE_NAME "httpd-%{version}"
+%define HTTP_SOURCE_TAR "%{HTTP_PACKAGE_NAME}.tar.gz"
+%define RPMBUILD_PYPIES_DIR "%{_baseline_workspace}/rpmbuild/BUILD/httpd-pypies"
+%define RPMBUILD_HTTP_DIR %RPMBUILD_PYPIES_DIR/%HTTP_PACKAGE_NAME
+%define DISTCACHE distcache-1.4.5
+%define MOD_WSGI_VERSION 4.9.4
+%define APR_VERSION 1.7.5
+%define APR_UTIL_VERSION 1.6.0
 
 %define _installed_python_short %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))'; else echo 0; fi)
 
 Summary: Apache HTTP Server Configured for PyPIES
 Name: awips2-httpd-pypies
-Version: 2.4.57
-Release: 2%{?dist}
+Version: 2.4.58
+Release: 4%{?dist}
 URL: http://httpd.apache.org/
 License: Apache License, Version 2.0
 Group: AWIPSII

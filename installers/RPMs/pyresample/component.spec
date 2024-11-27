@@ -2,6 +2,7 @@
 %global __os_install_post %(echo '%{__os_install_post}' | sed -e 's/\/usr\/bin\/python/\/awips2\/python\/bin\/python/g')
 %define _installed_python_short %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))'; else echo 0; fi)
 %define _build_arch %(uname -i)
+%define _build_id_links none
 
 #
 # AWIPS II Python pyresample Spec File
@@ -11,7 +12,7 @@ Name: awips2-python-pyresample
 Summary: AWIPS II Python pyresample module
 Epoch: 1
 Version: 1.26.1
-Release: %{_installed_python_short}.1%{?dist}
+Release: %{_installed_python_short}.6%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
@@ -23,7 +24,6 @@ Packager: %{_build_site}
 
 AutoReq: no
 Requires: awips2-python >= %{_installed_python_short}
-Requires: awips2-python-configobj
 Requires: awips2-python-importlib-metadata
 Requires: awips2-python-numpy >= 1.10.0
 Requires: awips2-python-pykdtree >= 1.3.1

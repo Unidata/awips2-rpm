@@ -7,6 +7,7 @@
 %define _installed_python_numpy %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c "import numpy; print(numpy.__version__)"; else echo 0; fi)
 %define _installed_python_short %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))'; else echo 0; fi)
 %define _installed_python_short_no_dot %(echo %{_installed_python_short} | tr -d .)
+%define _build_id_links none
 
 #
 # AWIPS II Python Jep Spec File
@@ -15,7 +16,7 @@ Name: awips2-python-jep
 Summary: AWIPS II Python Jep Distribution
 Epoch: 1
 Version: 4.1.1
-Release: %{_installed_python_short}.%{_installed_python_numpy}.1%{?dist}
+Release: %{_installed_python_short}.%{_installed_python_numpy}.3%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
@@ -65,8 +66,36 @@ tar --extract --file "${JEP_ZIP}" || exit 1
 rm --force --verbose "${JEP_ZIP}"
 cd jep-%{version} || exit 1
 
+# patch - build failure of jep 4.1.1
+# Adapt code to setuptools.dep_util deprecation
+# This patch should be removed when jep is upgraded
+# to 4.2 or later
+patch commands/java.py << 'EOF'
+2c2,5
+< from setuptools.dep_util import newer_group
+---
+> try:
+>     from setuptools.modified import newer_group
+> except ImportError:
+>     from setuptools.dep_util import newer_group
+EOF
+if [ $? -ne 0 ]; then
+   exit 1
+fi
+patch commands/scripts.py << 'EOF'
+14c14,17
+< from distutils.dep_util import newer
+---
+> try:
+>     from setuptools.modified import newer
+> except ImportError:
+>     from distutils.dep_util import newer
+EOF
+if [ $? -ne 0 ]; then
+   exit 1
+fi
+# end patch
 /awips2/python/bin/python setup.py clean || exit 1
-
 /awips2/python/bin/python setup.py build || exit 1
 
 popd > /dev/null
@@ -98,3 +127,7 @@ rm --recursive --force %{_python_build_loc}
 /awips2/python/lib/python%{_installed_python_short}/site-packages/jep/libjep.so
 %defattr(755,awips,fxalpha,755)
 /awips2/python/bin/jep
+
+%changelog
+* Thu Nov 07 2024 Howard Van Dam <howard.vandam@rtx.com>
+- Patch build failure in jep 4.1.1

@@ -3,6 +3,7 @@
 %define _qpid_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 %define _prefix /awips2/qpid
 %define _qpid_source_dir %{_baseline_workspace}/foss/qpid-proton-%{version}
+%define _build_id_links none
 
 #
 # AWIPS II Qpid Proton Spec File
@@ -11,7 +12,7 @@
 Name: awips2-qpid-proton
 Summary: AWIPS II QPID Proton Distribution
 Version: %{_qpid_proton_version}
-Release: 1%{?dist}
+Release: 2%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}

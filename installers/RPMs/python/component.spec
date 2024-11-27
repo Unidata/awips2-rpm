@@ -2,7 +2,8 @@
 %global __os_install_post %(echo '%{__os_install_post}' | sed -e 's/\/usr\/bin\/python/\/awips2\/python\/bin\/python/g')
 %define _build_arch %(uname -i)
 %define _python_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-%define _setuptools_version 68.0.0
+%define _build_id_links none
+%define _setuptools_version 70.0.0
 
 # Update this as necessary when Python is upgraded.  Also update
 # the Version line with this information.
@@ -139,6 +140,8 @@ rm --recursive --force %{_python_build_loc}
 /awips2/python
 
 %changelog
+* Thu Sep 12 2024 Howard Van Dam <howard.vandam@rtx.com>
+- Upgrade setuptools to version 70.0.0
 * Wed May 24 2023 Tom Gurney <thomas.gurney@rtx.com>
 - Upgrade to Python 3.11
 * Fri Apr 21 2023 Tom Gurney <thomas.gurney@rtx.com>

@@ -4,13 +4,13 @@
 %define _installed_python_short %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))'; else echo 0; fi)
 %define _installed_python_short_no_dot %(echo %{_installed_python_short} | tr -d .)
 %define _build_arch %(uname -i)
-
+%define _build_id_links none
 
 Name: awips2-python-casadi
 Summary: AWIPS II Python casadi module
 Epoch: 1
 Version: 3.6.3
-Release: %{_installed_python_short}.1%{?dist}
+Release: %{_installed_python_short}.2%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}

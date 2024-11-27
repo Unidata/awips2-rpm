@@ -86,7 +86,7 @@ ln --symbolic /usr/bin/vacuumdb "$bindir/vacuumdb"
 
 %files
 %defattr(-,awips,fxalpha,-)
-/awips2/postgresql/*
+/awips2/postgresql/bin/*
 
 %defattr(644,root,root,755)
 /etc/profile.d/awips2PSQL.sh
@@ -104,4 +104,4 @@ Provides the /awips2/psql/bin/psql symlink
 
 %files -n awips2-psql
 %defattr(-,awips,fxalpha,-)
-/awips2/psql/*
+/awips2/psql/bin/psql

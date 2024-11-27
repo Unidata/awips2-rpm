@@ -3,6 +3,7 @@
 %define _build_arch %(uname -i)
 %define _installed_python_numpy %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c "import numpy; print(numpy.__version__)"; else echo 0; fi)
 %define _installed_python_short %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))'; else echo 0; fi)
+%define _build_id_links none
 
 #
 # AWIPS II Python PyTables Spec File
@@ -11,7 +12,7 @@ Name: awips2-python-tables
 Summary: AWIPS II Python PyTables Distribution
 Epoch: 1
 Version: 3.8.0
-Release: %{_installed_python_short}.2%{?dist}
+Release: %{_installed_python_short}.3%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
