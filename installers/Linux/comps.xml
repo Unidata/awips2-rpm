@@ -1369,7 +1369,6 @@
           <packagereq type="default">awips2-python-bottleneck</packagereq>
           <packagereq type="default">awips2-python-cartopy</packagereq>
           <packagereq type="default">awips2-python-click</packagereq>
-          <packagereq type="default">awips2-python-configobj</packagereq>
           <packagereq type="default">awips2-python-dateutil</packagereq>
           <packagereq type="default">awips2-python-gdal</packagereq>
           <packagereq type="default">awips2-python-geojson</packagereq>
