@@ -2,13 +2,13 @@ Manifest-Version: 1.0
 Class-Path-Wrapper-Core: 
  ./wrapperApp.jar 
  ./lib/core/yajsw/ahessian.jar 
- ./lib/core/netty/netty-transport-4.1.99.Final.jar 
- ./lib/core/netty/netty-common-4.1.99.Final.jar 
- ./lib/core/netty/netty-buffer-4.1.99.Final.jar 
- ./lib/core/netty/netty-codec-4.1.99.Final.jar 
- ./lib/core/netty/netty-handler-4.1.99.Final.jar 
- ./lib/core/netty/netty-resolver-4.1.99.Final.jar 
- ./lib/core/netty/netty-tcnative-classes-2.0.62.Final.jar 
+ ./lib/core/netty/netty-transport-4.1.110.Final.jar 
+ ./lib/core/netty/netty-common-4.1.110.Final.jar 
+ ./lib/core/netty/netty-buffer-4.1.110.Final.jar 
+ ./lib/core/netty/netty-codec-4.1.110.Final.jar 
+ ./lib/core/netty/netty-handler-4.1.110.Final.jar 
+ ./lib/core/netty/netty-resolver-4.1.110.Final.jar 
+ ./lib/core/netty/netty-tcnative-classes-2.0.65.Final.jar 
  ./lib/core/jna/jna-5.3.1.jar 
  ./lib/core/jna/jna-platform-5.3.1.jar 
  ./lib/core/commons/commons-configuration2-2.8.0.jar 
@@ -52,13 +52,13 @@ Class-Path-Wrapper-Extended:
 Class-Path-App: 
  ./wrapper.jar 
  ./lib/core/yajsw/ahessian.jar 
- ./lib/core/netty/netty-transport-4.1.99.Final.jar 
- ./lib/core/netty/netty-common-4.1.99.Final.jar 
- ./lib/core/netty/netty-buffer-4.1.99.Final.jar 
- ./lib/core/netty/netty-codec-4.1.99.Final.jar 
- ./lib/core/netty/netty-handler-4.1.99.Final.jar 
- ./lib/core/netty/netty-resolver-4.1.99.Final.jar 
- ./lib/core/netty/netty-tcnative-classes-2.0.62.Final.jar 
+ ./lib/core/netty/netty-transport-4.1.110.Final.jar 
+ ./lib/core/netty/netty-common-4.1.110.Final.jar 
+ ./lib/core/netty/netty-buffer-4.1.110.Final.jar 
+ ./lib/core/netty/netty-codec-4.1.110.Final.jar 
+ ./lib/core/netty/netty-handler-4.1.110.Final.jar 
+ ./lib/core/netty/netty-resolver-4.1.110.Final.jar 
+ ./lib/core/netty/netty-tcnative-classes-2.0.65.Final.jar 
  ./lib/core/commons/commons-text-1.10.0.jar 
  ./lib/core/commons/commons-configuration2-2.8.0.jar 
  ./lib/core/commons/commons-vfs2-2.2.jar 

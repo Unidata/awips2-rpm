@@ -3,6 +3,7 @@
 %define _python_pkgs_dir "%{_baseline_workspace}/pythonPackages"
 %define _python_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 %define _installed_python_short %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))'; else echo 0; fi)
+%define _build_id_links none
 
 #
 # AWIPS II Python Pillow Spec File
@@ -10,8 +11,8 @@
 Name: awips2-python-pillow
 Summary: AWIPS II Python Pillow Distribution
 Epoch: 1
-Version: 10.0.0
-Release: %{_installed_python_short}.1%{?dist}
+Version: 10.3.0
+Release: %{_installed_python_short}.2%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
@@ -93,8 +94,8 @@ if [ ${RC} -ne 0 ]; then
    exit 1
 fi
 rm --force --verbose ${PILLOW_TAR}
-if [ ! -d Pillow-%{version} ]; then
-   echo "Directory Pillow-%{version} not found!"
+if [ ! -d pillow-%{version} ]; then
+   echo "Directory pillow-%{version} not found!"
    exit 1
 fi
 
@@ -103,7 +104,7 @@ RC=$?
 if [ ${RC} -ne 0 ]; then
    exit 1
 fi
-cd Pillow-%{version}
+cd pillow-%{version}
 
 /awips2/python/bin/python setup.py build
 RC=$?
@@ -114,7 +115,7 @@ popd > /dev/null
 
 %install
 pushd . > /dev/null
-cd %{_python_build_loc}/Pillow-%{version}
+cd %{_python_build_loc}/pillow-%{version}
 /awips2/python/bin/python setup.py install \
    --root=%{_build_root} \
    --prefix=/awips2/python
@@ -137,7 +138,7 @@ rm --recursive --force %{_python_build_loc}
 %files
 %defattr(644,awips,fxalpha,755)
 /awips2/python/lib/python%{_installed_python_short}/site-packages/PIL
-/awips2/python/lib/python%{_installed_python_short}/site-packages/Pillow-%{version}-py%{_installed_python_short}.egg-info/
+/awips2/python/lib/python%{_installed_python_short}/site-packages/pillow-%{version}-py%{_installed_python_short}.egg-info/
 %exclude /awips2/python/lib/python%{_installed_python_short}/site-packages/PIL/__pycache__
 
 

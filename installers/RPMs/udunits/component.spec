@@ -1,6 +1,7 @@
 %global _python_bytecompile_extra 0
 %define _build_arch %(uname -i)
 %define _udunits_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+%define _build_id_links none
 
 #
 # AWIPS II udunits Spec File

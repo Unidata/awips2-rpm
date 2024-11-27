@@ -4,7 +4,7 @@
 %define _thrift_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 %define _installed_python_short %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))'; else echo 0; fi)
 %define _src_dir %{_baseline_workspace}/foss/thrift-%{version}/packaged
-
+%define _build_id_links none
 
 #
 # AWIPS II Apache Thrift Spec File
@@ -13,7 +13,7 @@ Name: awips2-thrift
 Summary: AWIPS II Thrift C++ API libraries
 Epoch: 1
 Version: 0.18.1
-Release: %{_installed_python_short}.1%{?dist}
+Release: %{_installed_python_short}.2%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}

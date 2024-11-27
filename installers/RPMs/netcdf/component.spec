@@ -6,6 +6,7 @@
 %else
 %define _prefix /awips2/netcdf32
 %endif
+%define _build_id_links none
 
 #
 # AWIPS II netCDF Spec File
@@ -13,7 +14,7 @@
 Name: awips2-netcdf
 Summary: AWIPS II NETCDF Distribution
 Version: 4.6.1
-Release: %{_component_version}.%{_component_release}.2%{?dist}
+Release: %{_component_version}.%{_component_release}.3%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}

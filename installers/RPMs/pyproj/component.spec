@@ -1,13 +1,13 @@
 %global __os_install_post %(echo '%{__os_install_post}' | sed -e 's/\/usr\/bin\/python/\/awips2\/python\/bin\/python/g')
 %define _python_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 %define _installed_python_short %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))'; else echo 0; fi)
-
+%define _build_id_links none
 
 Name: awips2-python-pyproj
 Summary: AWIPS II Python pyproj Distribution
 Epoch: 1
 Version: 3.4.1
-Release: %{_installed_python_short}.1%{?dist}
+Release: %{_installed_python_short}.2%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}

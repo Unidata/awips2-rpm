@@ -2,7 +2,7 @@
 
 Name:           awips2-qpid-broker-j
 Version:        7.1.12
-Release:        9%{?dist}
+Release:        11%{?dist}
 Summary:        Java implementation of Apache Qpid Broker
 License:        Apache Software License
 Group:          Development/Java
@@ -134,23 +134,23 @@ mkdir --parents %{buildroot}/awips2/qpid/lib
 /bin/rm %{buildroot}/awips2/qpid/lib/jetty-servlets-9.4.35.v20201120.jar
 /bin/rm %{buildroot}/awips2/qpid/lib/jetty-util-9.4.35.v20201120.jar
 /bin/rm %{buildroot}/awips2/qpid/lib/jetty-util-ajax-9.4.35.v20201120.jar
-/bin/cp ${QPID_PATCH_DIR}/lib/jetty-continuation-9.4.53.v20231009.jar %{buildroot}/awips2/qpid/lib
-/bin/cp ${QPID_PATCH_DIR}/lib/jetty-http-9.4.53.v20231009.jar %{buildroot}/awips2/qpid/lib
-/bin/cp ${QPID_PATCH_DIR}/lib/jetty-io-9.4.53.v20231009.jar %{buildroot}/awips2/qpid/lib
-/bin/cp ${QPID_PATCH_DIR}/lib/jetty-security-9.4.53.v20231009.jar %{buildroot}/awips2/qpid/lib
-/bin/cp ${QPID_PATCH_DIR}/lib/jetty-server-9.4.53.v20231009.jar %{buildroot}/awips2/qpid/lib
-/bin/cp ${QPID_PATCH_DIR}/lib/jetty-servlet-9.4.53.v20231009.jar %{buildroot}/awips2/qpid/lib
-/bin/cp ${QPID_PATCH_DIR}/lib/jetty-servlets-9.4.53.v20231009.jar %{buildroot}/awips2/qpid/lib
-/bin/cp ${QPID_PATCH_DIR}/lib/jetty-util-9.4.53.v20231009.jar %{buildroot}/awips2/qpid/lib
-/bin/cp ${QPID_PATCH_DIR}/lib/jetty-util-ajax-9.4.53.v20231009.jar %{buildroot}/awips2/qpid/lib
+/bin/cp ${QPID_PATCH_DIR}/lib/jetty-continuation-9.4.54.v20240208.jar %{buildroot}/awips2/qpid/lib
+/bin/cp ${QPID_PATCH_DIR}/lib/jetty-http-9.4.54.v20240208.jar %{buildroot}/awips2/qpid/lib
+/bin/cp ${QPID_PATCH_DIR}/lib/jetty-io-9.4.54.v20240208.jar %{buildroot}/awips2/qpid/lib
+/bin/cp ${QPID_PATCH_DIR}/lib/jetty-security-9.4.54.v20240208.jar %{buildroot}/awips2/qpid/lib
+/bin/cp ${QPID_PATCH_DIR}/lib/jetty-server-9.4.54.v20240208.jar %{buildroot}/awips2/qpid/lib
+/bin/cp ${QPID_PATCH_DIR}/lib/jetty-servlet-9.4.54.v20240208.jar %{buildroot}/awips2/qpid/lib
+/bin/cp ${QPID_PATCH_DIR}/lib/jetty-servlets-9.4.54.v20240208.jar %{buildroot}/awips2/qpid/lib
+/bin/cp ${QPID_PATCH_DIR}/lib/jetty-util-9.4.54.v20240208.jar %{buildroot}/awips2/qpid/lib
+/bin/cp ${QPID_PATCH_DIR}/lib/jetty-util-ajax-9.4.54.v20240208.jar %{buildroot}/awips2/qpid/lib
 
 #Apply jackson patch
 /bin/rm %{buildroot}/awips2/qpid/lib/jackson-annotations-2.12.1.jar
 /bin/rm %{buildroot}/awips2/qpid/lib/jackson-core-2.12.1.jar
 /bin/rm %{buildroot}/awips2/qpid/lib/jackson-databind-2.12.1.jar
-/bin/cp ${QPID_PATCH_DIR}/lib/jackson-annotations-2.15.2.jar %{buildroot}/awips2/qpid/lib
-/bin/cp ${QPID_PATCH_DIR}/lib/jackson-core-2.15.2.jar %{buildroot}/awips2/qpid/lib
-/bin/cp ${QPID_PATCH_DIR}/lib/jackson-databind-2.15.2.jar %{buildroot}/awips2/qpid/lib
+/bin/cp ${QPID_PATCH_DIR}/lib/jackson-annotations-2.17.2.jar %{buildroot}/awips2/qpid/lib
+/bin/cp ${QPID_PATCH_DIR}/lib/jackson-core-2.17.2.jar %{buildroot}/awips2/qpid/lib
+/bin/cp ${QPID_PATCH_DIR}/lib/jackson-databind-2.17.2.jar %{buildroot}/awips2/qpid/lib
 
 mkdir -p %{buildroot}/awips2/qpid/etc
 /bin/cp -rv ${QPID_PATCH_DIR}/etc/* %{buildroot}/awips2/qpid/etc
@@ -277,7 +277,11 @@ rm --recursive --force %{buildroot}
 /awips2/qpid/initialConfigAlr.json
 
 %changelog
-* Wed Dec 07 2023 Freddy Camacho <freddy.camacho@noaa.gov> - 7.1.12-8
+* Thu Sep 05 2024 Derek Haines <derek.haines@noaa.gov> - 7.1.12-11
+- Updated spec to manually patch jackson-annotations-2.17.2.jar, jackson-core-2.17.2.jar, jackson-databind-2.17.2.jar
+* Tue Jun 04 2024 Freddy Camacho <freddy.camacho@noaa.gov> - 7.1.12-10
+- Updated spec to manually patch jetty-continuation-9.4.54.v20240208.jar, jetty-http-9.4.54.v20240208.jar, jetty-io-9.4.54.v20240208.jar, jetty-security-9.4.54.v20240208.jar, jetty-server-9.4.54.v20240208.jar, jetty-servlet-9.4.54.v20240208.jar, jetty-servlets-9.4.54.v20240208.jar, jetty-util-9.4.54.v20240208.jar, jetty-util-ajax-9.4.54.v20240208.jar
+* Wed Dec 07 2023 Freddy Camacho <freddy.camacho@noaa.gov> - 7.1.12-9
 - Updated spec to manually patch jetty-continuation-9.4.53.v20231009.jar, jetty-http-9.4.53.v20231009.jar, jetty-io-9.4.53.v20231009.jar, jetty-security-9.4.53.v20231009.jar, jetty-server-9.4.53.v20231009.jar, jetty-servlet-9.4.53.v20231009.jar, jetty-servlets-9.4.53.v20231009.jar, jetty-util-9.4.53.v20231009.jar, jetty-util-ajax-9.4.53.v20231009.jar
 * Wed Oct 03 2023 Sarah Johnston <sarah.johnston@noaa.gov> - 7.1.12-8
 - Updated spec to manually patch jetty-continuation-9.4.52.v20230823.jar, jetty-http-9.4.52.v20230823.jar, jetty-io-9.4.52.v20230823.jar, jetty-security-9.4.52.v20230823.jar, jetty-server-9.4.52.v20230823.jar, jetty-servlet-9.4.52.v20230823.jar, jetty-servlets-9.4.52.v20230823.jar, jetty-util-9.4.52.v20230823.jar, jetty-util-ajax-9.4.52.v20230823.jar

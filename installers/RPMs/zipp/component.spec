@@ -10,8 +10,8 @@
 Name: awips2-python-zipp
 Summary: AWIPS II Python zipp module
 Epoch: 1
-Version: 3.15.0
-Release: %{_installed_python_short}.2%{?dist}
+Version: 3.19.2
+Release: %{_installed_python_short}.1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: noarch
@@ -84,6 +84,8 @@ rm --recursive --force %{_build_root}
 
 
 %changelog
+* Tue Aug 13 2024 Howard Van Dam <hvandam2@rtx.com>
+- Upgraded package to 3.19.2
 * Tue May 30 2023 Tom Gurney <thomas.gurney@rtx.com>
 - Upgrade to 3.15.0 to support Python 3.11
 * Tue Jul 27 2021 Lisa Singh <lisa.singh@raytheon.com>

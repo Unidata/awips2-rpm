@@ -2,7 +2,7 @@
 %global __os_install_post %(echo '%{__os_install_post}' | sed -e 's/\/usr\/bin\/python/\/awips2\/python\/bin\/python/g')
 %define _installed_python %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c 'import sys; print(".".join(map(str, sys.version_info[:3])))'; else echo 0; fi)
 %define _installed_python_short %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))'; else echo 0; fi)
-
+%define _build_id_links none
 
 #
 # AWIPS II Python geojson Spec File
@@ -12,7 +12,7 @@ Name: awips2-python-geojson
 Summary: AWIPS II Python geojson module
 Epoch: 1
 Version: 3.0.1
-Release: %{_installed_python_short}.1%{?dist}
+Release: %{_installed_python_short}.2%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: noarch
