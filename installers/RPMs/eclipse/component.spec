@@ -60,7 +60,7 @@ TMP_BUILD_DIR="/tmp/eclipse-build"
 
 CORE_PROJECT_DIR="%{_baseline_workspace}/foss"
 ECLIPSE_BIN_DIR="${CORE_PROJECT_DIR}/eclipse-%{version}/packaged"
-ECLIPSE_STATIC_DIR=ECLIPSE_STATIC_DIR="/awips2/repo/awips2-static/eclipse-%{version}/packaged"
+ECLIPSE_STATIC_DIR="/awips2/repo/awips2-static/awips2-rpm/foss/eclipse-%{version}/packaged"
 ECLIPSE_TAR_FILE="eclipse-rcp-%{ECLIPSE_VER}-linux-gtk-x86_64.tar.gz"
 ECLIPSE_DELTA_FILE="eclipse-%{ECLIPSE_VER}-delta-pack.zip"
 

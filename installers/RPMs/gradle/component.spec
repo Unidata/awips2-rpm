@@ -47,11 +47,12 @@ mkdir --parents ${RPM_BUILD_ROOT}/etc/profile.d || exit 1
 
 CORE_PROJECT_DIR="%{_baseline_workspace}/foss"
 GRADLE_BIN_DIR="${CORE_PROJECT_DIR}/gradle-%{version}/packaged"
+GRADLE_STATIC_DIR="/awips2/repo/awips2-static/awips2-rpm/foss/gradle-%{version}/packaged"
 GRADLE_ZIP_FILE="gradle-%{version}-bin.zip"
 GRADLE_SCRIPTS_DIR="%{_baseline_workspace}/installers/RPMs/gradle/scripts"
 
 # Will Be Extracted Into gradle-%{version}
-unzip ${GRADLE_BIN_DIR}/${GRADLE_ZIP_FILE} \
+unzip ${GRADLE_STATIC_DIR}/${GRADLE_ZIP_FILE} \
    -d %{_build_root}/awips2
 # Move Files From %{version} To The Generic Directory
 mv %{_build_root}/awips2/gradle-%{version}/ \
