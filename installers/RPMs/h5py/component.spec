@@ -12,8 +12,8 @@
 Name: awips2-python-h5py
 Summary: AWIPS II Python h5py Distribution
 Epoch: 1
-Version: 3.8.0
-Release: %{_installed_python_short}.%{_installed_python_numpy}.3%{?dist}
+Version: 3.15.1
+Release: %{_installed_python_short}.%{_installed_python_numpy}.2%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}

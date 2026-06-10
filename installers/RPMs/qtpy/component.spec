@@ -12,7 +12,7 @@ Name: awips2-python-qtpy
 Summary: AWIPS II Python QtPy module
 Epoch: 1
 Version: 2.3.0
-Release: %{_installed_python_short}.2%{?dist}
+Release: %{_installed_python_short}.3%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: noarch
@@ -25,7 +25,7 @@ Packager: %{_build_site}
 AutoReq: no
 Requires: awips2-python >= %{_installed_python_short}
 Requires: awips2-python-pyside6
-Requires: python%{_installed_python_short}-packaging
+Requires: awips2-python-packaging
 
 BuildRequires: awips2-python
 
@@ -83,6 +83,8 @@ rm --recursive --force %{_build_root}
 
 
 %changelog
+* Wed Dec 17 2025 Tim Jensen <timothy.jensen@rtx.com>
+- Change to use AWIPS packaged version of python-packaging
 * Wed Jun 14 2023 Tom Gurney <thomas.gurney@rtx.com>
 - Replace pyside2 dependency with pyside6
 * Thu Mar 23 2023 Tom Gurney <thomas.gurney@rtx.com>

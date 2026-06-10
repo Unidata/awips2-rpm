@@ -10,8 +10,8 @@
 Name: awips2-python-jaraco.functools
 Summary: AWIPS II Python jaraco.functools Distribution
 Epoch: 1
-Version: 2.0
-Release: %{_installed_python_short}.3%{?dist}
+Version: 4.3.0
+Release: %{_installed_python_short}.1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: noarch
@@ -59,32 +59,15 @@ fi
 mkdir --parents %{_python_build_loc}
 
 %build
-SRC_DIR="%{_baseline_workspace}/foss/jaraco.functools-%{version}/packaged"
-
-cp --recursive --verbose ${SRC_DIR}/jaraco.functools-%{version}.tar.gz %{_python_build_loc}
-pushd . > /dev/null
-cd %{_python_build_loc}
-tar --extract --file="jaraco.functools-%{version}.tar.gz"
-cd jaraco.functools-%{version}
-
-/awips2/python/bin/python setup.py clean
-RC=$?
-if [ ${RC} -ne 0 ]; then
-   exit 1
-fi
-/awips2/python/bin/python setup.py build
-RC=$?
-if [ ${RC} -ne 0 ]; then
-   exit 1
-fi
-popd > /dev/null
 
 %install
 pushd . > /dev/null
-cd %{_python_build_loc}/jaraco.functools-%{version}
-/awips2/python/bin/python setup.py install \
-   --root=%{_build_root} \
-   --prefix=/awips2/python
+SRC_DIR="%{_baseline_workspace}/foss/jaraco.functools-%{version}/packaged"
+PACKAGE_FILE="jaraco_functools-%{version}-py3-none-any.whl"
+/awips2/python/bin/pip3 install \
+   --disable-pip-version-check --verbose --no-deps --ignore-installed --no-index \
+   --root %{_build_root} --prefix /awips2/python \
+   "${SRC_DIR}/${PACKAGE_FILE}"
 RC=$?
 if [ ${RC} -ne 0 ]; then
    exit 1

@@ -11,7 +11,7 @@ Name: awips2-python-gdal
 Summary: AWIPS II GDAL Distribution
 Epoch: 1
 Version: 3.5.3
-Release: %{_installed_python_short}.2%{?dist}
+Release: %{_installed_python_short}.3%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
@@ -23,11 +23,13 @@ Packager: %{_build_site}
 
 AutoReq: no
 Requires: libqhull_r
+Requires: awips2-hdf5
 Requires: awips2-netcdf
 Requires: awips2-python
 Requires: awips2-python-geos
 Requires: awips2-python-proj
 
+BuildRequires: awips2-hdf5
 BuildRequires: awips2-python
 BuildRequires: awips2-netcdf
 BuildRequires: awips2-python-geos

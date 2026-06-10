@@ -17,7 +17,6 @@ Requires: libpq >= 12
 Requires: postgresql >= 12
 Requires: postgresql-server >= 12
 Requires: postgresql-contrib >= 12
-Requires: postgresql-upgrade >= 12
 
 BuildRequires: readline-devel
 
@@ -98,6 +97,12 @@ Summary: AWIPS II PSQL compatibility package
 Group: AWIPSII
 # This gets us /usr/bin/psql
 Requires: postgresql >= 12
+
+# Needed for pgadmin4. It has a dependency on
+# an RPM called "libpq5" but Red Hat already
+# provides libpq in the "libpq" package.
+Provides: libpq5
+Requires: libpq >= 12
 
 %description -n awips2-psql
 Provides the /awips2/psql/bin/psql symlink 

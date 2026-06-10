@@ -9,7 +9,7 @@
 Name: awips2-python-certifi
 Summary: AWIPS II Python certifi Distribution
 Epoch: 1
-Version: 2023.11.17
+Version: 2025.7.14
 Release: %{_installed_python_short}.1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}

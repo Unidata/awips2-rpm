@@ -11,8 +11,8 @@
 Name: awips2-python-pillow
 Summary: AWIPS II Python Pillow Distribution
 Epoch: 1
-Version: 10.3.0
-Release: %{_installed_python_short}.2%{?dist}
+Version: 12.2.0
+Release: %{_installed_python_short}.1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
@@ -83,7 +83,7 @@ mkdir --parents %{_python_build_loc}
 
 %build
 PILLOW_SRC_DIR="%{_baseline_workspace}/foss/pillow-%{version}/packaged"
-PILLOW_TAR="Pillow-%{version}.tar.gz"
+PILLOW_TAR="pillow-%{version}.tar.gz"
 
 cp --verbose ${PILLOW_SRC_DIR}/${PILLOW_TAR} %{_python_build_loc}
 pushd . > /dev/null

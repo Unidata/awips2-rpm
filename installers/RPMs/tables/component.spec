@@ -12,7 +12,7 @@ Name: awips2-python-tables
 Summary: AWIPS II Python PyTables Distribution
 Epoch: 1
 Version: 3.8.0
-Release: %{_installed_python_short}.3%{?dist}
+Release: %{_installed_python_short}.6%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
@@ -29,7 +29,7 @@ Requires: awips2-python-numexpr >= 2.6.2
 Requires: awips2-python-numpy >= 1.19.0
 Requires: awips2-python-py_cpuinfo
 Requires: awips2-python-blosc2 >= 2.0.0
-Requires: python%{_installed_python_short}-packaging
+Requires: awips2-python-packaging
 Requires: lzo
 Requires: zlib
 Requires: bzip2
@@ -38,7 +38,7 @@ BuildRequires: awips2-hdf5-devel
 BuildRequires: awips2-python
 BuildRequires: awips2-python-setuptools
 BuildRequires: python%{_installed_python_short}-wheel
-BuildRequires: python%{_installed_python_short}-packaging
+BuildRequires: awips2-python-packaging
 BuildRequires: awips2-python-py_cpuinfo
 BuildRequires: awips2-python-cython
 BuildRequires: awips2-python-numexpr

@@ -14,7 +14,7 @@ Name: awips2-python-scipy
 Summary: AWIPS II Python scipy Distribution
 Epoch: 1
 Version: 1.10.1
-Release: %{_installed_python_short}.%{_installed_python_numpy}.3%{?dist}
+Release: %{_installed_python_short}.%{_installed_python_numpy}.4%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
@@ -56,6 +56,8 @@ fi
 mkdir --parents %{_python_build_loc} || exit 1
 
 %build
+export SETUPTOOLS_USE_DISTUTILS=stdlib
+
 SCIPY_SRC_DIR="%{_baseline_workspace}/foss/scipy-%{version}/packaged"
 cp -v ${SCIPY_SRC_DIR}/scipy-%{version}.tar.gz %{_python_build_loc} || exit 1
 
@@ -77,8 +79,13 @@ patch scipy/__init__.py %{_baseline_workspace}/installers/RPMs/scipy/patches/sci
 # determined to be desired for awips2
 SCIPY_USE_PYTHRAN=0 CFLAGS=-std=c99 /awips2/python/bin/python setup.py build || exit 1
 popd > /dev/null
+unset SETUPTOOLS_USE_DISTUTILS
 
 %install
+# Force setuptools to use the stdlib version of distutils when building this foss.
+# This will need removed when python is upgraded to >= 3.12.
+export SETUPTOOLS_USE_DISTUTILS=stdlib
+
 pushd . > /dev/null
 cd %{_python_build_loc}/scipy-%{version} || exit 1
 # pythran pulls in several more dependencies so we will disable it until it is
@@ -91,6 +98,7 @@ if [ -d "%{_build_root}/awips2/python/lib64/" ]; then
     rsync --archive %{_build_root}/awips2/python/lib64/ %{_build_root}/awips2/python/lib || exit 1
     rm --recursive --force %{_build_root}/awips2/python/lib64
 fi
+unset SETUPTOOLS_USE_DISTUTILS
 
 %clean
 rm --recursive --force %{_build_root}

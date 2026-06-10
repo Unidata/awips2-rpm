@@ -1,8 +1,8 @@
 %define _qpid_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 Name:           awips2-qpid-broker-j
-Version:        7.1.12
-Release:        11%{?dist}
+Version:        10.0.1
+Release:        2%{?dist}
 Summary:        Java implementation of Apache Qpid Broker
 License:        Apache Software License
 Group:          Development/Java
@@ -18,13 +18,6 @@ Packager:       %{_build_site}
 Obsoletes:      awips2-qpid-java-broker
 Obsoletes:      awips2-qpid-java-common
 Obsoletes:      awips2-qpid-java-client
-
-# These obsoletes are for RPMs that were part of early 20.1.1 builds.
-# They were added to allow this RPM to install over earlier builds.
-# They can be removed after all 20.1.1/20.3.1 installations have
-# installed awips2-qpid-broker-j 7.1.4-1 or higher.
-Obsoletes:      awips2-qpid-jms-client
-Obsoletes:      awips2-qpid-jms-common
 
 %description
 Java implementation of Apache Qpid Broker.
@@ -106,51 +99,51 @@ mkdir --parents %{buildroot}/awips2/qpid/lib
 /bin/cp --recursive --verbose lib/*.jar %{buildroot}/awips2/qpid/lib
 /bin/cp --recursive --verbose lib/*.zip %{buildroot}/awips2/qpid/lib
 
-#Apply derby patch
-/bin/rm %{buildroot}/awips2/qpid/lib/derby-10.13.1.1.jar
-/bin/cp ${QPID_PATCH_DIR}/lib/derby-10.15.2.0.jar %{buildroot}/awips2/qpid/lib
-/bin/cp ${QPID_PATCH_DIR}/lib/derbyshared-10.15.2.0.jar %{buildroot}/awips2/qpid/lib
-/bin/cp ${QPID_PATCH_DIR}/lib/derbytools-10.15.2.0.jar %{buildroot}/awips2/qpid/lib
+# apply derby patch
+/bin/rm %{buildroot}/awips2/qpid/lib/derby-10.16.1.1.jar
+/bin/rm %{buildroot}/awips2/qpid/lib/derbyshared-10.16.1.1.jar
+/bin/rm %{buildroot}/awips2/qpid/lib/derbytools-10.16.1.1.jar
+/bin/cp ${QPID_PATCH_DIR}/lib/derby-10.16.1.2.jar %{buildroot}/awips2/qpid/lib
+/bin/cp ${QPID_PATCH_DIR}/lib/derbyshared-10.16.1.2.jar %{buildroot}/awips2/qpid/lib
+/bin/cp ${QPID_PATCH_DIR}/lib/derbytools-10.16.1.2.jar %{buildroot}/awips2/qpid/lib
 
-#Remove deprecated bonecp jars
-/bin/rm %{buildroot}/awips2/qpid/lib/bonecp-0.7.1.RELEASE.jar
-/bin/rm %{buildroot}/awips2/qpid/lib/qpid-broker-plugins-jdbc-provider-bone-%{version}.jar
+# apply jetty patch
+/bin/rm %{buildroot}/awips2/qpid/lib/jetty-ee11-servlet-12.1.5.jar
+/bin/rm %{buildroot}/awips2/qpid/lib/jetty-ee11-websocket-jetty-server-12.1.5.jar
+/bin/rm %{buildroot}/awips2/qpid/lib/jetty-ee11-websocket-servlet-12.1.5.jar
+/bin/rm %{buildroot}/awips2/qpid/lib/jetty-http-12.1.5.jar
+/bin/rm %{buildroot}/awips2/qpid/lib/jetty-io-12.1.5.jar
+/bin/rm %{buildroot}/awips2/qpid/lib/jetty-rewrite-12.1.5.jar
+/bin/rm %{buildroot}/awips2/qpid/lib/jetty-security-12.1.5.jar
+/bin/rm %{buildroot}/awips2/qpid/lib/jetty-server-12.1.5.jar
+/bin/rm %{buildroot}/awips2/qpid/lib/jetty-session-12.1.5.jar
+/bin/rm %{buildroot}/awips2/qpid/lib/jetty-util-12.1.5.jar
+/bin/rm %{buildroot}/awips2/qpid/lib/jetty-websocket-core-common-12.1.5.jar
+/bin/rm %{buildroot}/awips2/qpid/lib/jetty-websocket-core-server-12.1.5.jar
+/bin/rm %{buildroot}/awips2/qpid/lib/jetty-websocket-jetty-api-12.1.5.jar
+/bin/rm %{buildroot}/awips2/qpid/lib/jetty-websocket-jetty-common-12.1.5.jar
+/bin/rm %{buildroot}/awips2/qpid/lib/jetty-websocket-jetty-server-12.1.5.jar
+/bin/cp ${QPID_PATCH_DIR}/lib/jetty-ee11-servlet-12.1.8.jar %{buildroot}/awips2/qpid/lib
+/bin/cp ${QPID_PATCH_DIR}/lib/jetty-ee11-websocket-jetty-server-12.1.8.jar %{buildroot}/awips2/qpid/lib
+/bin/cp ${QPID_PATCH_DIR}/lib/jetty-ee11-websocket-servlet-12.1.8.jar %{buildroot}/awips2/qpid/lib
+/bin/cp ${QPID_PATCH_DIR}/lib/jetty-http-12.1.8.jar %{buildroot}/awips2/qpid/lib
+/bin/cp ${QPID_PATCH_DIR}/lib/jetty-io-12.1.8.jar %{buildroot}/awips2/qpid/lib
+/bin/cp ${QPID_PATCH_DIR}/lib/jetty-rewrite-12.1.8.jar %{buildroot}/awips2/qpid/lib
+/bin/cp ${QPID_PATCH_DIR}/lib/jetty-security-12.1.8.jar %{buildroot}/awips2/qpid/lib
+/bin/cp ${QPID_PATCH_DIR}/lib/jetty-server-12.1.8.jar %{buildroot}/awips2/qpid/lib
+/bin/cp ${QPID_PATCH_DIR}/lib/jetty-session-12.1.8.jar %{buildroot}/awips2/qpid/lib
+/bin/cp ${QPID_PATCH_DIR}/lib/jetty-util-12.1.8.jar %{buildroot}/awips2/qpid/lib
+/bin/cp ${QPID_PATCH_DIR}/lib/jetty-websocket-core-common-12.1.8.jar %{buildroot}/awips2/qpid/lib
+/bin/cp ${QPID_PATCH_DIR}/lib/jetty-websocket-core-server-12.1.8.jar %{buildroot}/awips2/qpid/lib
+/bin/cp ${QPID_PATCH_DIR}/lib/jetty-websocket-jetty-api-12.1.8.jar %{buildroot}/awips2/qpid/lib
+/bin/cp ${QPID_PATCH_DIR}/lib/jetty-websocket-jetty-common-12.1.8.jar %{buildroot}/awips2/qpid/lib
+/bin/cp ${QPID_PATCH_DIR}/lib/jetty-websocket-jetty-server-12.1.8.jar %{buildroot}/awips2/qpid/lib
 
-#Apply bcel patch
-/bin/rm %{buildroot}/awips2/qpid/lib/bcel-6.2.jar
-/bin/cp ${QPID_PATCH_DIR}/lib/bcel-6.6.1.jar %{buildroot}/awips2/qpid/lib
-
-#Apply guava patch
-/bin/rm %{buildroot}/awips2/qpid/lib/guava-30.0-jre.jar
-/bin/cp ${QPID_PATCH_DIR}/lib/guava-32.0.0-jre.jar %{buildroot}/awips2/qpid/lib
-
-#Apply jetty patch
-/bin/rm %{buildroot}/awips2/qpid/lib/jetty-continuation-9.4.35.v20201120.jar
-/bin/rm %{buildroot}/awips2/qpid/lib/jetty-http-9.4.35.v20201120.jar
-/bin/rm %{buildroot}/awips2/qpid/lib/jetty-io-9.4.35.v20201120.jar
-/bin/rm %{buildroot}/awips2/qpid/lib/jetty-security-9.4.35.v20201120.jar
-/bin/rm %{buildroot}/awips2/qpid/lib/jetty-server-9.4.35.v20201120.jar
-/bin/rm %{buildroot}/awips2/qpid/lib/jetty-servlet-9.4.35.v20201120.jar
-/bin/rm %{buildroot}/awips2/qpid/lib/jetty-servlets-9.4.35.v20201120.jar
-/bin/rm %{buildroot}/awips2/qpid/lib/jetty-util-9.4.35.v20201120.jar
-/bin/rm %{buildroot}/awips2/qpid/lib/jetty-util-ajax-9.4.35.v20201120.jar
-/bin/cp ${QPID_PATCH_DIR}/lib/jetty-continuation-9.4.54.v20240208.jar %{buildroot}/awips2/qpid/lib
-/bin/cp ${QPID_PATCH_DIR}/lib/jetty-http-9.4.54.v20240208.jar %{buildroot}/awips2/qpid/lib
-/bin/cp ${QPID_PATCH_DIR}/lib/jetty-io-9.4.54.v20240208.jar %{buildroot}/awips2/qpid/lib
-/bin/cp ${QPID_PATCH_DIR}/lib/jetty-security-9.4.54.v20240208.jar %{buildroot}/awips2/qpid/lib
-/bin/cp ${QPID_PATCH_DIR}/lib/jetty-server-9.4.54.v20240208.jar %{buildroot}/awips2/qpid/lib
-/bin/cp ${QPID_PATCH_DIR}/lib/jetty-servlet-9.4.54.v20240208.jar %{buildroot}/awips2/qpid/lib
-/bin/cp ${QPID_PATCH_DIR}/lib/jetty-servlets-9.4.54.v20240208.jar %{buildroot}/awips2/qpid/lib
-/bin/cp ${QPID_PATCH_DIR}/lib/jetty-util-9.4.54.v20240208.jar %{buildroot}/awips2/qpid/lib
-/bin/cp ${QPID_PATCH_DIR}/lib/jetty-util-ajax-9.4.54.v20240208.jar %{buildroot}/awips2/qpid/lib
-
-#Apply jackson patch
-/bin/rm %{buildroot}/awips2/qpid/lib/jackson-annotations-2.12.1.jar
-/bin/rm %{buildroot}/awips2/qpid/lib/jackson-core-2.12.1.jar
-/bin/rm %{buildroot}/awips2/qpid/lib/jackson-databind-2.12.1.jar
-/bin/cp ${QPID_PATCH_DIR}/lib/jackson-annotations-2.17.2.jar %{buildroot}/awips2/qpid/lib
-/bin/cp ${QPID_PATCH_DIR}/lib/jackson-core-2.17.2.jar %{buildroot}/awips2/qpid/lib
-/bin/cp ${QPID_PATCH_DIR}/lib/jackson-databind-2.17.2.jar %{buildroot}/awips2/qpid/lib
+# apply logback patch
+/bin/rm %{buildroot}/awips2/qpid/lib/logback-classic-1.5.21.jar
+/bin/rm %{buildroot}/awips2/qpid/lib/logback-core-1.5.21.jar
+/bin/cp ${QPID_PATCH_DIR}/lib/logback-classic-1.5.26.jar %{buildroot}/awips2/qpid/lib
+/bin/cp ${QPID_PATCH_DIR}/lib/logback-core-1.5.26.jar %{buildroot}/awips2/qpid/lib
 
 mkdir -p %{buildroot}/awips2/qpid/etc
 /bin/cp -rv ${QPID_PATCH_DIR}/etc/* %{buildroot}/awips2/qpid/etc
@@ -256,7 +249,6 @@ rm --recursive --force %{buildroot}
 %defattr(644,awips,fxalpha,755)
 %dir /awips2/qpid/etc
 /awips2/qpid/etc/wrapper.conf
-/awips2/qpid/etc/wrapper.conf.centralRegistry
 
 %dir /awips2/qpid/lib
 /awips2/qpid/lib/*.jar
@@ -277,6 +269,14 @@ rm --recursive --force %{buildroot}
 /awips2/qpid/initialConfigAlr.json
 
 %changelog
+* Fri Apr 10 2026 Mark Peters <mark.a.peters@rtx.com> - 10.0.1-1
+- Upgraded to version 10.0.1 and manually patched in derby 10.16.1.2, jetty 12.1.8, and logback 1.5.26 jars to resolve CVEs
+* Thu Apr 02 2026 Mark Peters <mark.a.peters@rtx.com> - 7.1.12-15
+- Updated spec to manually patch derby 10.16.1.2 jars
+* Mon Sep 08 2025 Shiji Manoj <shiji.manoj@noaa.gov> - 7.1.12-14
+- Updated spec to manually patch jetty-continuation-9.4.58.v20250814.jar, jetty-http-9.4.58.v20250814.jar, jetty-io-9.4.58.v20250814.jar, jetty-security-9.4.58.v20250814.jar, jetty-server-9.4.58.v20250814.jar, jetty-servlet-9.4.58.v20250814.jar, jetty-servlets-9.4.58.v20250814.jar, jetty-util-9.4.58.v20250814.jar, jetty-util-ajax-9.4.58.v20250814.jar
+* Fri Jan 31 2025 Sarah Johnston <sarah.johnston@noaa.gov> - 7.1.12-12
+- Updated spec to manually patch jetty-continuation-9.4.56.v20240826.jar, jetty-http-9.4.56.v20240826.jar, jetty-io-9.4.56.v20240826.jar, jetty-security-9.4.56.v20240826.jar, jetty-server-9.4.56.v20240826.jar, jetty-servlet-9.4.56.v20240826.jar, jetty-servlets-9.4.56.v20240826.jar, jetty-util-9.4.56.v20240826.jar, jetty-util-ajax-9.4.56.v20240826.jar
 * Thu Sep 05 2024 Derek Haines <derek.haines@noaa.gov> - 7.1.12-11
 - Updated spec to manually patch jackson-annotations-2.17.2.jar, jackson-core-2.17.2.jar, jackson-databind-2.17.2.jar
 * Tue Jun 04 2024 Freddy Camacho <freddy.camacho@noaa.gov> - 7.1.12-10
@@ -340,4 +340,4 @@ rm --recursive --force %{buildroot}
 * Fri Mar 20 2015 Dave Lovely <david.n.lovely@raytheon.com> - 0.32-1
 - Upgrade to 0.32
 * Thu Jul 31 2014 Ron Anderson <ron.anderson@raytheon.com> - 0.28-1
-- Initial build.
+7 Initial build.

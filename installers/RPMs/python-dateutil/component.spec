@@ -11,7 +11,7 @@
 Name: awips2-python-dateutil
 Summary: AWIPS II Python dateutil Distribution
 Epoch: 1
-Version: 2.8.0
+Version: 2.9.0
 Release: %{_installed_python_short}.1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}

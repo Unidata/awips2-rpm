@@ -1,0 +1,2 @@
+org.apache.qpid.server.virtualhost.derby.DerbyRepackingVirtualHostImplFactory
+org.apache.qpid.server.virtualhostnode.derby.DerbyRepackingVirtualHostNodeImplFactory

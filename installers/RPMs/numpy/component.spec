@@ -13,7 +13,7 @@ Name: awips2-python-numpy
 Summary: AWIPS II Python numpy Distribution
 Epoch: 1
 Version: 1.23.5
-Release: %{_installed_python_short}.2%{?dist}
+Release: %{_installed_python_short}.3%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}
@@ -56,6 +56,9 @@ fi
 mkdir --parents %{_python_build_loc} || exit 1
 
 %build
+# Force setuptools to use the stdlib version of distutils when building this foss.
+# This will need removed when python is upgraded to >= 3.12.
+export SETUPTOOLS_USE_DISTUTILS=stdlib
 NUMPY_SRC_DIR="%{_baseline_workspace}/foss/numpy-%{version}/packaged"
 NUMPY_PKG="numpy-%{version}.tar.gz"
 cp --verbose ${NUMPY_SRC_DIR}/${NUMPY_PKG} %{_python_build_loc} || exit 1
@@ -72,8 +75,12 @@ source /etc/profile.d/awips2Python.sh || exit 1
 cd numpy-%{version} || exit 1
 /awips2/python/bin/python setup.py build || exit 1
 popd > /dev/null
+unset SETUPTOOLS_USE_DISTUTILS
 
 %install
+# Force setuptools to use the stdlib version of distutils when building this foss.
+# This will need removed when python is upgraded to >= 3.12.
+export SETUPTOOLS_USE_DISTUTILS=stdlib
 pushd . > /dev/null
 cd %{_python_build_loc}/numpy-%{version} || exit 1
 /awips2/python/bin/python setup.py install \
@@ -86,6 +93,7 @@ if [ -d "%{_build_root}/awips2/python/lib64/" ]; then
     rsync --archive %{_build_root}/awips2/python/lib64/ %{_build_root}/awips2/python/lib || exit 1
     rm --recursive --force %{_build_root}/awips2/python/lib64
 fi
+unset SETUPTOOLS_USE_DISTUTILS
 
 %clean
 rm --recursive --force %{_build_root}

@@ -37,10 +37,12 @@
          <packagereq type="mandatory">awips2-edex-foss</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-com-beust-jcommander</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-com-google-protobuf</packagereq>
+         <packagereq type="mandatory">awips2-edex-foss-com-google-re2j</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-com-mchange</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-com-sun-jna</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-edu-mit-ll-netcdf</packagereq>
-         <packagereq type="mandatory">awips2-edex-foss-javax-activation</packagereq>
+         <packagereq type="mandatory">awips2-edex-foss-jakarta-activation</packagereq>
+         <packagereq type="mandatory">awips2-edex-foss-jakarta-servlet</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-javax-mail</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-javax-media-opengl</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-javax-servlet</packagereq>
@@ -65,6 +67,7 @@
          <packagereq type="mandatory">awips2-edex-foss-org-apache-xml-security</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-org-apache-xml-serializer</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-org-dom4j</packagereq>
+         <packagereq type="mandatory">awips2-edex-foss-org-ehcache</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-org-eclipse-jetty</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-org-itadaki-bzip2</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-org-jasypt</packagereq>
@@ -148,6 +151,7 @@
          <packagereq type="mandatory">awips2-qpid-proton</packagereq>
          <packagereq type="mandatory">awips2-qpid-proton-python</packagereq>
          <packagereq type="mandatory">awips2-python-tables</packagereq>
+         <packagereq type="mandatory">awips2-python-packaging</packagereq> 
          <packagereq type="mandatory">awips2-python-numexpr</packagereq>
          <packagereq type="mandatory">awips2-python-thrift</packagereq>
          <packagereq type="mandatory">awips2-python-tpg</packagereq>
@@ -223,6 +227,7 @@
          <packagereq type="mandatory">awips2-qpid-proton</packagereq>
          <packagereq type="mandatory">awips2-qpid-proton-python</packagereq>
          <packagereq type="mandatory">awips2-python-tables</packagereq>
+         <packagereq type="mandatory">awips2-python-packaging</packagereq> 
          <packagereq type="mandatory">awips2-python-numexpr</packagereq>
          <packagereq type="mandatory">awips2-python-thrift</packagereq>
          <packagereq type="mandatory">awips2-python-tpg</packagereq>
@@ -290,6 +295,7 @@
          <packagereq type="mandatory">awips2-qpid-proton</packagereq>
          <packagereq type="mandatory">awips2-qpid-proton-python</packagereq>
          <packagereq type="mandatory">awips2-python-tables</packagereq>
+         <packagereq type="mandatory">awips2-python-packaging</packagereq> 
          <packagereq type="mandatory">awips2-python-numexpr</packagereq>
          <packagereq type="mandatory">awips2-python-thrift</packagereq>
          <packagereq type="mandatory">awips2-python-tpg</packagereq>
@@ -356,10 +362,12 @@
          <packagereq type="default">awips2-edex-foss</packagereq>
          <packagereq type="default">awips2-edex-foss-com-beust-jcommander</packagereq>
          <packagereq type="default">awips2-edex-foss-com-google-protobuf</packagereq>
+         <packagereq type="default">awips2-edex-foss-com-google-re2j</packagereq>
          <packagereq type="default">awips2-edex-foss-com-mchange</packagereq>
          <packagereq type="default">awips2-edex-foss-com-sun-jna</packagereq>
          <packagereq type="default">awips2-edex-foss-edu-mit-ll-netcdf</packagereq>
-         <packagereq type="default">awips2-edex-foss-javax-activation</packagereq>
+         <packagereq type="default">awips2-edex-foss-jakarta-activation</packagereq>
+         <packagereq type="default">awips2-edex-foss-jakarta-servlet</packagereq>
          <packagereq type="default">awips2-edex-foss-javax-mail</packagereq>
          <packagereq type="default">awips2-edex-foss-javax-media-opengl</packagereq>
          <packagereq type="default">awips2-edex-foss-javax-servlet</packagereq>
@@ -384,6 +392,7 @@
          <packagereq type="default">awips2-edex-foss-org-apache-xml-security</packagereq>
          <packagereq type="default">awips2-edex-foss-org-apache-xml-serializer</packagereq>
          <packagereq type="default">awips2-edex-foss-org-dom4j</packagereq>
+         <packagereq type="default">awips2-edex-foss-org-ehcache</packagereq>
          <packagereq type="default">awips2-edex-foss-org-eclipse-jetty</packagereq>
          <packagereq type="default">awips2-edex-foss-org-itadaki-bzip2</packagereq>
          <packagereq type="default">awips2-edex-foss-org-jasypt</packagereq>
@@ -452,6 +461,7 @@
          <packagereq type="mandatory">awips2-qpid-proton</packagereq>
          <packagereq type="mandatory">awips2-qpid-proton-python</packagereq>
          <packagereq type="mandatory">awips2-python-tables</packagereq>
+         <packagereq type="mandatory">awips2-python-packaging</packagereq> 
          <packagereq type="mandatory">awips2-python-numexpr</packagereq>
          <packagereq type="mandatory">awips2-python-thrift</packagereq>
          <packagereq type="mandatory">awips2-python-tpg</packagereq>
@@ -523,6 +533,7 @@
          <packagereq type="mandatory">awips2-qpid-proton</packagereq>
          <packagereq type="mandatory">awips2-qpid-proton-python</packagereq>
          <packagereq type="mandatory">awips2-python-tables</packagereq>
+         <packagereq type="mandatory">awips2-python-packaging</packagereq> 
          <packagereq type="mandatory">awips2-python-numexpr</packagereq>
          <packagereq type="mandatory">awips2-python-thrift</packagereq>
          <packagereq type="mandatory">awips2-python-tpg</packagereq>
@@ -576,6 +587,7 @@
          <packagereq type="mandatory">awips2-qpid-proton</packagereq>
          <packagereq type="mandatory">awips2-qpid-proton-python</packagereq>
          <packagereq type="mandatory">awips2-python-tables</packagereq>
+         <packagereq type="mandatory">awips2-python-packaging</packagereq> 
          <packagereq type="mandatory">awips2-python-numexpr</packagereq>
          <packagereq type="mandatory">awips2-python-thrift</packagereq>
          <packagereq type="mandatory">awips2-python-tpg</packagereq>
@@ -621,6 +633,7 @@
          <packagereq type="mandatory">awips2-qpid-proton-python</packagereq>
          <packagereq type="mandatory">awips2-python-numpy</packagereq>
          <packagereq type="mandatory">awips2-python-tables</packagereq>
+         <packagereq type="mandatory">awips2-python-packaging</packagereq> 
          <packagereq type="mandatory">awips2-python-numexpr</packagereq>
          <packagereq type="mandatory">awips2-python-thrift</packagereq>
          <packagereq type="mandatory">awips2-python-tpg</packagereq>
@@ -670,6 +683,7 @@
          <packagereq type="mandatory">awips2-qpid-proton</packagereq>
          <packagereq type="mandatory">awips2-qpid-proton-python</packagereq>
          <packagereq type="mandatory">awips2-python-tables</packagereq>
+         <packagereq type="mandatory">awips2-python-packaging</packagereq> 
          <packagereq type="mandatory">awips2-python-numexpr</packagereq>
          <packagereq type="mandatory">awips2-python-thrift</packagereq>
          <packagereq type="mandatory">awips2-python-tpg</packagereq>
@@ -723,6 +737,7 @@
          <packagereq type="default">awips2-qpid-proton</packagereq>
          <packagereq type="default">awips2-qpid-proton-python</packagereq>
          <packagereq type="default">awips2-python-tables</packagereq>
+         <packagereq type="default">awips2-python-packaging</packagereq> 
          <packagereq type="default">awips2-python-numexpr</packagereq>
          <packagereq type="default">awips2-python-thrift</packagereq>
          <packagereq type="default">awips2-python-tpg</packagereq>
@@ -769,10 +784,12 @@
          <packagereq type="mandatory">awips2-edex-foss</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-com-beust-jcommander</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-com-google-protobuf</packagereq>
+         <packagereq type="mandatory">awips2-edex-foss-com-google-re2j</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-com-mchange</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-com-sun-jna</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-edu-mit-ll-netcdf</packagereq>
-         <packagereq type="mandatory">awips2-edex-foss-javax-activation</packagereq>
+         <packagereq type="mandatory">awips2-edex-foss-jakarta-activation</packagereq>
+         <packagereq type="mandatory">awips2-edex-foss-jakarta-servlet</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-javax-mail</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-javax-media-opengl</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-javax-servlet</packagereq>
@@ -798,6 +815,7 @@
          <packagereq type="mandatory">awips2-edex-foss-org-apache-xml-serializer</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-org-dom4j</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-org-eclipse-jetty</packagereq>
+         <packagereq type="mandatory">awips2-edex-foss-org-ehcache</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-org-itadaki-bzip2</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-org-jasypt</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-org-jfreechart</packagereq>
@@ -853,6 +871,7 @@
          <packagereq type="mandatory">awips2-python-cftime</packagereq>
          <packagereq type="mandatory">awips2-python-netcdf4</packagereq>
          <packagereq type="mandatory">awips2-python-tables</packagereq>
+         <packagereq type="mandatory">awips2-python-packaging</packagereq> 
          <packagereq type="mandatory">awips2-python-numexpr</packagereq>
          <packagereq type="mandatory">awips2-python-thrift</packagereq>
          <packagereq type="mandatory">awips2-python-tpg</packagereq>
@@ -893,10 +912,12 @@
          <packagereq type="default">awips2-edex-foss</packagereq>
          <packagereq type="default">awips2-edex-foss-com-beust-jcommander</packagereq>
          <packagereq type="default">awips2-edex-foss-com-google-protobuf</packagereq>
+         <packagereq type="default">awips2-edex-foss-com-google-re2j</packagereq>
          <packagereq type="default">awips2-edex-foss-com-mchange</packagereq>
          <packagereq type="default">awips2-edex-foss-com-sun-jna</packagereq>
          <packagereq type="default">awips2-edex-foss-edu-mit-ll-netcdf</packagereq>
-         <packagereq type="default">awips2-edex-foss-javax-activation</packagereq>
+         <packagereq type="default">awips2-edex-foss-jakarta-activation</packagereq>
+         <packagereq type="default">awips2-edex-foss-jakarta-servlet</packagereq>
          <packagereq type="default">awips2-edex-foss-javax-mail</packagereq>
          <packagereq type="default">awips2-edex-foss-javax-media-opengl</packagereq>
          <packagereq type="default">awips2-edex-foss-javax-servlet</packagereq>
@@ -922,6 +943,7 @@
          <packagereq type="default">awips2-edex-foss-org-apache-xml-serializer</packagereq>
          <packagereq type="default">awips2-edex-foss-org-dom4j</packagereq>
          <packagereq type="default">awips2-edex-foss-org-eclipse-jetty</packagereq>
+         <packagereq type="default">awips2-edex-foss-org-ehcache</packagereq>
          <packagereq type="default">awips2-edex-foss-org-itadaki-bzip2</packagereq>
          <packagereq type="default">awips2-edex-foss-org-jasypt</packagereq>
          <packagereq type="default">awips2-edex-foss-org-jfreechart</packagereq>
@@ -985,6 +1007,7 @@
          <packagereq type="default">awips2-qpid-proton</packagereq>
          <packagereq type="default">awips2-qpid-proton-python</packagereq>
          <packagereq type="default">awips2-python-tables</packagereq>
+         <packagereq type="default">awips2-python-packaging</packagereq> 
          <packagereq type="default">awips2-python-numexpr</packagereq>
          <packagereq type="default">awips2-python-thrift</packagereq>
          <packagereq type="default">awips2-python-tpg</packagereq>
@@ -1035,10 +1058,12 @@
          <packagereq type="mandatory">awips2-edex-foss</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-com-beust-jcommander</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-com-google-protobuf</packagereq>
+         <packagereq type="mandatory">awips2-edex-foss-com-google-re2j</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-com-mchange</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-com-sun-jna</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-edu-mit-ll-netcdf</packagereq>
-         <packagereq type="mandatory">awips2-edex-foss-javax-activation</packagereq>
+         <packagereq type="mandatory">awips2-edex-foss-jakarta-activation</packagereq>
+         <packagereq type="mandatory">awips2-edex-foss-jakarta-servlet</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-javax-mail</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-javax-media-opengl</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-javax-servlet</packagereq>
@@ -1063,6 +1088,7 @@
          <packagereq type="mandatory">awips2-edex-foss-org-apache-xml-security</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-org-apache-xml-serializer</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-org-dom4j</packagereq>
+         <packagereq type="mandatory">awips2-edex-foss-org-ehcache</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-org-eclipse-jetty</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-org-itadaki-bzip2</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-org-jasypt</packagereq>
@@ -1125,6 +1151,7 @@
          <packagereq type="mandatory">awips2-qpid-proton</packagereq>
          <packagereq type="mandatory">awips2-qpid-proton-python</packagereq>
          <packagereq type="mandatory">awips2-python-tables</packagereq>
+         <packagereq type="mandatory">awips2-python-packaging</packagereq> 
          <packagereq type="mandatory">awips2-python-numexpr</packagereq>
          <packagereq type="mandatory">awips2-python-thrift</packagereq>
          <packagereq type="mandatory">awips2-python-tpg</packagereq>
@@ -1178,10 +1205,12 @@
          <packagereq type="default">awips2-edex-foss</packagereq>
          <packagereq type="default">awips2-edex-foss-com-beust-jcommander</packagereq>
          <packagereq type="default">awips2-edex-foss-com-google-protobuf</packagereq>
+         <packagereq type="default">awips2-edex-foss-com-google-re2j</packagereq>
          <packagereq type="default">awips2-edex-foss-com-mchange</packagereq>
          <packagereq type="default">awips2-edex-foss-com-sun-jna</packagereq>
          <packagereq type="default">awips2-edex-foss-edu-mit-ll-netcdf</packagereq>
-         <packagereq type="default">awips2-edex-foss-javax-activation</packagereq>
+         <packagereq type="default">awips2-edex-foss-jakarta-activation</packagereq>
+         <packagereq type="default">awips2-edex-foss-jakarta-servlet</packagereq>
          <packagereq type="default">awips2-edex-foss-javax-mail</packagereq>
          <packagereq type="default">awips2-edex-foss-javax-media-opengl</packagereq>
          <packagereq type="default">awips2-edex-foss-javax-servlet</packagereq>
@@ -1206,6 +1235,7 @@
          <packagereq type="default">awips2-edex-foss-org-apache-xml-security</packagereq>
          <packagereq type="default">awips2-edex-foss-org-apache-xml-serializer</packagereq>
          <packagereq type="default">awips2-edex-foss-org-dom4j</packagereq>
+         <packagereq type="default">awips2-edex-foss-org-ehcache</packagereq>
          <packagereq type="default">awips2-edex-foss-org-eclipse-jetty</packagereq>
          <packagereq type="default">awips2-edex-foss-org-itadaki-bzip2</packagereq>
          <packagereq type="default">awips2-edex-foss-org-jasypt</packagereq>
@@ -1249,6 +1279,7 @@
          <packagereq type="mandatory">awips2-python-pillow</packagereq>
          <packagereq type="mandatory">awips2-qpid-proton-python</packagereq>
          <packagereq type="mandatory">awips2-python-tables</packagereq>
+         <packagereq type="mandatory">awips2-python-packaging</packagereq> 
          <packagereq type="mandatory">awips2-python-numexpr</packagereq>
          <packagereq type="mandatory">awips2-python-thrift</packagereq>
          <packagereq type="mandatory">awips2-python-tpg</packagereq>
@@ -1295,10 +1326,12 @@
          <packagereq type="mandatory">awips2-edex-foss</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-com-beust-jcommander</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-com-google-protobuf</packagereq>
+         <packagereq type="mandatory">awips2-edex-foss-com-google-re2j</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-com-mchange</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-com-sun-jna</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-edu-mit-ll-netcdf</packagereq>
-         <packagereq type="mandatory">awips2-edex-foss-javax-activation</packagereq>
+         <packagereq type="mandatory">awips2-edex-foss-jakarta-activation</packagereq>
+         <packagereq type="mandatory">awips2-edex-foss-jakarta-servlet</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-javax-mail</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-javax-media-opengl</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-javax-servlet</packagereq>
@@ -1323,6 +1356,7 @@
          <packagereq type="mandatory">awips2-edex-foss-org-apache-xml-security</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-org-apache-xml-serializer</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-org-dom4j</packagereq>
+         <packagereq type="mandatory">awips2-edex-foss-org-ehcache</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-org-eclipse-jetty</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-org-itadaki-bzip2</packagereq>
          <packagereq type="mandatory">awips2-edex-foss-org-jasypt</packagereq>
@@ -1361,11 +1395,9 @@
       <description>This Will Install The AWIPS II FOSS RPMs</description>
       <uservisible>true</uservisible>
       <packagelist>
-          <packagereq type="default">awips2-aec</packagereq>
           <packagereq type="default">awips2-eccodes</packagereq>
           <packagereq type="default">awips2-hdfview</packagereq>
           <packagereq type="default">awips2-python-appdirs</packagereq>
-          <packagereq type="default">awips2-python-bokeh</packagereq>
           <packagereq type="default">awips2-python-bottleneck</packagereq>
           <packagereq type="default">awips2-python-cartopy</packagereq>
           <packagereq type="default">awips2-python-click</packagereq>
@@ -1407,11 +1439,9 @@
           <packagereq type="default">awips2-python-qtawesome</packagereq>
           <packagereq type="default">awips2-python-qtpy</packagereq>
           <packagereq type="default">awips2-python-scipy</packagereq>
-          <packagereq type="default">awips2-python-seaborn</packagereq>
           <packagereq type="default">awips2-python-shapely</packagereq>
           <packagereq type="default">awips2-python-shiboken6</packagereq>
           <packagereq type="default">awips2-python-sqlite3</packagereq>
-          <packagereq type="default">awips2-python-tornado</packagereq>
           <packagereq type="default">awips2-python-traitlets</packagereq>
           <packagereq type="default">awips2-python-typing_extensions</packagereq>
           <packagereq type="default">awips2-python-whoosh</packagereq>

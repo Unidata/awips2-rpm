@@ -38,6 +38,13 @@
 #    Jun  2, 2023 2034252    tgurney      Remove python chardet package, not used anymore
 #    Jun  7, 2023 2034280    dgilling     Add package ninja-build, a dependency for 
 #                                         meson.
+#    Apr 10, 2024 2037206    tgurney      Upgrade Java from 11 to 17
+#    Dec 18, 2025 2040388    smanoj       Add gcc-toolset-10 for RHEL8 upgrade
+#                                         gfortran and stdc++
+#    Jan 08, 2026 2040611    njensen      Remove ninja-build as we are packaging and
+#                                         providing a newer version
+#    Jan 14, 2026 2040388    smanoj       Add additional gcc 10 compilers for OHD rehost
+#    Apr  7, 2026 2041307    tgurney      Add libaec and libaec-devel for awips2-hdf5
 
 ARG img
 FROM $img
@@ -108,6 +115,8 @@ yum -y install \
   gcc \
   gcc-c++ \
   gcc-gfortran \
+  gcc-toolset-10-gcc-c++ \
+  gcc-toolset-10-gcc-gfortran \
   gettext \
   git \
   glibc-common \
@@ -119,7 +128,6 @@ yum -y install \
   libstdc++-devel \
   libtool \
   make \
-  ninja-build \
   patch \
   patchutils \
   perl \
@@ -163,10 +171,12 @@ yum -y install \
   initscripts \
   jasper-devel \
   jasper-libs \
-  java-11-openjdk-devel \
+  java-17-openjdk-devel \
   ksh \
   lapack \
   lapack-devel \
+  libaec \
+  libaec-devel \
   libcurl-devel \
   libffi \
   libffi-devel \
@@ -239,6 +249,11 @@ RUN yum -y install \
   cyrus-sasl-devel.i686 \
   expat-devel.i686 \
   elfutils-libelf-devel.i686 \
+  gcc-toolset-10-libatomic-devel.i686 \
+  gcc-toolset-10-libitm-devel.i686 \
+  gcc-toolset-10-libquadmath-devel.i686 \
+  gcc-toolset-10-libstdc++-devel.i686 \
+  gcc-toolset-10-libubsan-devel.i686 \
   glibc.i686 \
   gdbm.i686 \
   gdbm-devel.i686 \
@@ -296,6 +311,7 @@ RUN \
   # ghostscript-devel renamed to libgs-devel
   && yum install -y libgs-devel \
   && yum -y clean all && rm -rf /var/cache/yum
+
 
 # Install any temporary packages you may need here
 # RUN yum install -y my-package

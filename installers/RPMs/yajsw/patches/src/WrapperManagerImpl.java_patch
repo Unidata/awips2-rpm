@@ -1,0 +1,72 @@
+diff --git a/./yajsw-stable-13.11/src/yajsw/src/main/java/org/rzo/yajsw/app/WrapperManagerImpl.java b/./yajsw-stable-13.11_patched/src/yajsw/src/main/java/org/rzo/yajsw/app/WrapperManagerImpl.java
+index a6e96a94..836cc020 100644
+--- a/./yajsw-stable-13.11/src/yajsw/src/main/java/org/rzo/yajsw/app/WrapperManagerImpl.java
++++ b/./yajsw-stable-13.11_patched/src/yajsw/src/main/java/org/rzo/yajsw/app/WrapperManagerImpl.java
+@@ -246,9 +246,12 @@ public class WrapperManagerImpl implements WrapperManager, Constants,
+ 		 * (InterruptedException e1) { // TODO Auto-generated catch block
+ 		 * e1.printStackTrace(); }
+ 		 */
+-		System.out.println("YAJSW: " + YajswVersion.YAJSW_VERSION);
+-		System.out.println("OS   : " + YajswVersion.OS_VERSION);
+-		System.out.println("JVM  : " + YajswVersion.JAVA_VERSION);
++                 /*
++                  * bkowal Suppress extraneous output.
++                  */
++		//System.out.println("YAJSW: " + YajswVersion.YAJSW_VERSION);
++		//System.out.println("OS   : " + YajswVersion.OS_VERSION);
++		//System.out.println("JVM  : " + YajswVersion.JAVA_VERSION);
+ 		// set commons logging for vfs -> avoid using default java logger
+ 		ClassLoader currentClassLoader = Thread.currentThread()
+ 				.getContextClassLoader();
+@@ -663,11 +666,16 @@ public class WrapperManagerImpl implements WrapperManager, Constants,
+ 				{
+ 					minorGCBeanX = gcBean;
+ 				}
+-				else if (gcBean.getName().toLowerCase().contains("scavenge"))
++				/*
++				 * D. Friedman  2017-02-10  DR 19670 -- Recognize G1 GC beans
++ 				 */
++				else if (gcBean.getName().toLowerCase().contains("scavenge")
++					|| gcBean.getName().equals("G1 Young Generation"))
+ 				{
+ 					minorGCBeanX = gcBean;
+ 				}
+-				else if (gcBean.getName().toLowerCase().contains("marksweep"))
++				else if (gcBean.getName().toLowerCase().contains("marksweep")
++					|| gcBean.getName().equals("G1 Old Generation"))
+ 				{
+ 					fullGCBeanX = gcBean;
+ 				}
+@@ -1247,6 +1255,9 @@ public class WrapperManagerImpl implements WrapperManager, Constants,
+ 								{
+ 									if (minorGCDuration == -1)
+ 										getGCData();
++									/*
++									 * D. Friedman  2017-02-10  DR 19670 -- Do not send null value
++									 */
+ 									future = _session
+ 											.writeAndFlush(new Message(
+ 													Constants.WRAPPER_MSG_PING,
+@@ -1256,7 +1267,7 @@ public class WrapperManagerImpl implements WrapperManager, Constants,
+ 															+ ";"
+ 															+ fullGCDuration
+ 															+ ";"
+-															+ lastUsedHeap));
++															+ (lastUsedHeap != null ? lastUsedHeap : -1)));
+ 									currentPercentHeap = -1;
+ 									minorGCDuration = -1;
+ 									fullGCDuration = -1;
+@@ -1434,7 +1445,12 @@ public class WrapperManagerImpl implements WrapperManager, Constants,
+ 			if (msg.getCode() == Constants.WRAPPER_MSG_STOP)
+ 				try
+ 				{
+-					System.out.println("wrapper manager received "+msg);
++					/*
++ 					 * bkowal Suppress extraneous output unless debug is enabled
++   					 */ 
++					if (_debug > 0) {
++						System.out.println("wrapper manager received "+msg);
++					}
+ 					_stopping = true;
+ 
+ 					if (session != null)

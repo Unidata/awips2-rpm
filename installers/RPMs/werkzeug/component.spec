@@ -10,7 +10,7 @@
 Name: awips2-python-werkzeug
 Summary: AWIPS II Python Werkzeug Distribution
 Epoch: 1
-Version: 3.0.3
+Version: 3.1.6
 Release: %{_installed_python_short}.0%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}

@@ -35,7 +35,6 @@ Requires: libpq >= 12
 Requires: postgresql >= 12
 Requires: postgresql-server >= 12
 Requires: postgresql-contrib >= 12
-Requires: postgresql-upgrade >= 12
 
 %description
 AWIPS II PostGIS distribution

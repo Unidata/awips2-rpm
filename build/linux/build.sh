@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# This script will sync over enabled GIT repos. Ordering of the 
+# This script will sync over enabled GIT repos. Ordering of the
 # repos in this file is strict, build order is determined by this
 # order. This script also handles the full and continuous builds.
 #
@@ -19,6 +19,7 @@
 # Aug 13, 2021  8437     tgurney     Run "sync workspace" operations only once
 # Dec 09, 2021  8719     dlovely     Added WA Package support to AWIPS2_NWS
 # Apr 11, 2023  2028208  dlovely     Updated Repo names to match VLab
+# Dec 10, 2025  2033931  dkingfield  Updated AWIPS2_GSD to support ATOMS/PEM
 
 ####################################################################
 # Usage
@@ -402,7 +403,7 @@ fi
 ##################################
 if [ ! -z "$GSD_BRANCH" ]; then
    repo=$repo_dir/AWIPS2_GSD
-   parts_to_sync=( 'features/*' 'viz/*')
+   parts_to_sync=( 'common/*' 'edex/*' 'features/*' 'viz/*')
    $repo_dir/AWIPS2_build/build/common/sync_workspace.sh $repo $GSD_BRANCH $baseline ${parts_to_sync[*]}
    if [ $? -ne 0 ]; then
       exit 1
@@ -411,6 +412,18 @@ if [ ! -z "$GSD_BRANCH" ]; then
    # Create properties file for GSD
    ##################################
    echo "gov.noaa.gsd.viz.ensemble.feature" >> ${WORKSPACE}/baseline/build/features.txt
+   echo "gov.noaa.nssl.viz.phiplume.feature" >> ${WORKSPACE}/baseline/build/features.txt
+   echo "gov.noaa.nssl.edex.phiplume.feature" >> ${WORKSPACE}/baseline/build.edex/features.txt
+   echo "gov.noaa.gsl.edex.pem.feature" >> ${WORKSPACE}/baseline/build.edex/features.txt
+   echo "gov.noaa.gsl.viz.pem.feature" >> ${WORKSPACE}/baseline/build/features.txt
+   echo "gov.noaa.gsl.edex.atoms.feature" >> ${WORKSPACE}/baseline/build.edex/features.txt
+   echo "gov.noaa.gsl.edex.atomsForecast.feature" >> ${WORKSPACE}/baseline/build.edex/features.txt
+   echo "gov.noaa.gsl.edex.atomsSeaLevelObs.feature" >> ${WORKSPACE}/baseline/build.edex/features.txt
+   echo "gov.noaa.gsl.edex.atomsImagery.feature" >> ${WORKSPACE}/baseline/build.edex/features.txt
+   echo "gov.noaa.gsl.viz.atoms.feature" >> ${WORKSPACE}/baseline/build/features.txt
+   echo "gov.noaa.gsl.viz.atomsForecast.feature" >> ${WORKSPACE}/baseline/build/features.txt
+   echo "gov.noaa.gsl.viz.atomsSeaLevelObs.feature" >> ${WORKSPACE}/baseline/build/features.txt
+   echo "gov.noaa.gsl.viz.atomsImagery.feature" >> ${WORKSPACE}/baseline/build/features.txt
 fi
 
 ##################################
@@ -582,6 +595,12 @@ if [ ! -z "$RPMS" ]; then
          exit 1
       fi
    fi
+elif [ ! -z "$BUILD_ADE_DEST" ]; then
+   # Build the ADE
+   /bin/bash build.sh -ade
+   if [ $? -ne 0 ]; then
+      exit 1
+   fi
 else
    /bin/bash build.sh -rh6
    if [ $? -ne 0 ]; then
@@ -591,28 +610,6 @@ else
    if [ $? -ne 0 ]; then
       exit 1
    fi
-   ##################################
-   # Actions for the Omaha Build
-   ##################################
-   if [ "$AWIPSII_BUILD_SITE" == "Raytheon Omaha" ]; then
-      ##################################
-      # Add revision info
-      ##################################
-      pushd .
-      cd $WORKSPACE/rpmbuild/RPMS/
-      export http_proxy=
-      export HTTP_PROXY=
-      curl -s "$BUILD_URL/api/xml?wrapper=changes&xpath=//changeSet//comment" \
-         | sed -e 's/<\/comment>//g; s/<comment>//g; s/<\/*changes>//g' \
-         | grep  -G '^.*#[0-9]' \
-         | awk '{print $1" "$2}' \
-         | sed ':a;N;$!ba;s/\n/, /g' > $WORKSPACE/rpmbuild/RPMS/build_log
-      find . -type f -iname "awips2-1*" -exec rpmrebuild -d /tmp/rebuilt -vnp --change-spec-description="cat $WORKSPACE/rpmbuild/RPMS/build_log" {} \;
-      find . -type f -iname "awips2-1*" -exec mv -v {} {}.orig \;
-      find /tmp/rebuilt/ -iname "awips2-1*" -exec mv -v {} noarch/ \;
-      rm $WORKSPACE/rpmbuild/RPMS/build_log
-      popd
-   fi
 fi
 
 ##################################
@@ -621,10 +618,32 @@ fi
 if [ ! -z "$SYNC_DEST" ]; then
    $repo_dir/AWIPS2_build/build/common/build_install_rpms.sh ${SYNC_DEST}
    # Cleanup the rpmbuild directory after we copy over the RPMs.
-   sudo rm -rf ${WORKSPACE}/rpmbuild
-   sudo rm -rf ${WORKSPACE}/eclipse-repo
+   sudo rm --recursive --force ${WORKSPACE}/rpmbuild
+   sudo rm --recursive --force ${WORKSPACE}/eclipse-repo
+fi
+
+##################################
+# Sync the ADE Source Jar
+##################################
+if [ ! -z "$BUILD_ADE_DEST" ]; then
+   #Save workspace var without basline
+   OLD_WORKSPACE=${WORKSPACE}
+   #Source ENV info to get Relase number
+   source ${WORKSPACE}/baseline/rpms/build/x86_64/buildEnvironment.sh
+   WORKSPACE=${OLD_WORKSPACE}
+   ADE_DIR="${WORKSPACE}/awips2-ade-${AWIPSII_VERSION}-${AWIPSII_RELEASE}"
+   ADE_FILE="${ADE_DIR}/awips2-ade-baseline-SOURCES.jar"
+
+   if [ -f ${ADE_FILE} ]; then
+      sudo rsync --compress --archive --progress ${ADE_DIR} ${BUILD_ADE_DEST}
+      rm --recursive --force ${ADE_DIR}
+   else
+      echo "ERROR: Unable to find - ${ADE_FILE}."
+      echo "Unable To Continue ... Terminating."
+      exit 1
+   fi
 fi
 
 # Cleanup the baseline directory
-sudo rm -rf ${WORKSPACE}/baseline
+sudo rm --recursive --force ${WORKSPACE}/baseline
 

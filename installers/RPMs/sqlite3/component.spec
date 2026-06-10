@@ -4,13 +4,13 @@
 %define _python_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 %define _installed_python %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c 'import sys; print(".".join(map(str, sys.version_info[:3])))'; else echo 0; fi)
 %define _installed_python_short %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))'; else echo 0; fi)
-%define _sqlite_version_formatted 3340000
+%define _sqlite_version_formatted 3500400
 %define _build_id_links none
 
 Name: awips2-python-sqlite3
 Summary: AWIPS II sqlite3 Site-Package
 Epoch: 1
-Version: 3.34.0
+Version: 3.50.4
 Release: %{_installed_python_short}.2%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}

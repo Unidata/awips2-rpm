@@ -1,7 +1,8 @@
 %global _python_bytecompile_extra 0
 %define _build_arch %(uname -i)
 %define _hdf5_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-%define _szip_version 2.1.1
+%define _libaec_version 1.1.5
+%define _zlibng_version 2.2.5
 %define _build_id_links none
 
 #
@@ -10,7 +11,7 @@
 Name: awips2-hdf5
 Summary: AWIPS II HDF5 Distribution
 # Can't use variables here since this line is parsed by SetupEnvironment.sh
-Version: 1.14.4
+Version: 2.1.0
 Release: %{_component_version}.%{_component_release}%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
@@ -28,6 +29,13 @@ Provides: %{name} = %{version}
 
 BuildRequires: gcc-c++
 BuildRequires: make
+BuildRequires: awips2-ninja-build
+BuildRequires: libaec
+BuildRequires: libaec-devel
+BuildRequires: zlib
+BuildRequires: zlib-devel
+Requires: zlib
+Requires: libaec
 
 # HDF5 is now provided by this RPM with all the libs required.
 Obsoletes: awips2-tools
@@ -52,60 +60,17 @@ then
    echo "Unable To Continue ... Terminating"
    exit 1
 fi
-
 rm -rf %{_build_root}
 mkdir -p %{_build_root}/awips2/hdf5
+
 if [ -d %{_hdf5_build_loc} ]; then
    rm -rf %{_hdf5_build_loc}
 fi
 mkdir -p %{_hdf5_build_loc}
 
 %build
-HDF5_TAR_GZ="hdf5-%{version}-3.tar.gz"
-HDF5_SRC_DIR="%{_baseline_workspace}/foss/hdf5-%{version}-3/packaged"
-
-SZIP_TAR="szip-%{_szip_version}.tar"
-SZIP_TAR_GZ="${SZIP_TAR=}.gz"
-SZIP_SRC_DIR="%{_baseline_workspace}/foss/szip-%{_szip_version}/packaged"
-
-# Copy the szip source.
-cp -rv ${SZIP_SRC_DIR}/${SZIP_TAR_GZ} \
-   %{_hdf5_build_loc}
-if [ $? -ne 0 ]; then
-   exit 1
-fi
-
-# build szip
-pushd . > /dev/null
-cd %{_hdf5_build_loc}
-/bin/gunzip ${SZIP_TAR_GZ}
-/bin/tar -zxf ${SZIP_TAR}
-if [ $? -ne 0 ]; then
-   exit 1
-fi
-cd szip-%{_szip_version}
-./configure --prefix=/awips2/hdf5
-if [ $? -ne 0 ]; then
-   exit 1
-fi
-make %{?_smp_mflags}
-if [ $? -ne 0 ]; then
-   exit 1
-fi
-#Install early to a tmp loc so HDF5 can use the lib
-make install prefix=%{_hdf5_build_loc}/awips2/hdf5
-RC=$?
-if [ ${RC} -ne 0 ]; then
-   exit 1
-fi
-
-cd ..
-/bin/rm -f ${SZIP_TAR}
-if [ $? -ne 0 ]; then
-   exit 1
-fi
-
-popd > /dev/null
+HDF5_TAR_GZ="hdf5-%{version}.tar.gz"
+HDF5_SRC_DIR="%{_baseline_workspace}/foss/hdf5-%{version}/packaged"
 
 cp -v ${HDF5_SRC_DIR}/${HDF5_TAR_GZ} %{_hdf5_build_loc}
 
@@ -115,39 +80,22 @@ cd %{_hdf5_build_loc}
 tar -xzvf ${HDF5_TAR_GZ}
 
 pushd . > /dev/null
-cd %{_hdf5_build_loc}/hdf5-%{version}-3
+mkdir %{_hdf5_build_loc}/build
+cd %{_hdf5_build_loc}/build
 
-# Setting enable-build-mode for v1.12.0 due to bug.
-#   Will be resolved in 1.12.1 and can be removed.
-LDFLAGS='-Wl,-rpath,/awips2/hdf5/lib' ./configure \
-   --prefix=/awips2/hdf5 \
-   --with-szlib=%{_hdf5_build_loc}/awips2/hdf5 \
-   --enable-build-mode=production
-RC=$?
-if [ ${RC} -ne 0 ]; then
-   exit 1
-fi
+cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE:STRING=Release -DBUILD_TESTING:BOOL=ON -DHDF5_BUILD_TOOLS:BOOL=ON -DHDF5_ENABLE_ZLIB_SUPPORT:BOOL=ON -DSZIP_USE_EXTERNAL:BOOL=OFF -DZLIB_USE_EXTERNAL:BOOL=OFF -DHDF5_ENABLE_SZIP_SUPPORT:BOOL=ON -DHDF5_ALLOW_EXTERNAL_SUPPORT:STRING="NO" -DBUILD_SHARED_LIBS:BOOL=ON ../hdf5-%{version}
 
-make %{?_smp_mflags}
+cmake --build . --config Release
+ctest . -C Release
 if [ ${RC} -ne 0 ]; then
    exit 1
 fi
 popd > /dev/null
 
 %install
-
 pushd . > /dev/null
-cd %{_hdf5_build_loc}/szip-%{_szip_version}
-make install prefix=%{_build_root}/awips2/hdf5
-RC=$?
-if [ ${RC} -ne 0 ]; then
-   exit 1
-fi
-popd > /dev/null
-
-pushd . > /dev/null
-cd %{_hdf5_build_loc}/hdf5-%{version}-3
-make install prefix=%{_build_root}/awips2/hdf5
+cd %{_hdf5_build_loc}/hdf5-%{version}
+cmake --install ../build/ --prefix %{_build_root}/awips2/hdf5
 RC=$?
 if [ ${RC} -ne 0 ]; then
    exit 1
@@ -176,8 +124,9 @@ rm -rf %{_hdf5_build_loc}
 %dir /awips2/hdf5
 %dir /awips2/hdf5/lib
 /awips2/hdf5/lib/*
+/awips2/hdf5/cmake/*
+/awips2/hdf5/include/*
 %exclude /awips2/hdf5/lib/*.a
-%exclude /awips2/hdf5/lib/*.la
 %exclude /awips2/hdf5/lib/libhdf5.settings
 %defattr(755,awips,fxalpha,755)
 %dir /awips2/hdf5/bin

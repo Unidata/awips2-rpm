@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# This script will check if the environment pacakges required
+# This script will check if the environment packages required
 # during the build process are installed on the building system.
 # If not, this script will build the missing or updated packages
 # and cache them for future builds.
@@ -111,9 +111,14 @@
 # Jun 21, 2023  2034270  jsebahar    Add python packages py_cpuinfo, msgpack and blosc2 to
 #                                    python build which are build-time dependencies for tables.
 # Nov 16, 2022  8975     dgilling    Build werkzeug dependency MarkupSafe.
+# Oct 04, 2023  2030115  lisa.singh  Added gradle, as it is needed to build YAJSW
 # Dec 18, 2023  2036747  lisa.singh  Build werkzeug dependency MarkupSafe.
 # Jan 03, 2024  2036307  jsebahar    Modified yum install to install packages simultaneously
 #                                    to avoid dependency issues with a -devel package.
+# Dec 17, 2025  2040414  tjensen     Add python packaging to build before meson,
+#                                    which is a dependency for setuptools.
+# Jan 08, 2025  2040611  njensen     Added ninja-build as it is needed to build hdf5
+# Apr 20, 2026  2041593  mapeters    Removed awips2-aec
 
 # Finds the version of a given FOSS package.
 #   $1 - Name of the FOSS package
@@ -216,14 +221,11 @@ if [ ! -z "$LOCAL_APPS_FOSS_BRANCH" ]; then
         fi
    done
 
-   # packages are built in reverse order from what is listed here
-   for item in eccodes aec; do
-      pkg_version=$(getLAFOSSVersion $item)
-      if [[ "$(getRPMVersion awips2-$item)" != "$pkg_version" ]]; then
-         export RPMS=("buildRPM awips2-$item")
-         export LIB_ENV_BUILD_PACKAGE=awips2-$item
-      fi
-   done
+   pkg_version=$(getLAFOSSVersion eccodes)
+   if [[ "$(getRPMVersion awips2-eccodes)" != "$pkg_version" ]]; then
+      export RPMS=("buildRPM awips2-eccodes")
+      export LIB_ENV_BUILD_PACKAGE=awips2-eccodes
+   fi
 fi
 
 ##################################
@@ -268,6 +270,7 @@ tomli
 geos
 meson_python
 pyproject_metadata
+packaging
 )
 
 for item in "${pypackages[@]}"; do
@@ -285,6 +288,15 @@ MESON_VERSION="$(getRequiredVersionFromSpecFile meson)"
 if [[ "$(getRPMVersion awips2-meson)" != "$MESON_VERSION" ]]; then
    export RPMS=("buildRPM awips2-meson")
    export LIB_ENV_BUILD_PACKAGE=awips2-meson
+fi
+
+##################################
+# Python Packaging
+##################################
+PACKAGING_VERSION="$(getRequiredVersionFromSpecFile packaging)"
+if [[ "$(getRPMVersion awips2-python-packaging)" != "$PACKAGING_VERSION" ]]; then
+   export RPMS=("buildRPM awips2-python-packaging")
+   export LIB_ENV_BUILD_PACKAGE=awips2-python-packaging
 fi
 
 ##################################
@@ -340,6 +352,17 @@ else
 fi
 
 ##################################
+# NINJA-BUILD
+##################################
+NINJA_VERSION="$(getRequiredVersionFromDirName ninja-build)"
+if [[ "$(getRPMVersion awips2-ninja-build)" != "$NINJA_VERSION" ]]; then
+   export RPMS=("buildRPM awips2-ninja-build")
+   export LIB_ENV_BUILD_PACKAGE=awips2-ninja-build
+else
+   source /etc/profile.d/awips2Ninja.sh || exit 1
+fi
+
+##################################
 # ANT
 ##################################
 ANT_VERSION=$(getRequiredVersionFromDirName ant)
@@ -348,6 +371,17 @@ if [[ "$(getRPMVersion awips2-ant)" != "$ANT_VERSION" ]]; then
    export LIB_ENV_BUILD_PACKAGE=awips2-ant
 else
    source /etc/profile.d/awips2Ant.sh || exit 1
+fi
+
+##################################
+# GRADLE
+##################################
+GRADLE_VERSION=$(getRequiredVersionFromDirName gradle)
+if [[ "$(getRPMVersion awips2-gradle)" != "$GRADLE_VERSION" ]]; then
+   export RPMS=("buildRPM awips2-gradle")
+   export LIB_ENV_BUILD_PACKAGE=awips2-gradle
+else
+   source /etc/profile.d/awips2Gradle.sh || exit 1
 fi
 
 ##################################

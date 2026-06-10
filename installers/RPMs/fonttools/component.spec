@@ -6,7 +6,7 @@
 
 Name: awips2-python-fonttools
 Summary: AWIPS II Python fontTools module
-Version: 4.51.0
+Version: 4.61.1
 Release: %{_installed_python_short}.1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
@@ -77,6 +77,8 @@ rm --recursive --force %{_build_root}
 %exclude /awips2/python/share
 
 %changelog
+* Mon Jan 05 2026 Freddy Camacho <freddy.camacho@noaa.gov>
+- Update to version 4.61.1
 * Wed May 08 2024 Freddy Camacho <freddy.camacho@noaa.gov>
 - Update to version 4.51.0
 * Thu Jun 08 2023 David Gillingham <david.gillingham@rtx.com> 

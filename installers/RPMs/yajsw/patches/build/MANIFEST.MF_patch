@@ -1,0 +1,60 @@
+6,11c6,11
+<  ./lib/core/netty/netty-codec-4.1.104.Final.jar 
+<  ./lib/core/netty/netty-handler-4.1.104.Final.jar 
+<  ./lib/core/netty/netty-transport-4.1.104.Final.jar 
+<  ./lib/core/netty/netty-buffer-4.1.104.Final.jar 
+<  ./lib/core/netty/netty-common-4.1.104.Final.jar 
+<  ./lib/core/netty/netty-resolver-4.1.104.Final.jar 
+---
+>  ./lib/core/netty/netty-codec-4.1.132.Final.jar 
+>  ./lib/core/netty/netty-handler-4.1.132.Final.jar 
+>  ./lib/core/netty/netty-transport-4.1.132.Final.jar 
+>  ./lib/core/netty/netty-buffer-4.1.132.Final.jar 
+>  ./lib/core/netty/netty-common-4.1.132.Final.jar 
+>  ./lib/core/netty/netty-resolver-4.1.132.Final.jar 
+14c14
+<  ./lib/core/commons/commons-configuration2-2.8.0.jar 
+---
+>  ./lib/core/commons/commons-configuration2-2.12.0.jar 
+16c16
+<  ./lib/core/commons/commons-vfs2-2.9.0.jar 
+---
+>  ./lib/core/commons/commons-vfs2-2.10.0.jar 
+18,19c18,19
+<  ./lib/core/commons/commons-io-2.11.0.jar 
+<  ./lib/core/commons/commons-lang3-3.12.0.jar 
+---
+>  ./lib/core/commons/commons-io-2.18.0.jar 
+>  ./lib/core/commons/commons-lang3-3.18.0.jar 
+21c21
+<  ./lib/core/commons/commons-logging-1.2.jar 
+---
+>  ./lib/core/commons/commons-logging-1.3.4.jar 
+56,61c56,61
+<  ./lib/core/netty/netty-codec-4.1.104.Final.jar 
+<  ./lib/core/netty/netty-handler-4.1.104.Final.jar 
+<  ./lib/core/netty/netty-transport-4.1.104.Final.jar 
+<  ./lib/core/netty/netty-buffer-4.1.104.Final.jar 
+<  ./lib/core/netty/netty-common-4.1.104.Final.jar 
+<  ./lib/core/netty/netty-resolver-4.1.104.Final.jar 
+---
+>  ./lib/core/netty/netty-codec-4.1.132.Final.jar 
+>  ./lib/core/netty/netty-handler-4.1.132.Final.jar 
+>  ./lib/core/netty/netty-transport-4.1.132.Final.jar 
+>  ./lib/core/netty/netty-buffer-4.1.132.Final.jar 
+>  ./lib/core/netty/netty-common-4.1.132.Final.jar 
+>  ./lib/core/netty/netty-resolver-4.1.132.Final.jar 
+63,64c63,64
+<  ./lib/core/commons/commons-configuration2-2.8.0.jar  
+<  ./lib/core/commons/commons-vfs2-2.9.0.jar 
+---
+>  ./lib/core/commons/commons-configuration2-2.12.0.jar  
+>  ./lib/core/commons/commons-vfs2-2.10.0.jar 
+66,68c66,68
+<  ./lib/core/commons/commons-io-2.11.0.jar 
+<  ./lib/core/commons/commons-lang3-3.12.0.jar 
+<  ./lib/core/commons/commons-logging-1.2.jar
+---
+>  ./lib/core/commons/commons-io-2.18.0.jar 
+>  ./lib/core/commons/commons-lang3-3.18.0.jar 
+>  ./lib/core/commons/commons-logging-1.3.4.jar

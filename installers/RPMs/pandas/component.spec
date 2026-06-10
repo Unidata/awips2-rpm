@@ -12,7 +12,7 @@
 Name: awips2-python-pandas
 Summary: AWIPS II Python pandas Distribution
 Epoch: 1
-Version: 1.3.5
+Version: 1.5.3
 Release: %{_installed_python_short}.%{_installed_python_numpy}.2%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
@@ -23,10 +23,10 @@ Vendor: ${_build_vendor}
 
 AutoReq: no
 Requires: awips2-python >= %{_installed_python_short}
-Requires: awips2-python-bottleneck
-Requires: awips2-python-numpy >= 1.17.3
-Requires: awips2-python-dateutil >= 2.7.3
-Requires: awips2-python-pytz >= 2017.3
+Requires: awips2-python-bottleneck >= 1.3.2
+Requires: awips2-python-numpy >= 1.23.2
+Requires: awips2-python-dateutil >= 2.8.1
+Requires: awips2-python-pytz >= 2020.1
 
 BuildRequires: awips2-python
 BuildRequires: awips2-python-numpy

@@ -1,0 +1,6 @@
+# This is the environment file used by httpd-pypies.service
+# to properly start httpd configured for pypies.
+LANG=C
+PYPIES_CFG=/awips2/pypies/conf/pypies.cfg
+PYTHON_INSTALL="/awips2/python"
+PATH=/awips2/hdf5/bin

@@ -1,0 +1,97 @@
+diff --git a/./yajsw-stable-13.11/src/yajsw/src/main/java/org/rzo/yajsw/os/posix/PosixProcess.java b/./yajsw-stable-13.11_patched/src/yajsw/src/main/java/org/rzo/yajsw/os/posix/PosixProcess.java
+index 2ccff960..350f19ff 100644
+--- a/./yajsw-stable-13.11/src/yajsw/src/main/java/org/rzo/yajsw/os/posix/PosixProcess.java
++++ b/./yajsw-stable-13.11_patched/src/yajsw/src/main/java/org/rzo/yajsw/os/posix/PosixProcess.java
+@@ -789,7 +789,12 @@ public class PosixProcess extends AbstractProcess {
+ 			return false;
+ 		if (_arrCmd == null) {
+ 			_arrCmd = _cmd.split(" ");
++			/*
++                        * bkowal Suppress extraneous output unless debug is enabled.
++                        */
++                       if (_debug) {
+ 			log("exec: " + _cmd);
++		       }
+ 		} else {
+ 			String cmd = "";
+ 			for (String c : _arrCmd) {
+@@ -799,8 +804,12 @@ public class PosixProcess extends AbstractProcess {
+ 					cmd += c + " ";
+ 				}
+ 			}
+-			// if (_debug)
++			/*
++                        * bkowal Suppress extraneous output unless debug is enabled.
++                        */
++			if (_debug){ 
+ 			log("exec:" + cmd);
++			}
+ 		}
+ 		//
+ 		if (stdout == -1) {
+@@ -849,16 +858,24 @@ public class PosixProcess extends AbstractProcess {
+ 		if ((pid = CLibrary.INSTANCE.fork()) == 0) {
+ 			if (_umask != -1)
+ 				umask(_umask);
++			/*
++                         * bkowal Suppress extraneous output unless debug is enabled.
++                         */
++                       if (_debug) {
+ 			System.out.println("fork 0");
+-
++			}
+ 			// closeDescriptors();
+ 
+ 			// set working dir
+ 			if (getWorkingDir() != null)
+ 				if (CLibrary.INSTANCE.chdir(getWorkingDir()) != 0)
+ 					log("could not set working dir");
+-
++			/*
++                         * bkowal Suppress extraneous output unless debug is enabled.
++                         */
++                       if (_debug) {
+ 			System.out.println("fork 1");
++		       }
+ 
+ 			// set priority
+ 			if (_priority == PRIORITY_BELOW_NORMAL) {
+@@ -876,7 +893,12 @@ public class PosixProcess extends AbstractProcess {
+ 			}
+ 			if (getUser() != null)
+ 				switchUser(getUser(), getPassword());
++		       /*
++                        * bkowal Suppress extraneous output unless debug is enabled.
++                        */
++                       if (_debug) {
+ 			System.out.println("fork 2");
++		       }
+ 
+ 			// try
+ 			// {
+@@ -1032,7 +1054,11 @@ public class PosixProcess extends AbstractProcess {
+ 					else
+ 						_exitSignal = -1;
+ 				}
+-				if (_logger != null)
++                               /*
++                                * bkowal Suppress extraneous output unless debug is enabled.
++                                */
++
++				if (_logger != null && _debug)
+ 					_logger.info("exit code posix process: " + status.getValue() + " application(status/signal): "
+ 							+ _exitCode + "/" + _exitSignal);
+ 				_terminated = true;
+@@ -2115,7 +2141,11 @@ public class PosixProcess extends AbstractProcess {
+ 
+ 	public static int umask(int mask) {
+ 		int result = CLibrary.INSTANCE.umask(mask);
+-		System.out.println("umask " + mask + "->" + result);
++		/*
++                 * Removed extraneous logging.
++                 * lsingh 
++                 */
++		//System.out.println("umask " + mask + "->" + result);
+ 		return result;
+ 	}
+ 

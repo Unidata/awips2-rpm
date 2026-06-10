@@ -14,7 +14,7 @@
 Name: awips2-netcdf
 Summary: AWIPS II NETCDF Distribution
 Version: 4.6.1
-Release: %{_component_version}.%{_component_release}.3%{?dist}
+Release: %{_component_version}.%{_component_release}.5%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}

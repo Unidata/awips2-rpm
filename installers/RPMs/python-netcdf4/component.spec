@@ -14,7 +14,7 @@ Name: awips2-python-netcdf4
 Summary: AWIPS II Python netcdf4-python Distribution
 Epoch: 1
 Version: 1.6.2
-Release: %{_installed_python_short}.3%{?dist}
+Release: %{_installed_python_short}.5%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
 BuildArch: %{_build_arch}

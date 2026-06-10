@@ -1,0 +1,18 @@
+diff --git a/./yajsw-stable-13.11/src/yajsw/src/main/java/org/rzo/yajsw/os/posix/bsd/BSDProcess.java b/./yajsw-stable-13.11_patched/src/yajsw/src/main/java/org/rzo/yajsw/os/posix/bsd/BSDProcess.java
+index c953b758..6c4b416d 100644
+--- a/./yajsw-stable-13.11/src/yajsw/src/main/java/org/rzo/yajsw/os/posix/bsd/BSDProcess.java
++++ b/./yajsw-stable-13.11_patched/src/yajsw/src/main/java/org/rzo/yajsw/os/posix/bsd/BSDProcess.java
+@@ -164,7 +164,13 @@ public class BSDProcess extends PosixProcess
+ 				}
+ 				_terminated = true;
+ 				_exitCode = p.exitValue();
++				/*
++                                * bkowal Suppress extraneous output unless debug is enabled
++                                */
++                               if (_debug) {
++
+ 				System.out.println("exit code bsd process " + _exitCode);
++			       }
+ 				BSDProcess.this.setTerminated(true);
+ 			}
+ 

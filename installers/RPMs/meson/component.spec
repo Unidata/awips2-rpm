@@ -18,7 +18,7 @@ Packager: %{_build_site}
 
 AutoReq: no
 Requires: awips2-python >= %{_installed_python_short}
-Requires: ninja-build
+Requires: awips2-ninja-build
 
 BuildRequires: awips2-python
 

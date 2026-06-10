@@ -3,7 +3,7 @@
 %define _build_arch %(uname -i)
 %define _python_build_loc %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 %define _build_id_links none
-%define _setuptools_version 70.0.0
+%define _setuptools_version 80.9.0
 
 # Update this as necessary when Python is upgraded.  Also update
 # the Version line with this information.
@@ -140,6 +140,8 @@ rm --recursive --force %{_python_build_loc}
 /awips2/python
 
 %changelog
+* Tue Dec 02 2025 Tim Jensen <timothy.jensen@rtx.com>
+- Upgrade setuptools to version 80.9.0
 * Thu Sep 12 2024 Howard Van Dam <howard.vandam@rtx.com>
 - Upgrade setuptools to version 70.0.0
 * Wed May 24 2023 Tom Gurney <thomas.gurney@rtx.com>

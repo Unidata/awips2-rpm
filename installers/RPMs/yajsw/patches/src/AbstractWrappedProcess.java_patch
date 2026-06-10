@@ -1,0 +1,88 @@
+diff --git a/./yajsw-stable-13.11/src/yajsw/src/main/java/org/rzo/yajsw/wrapper/AbstractWrappedProcess.java b/./yajsw-stable-13.11_patched/src/yajsw/src/main/java/org/rzo/yajsw/wrapper/AbstractWrappedProcess.java
+index 7ab4f3ae..38164360 100644
+--- a/./yajsw-stable-13.11/src/yajsw/src/main/java/org/rzo/yajsw/wrapper/AbstractWrappedProcess.java
++++ b/./yajsw-stable-13.11_patched/src/yajsw/src/main/java/org/rzo/yajsw/wrapper/AbstractWrappedProcess.java
+@@ -1304,8 +1304,14 @@ public abstract class AbstractWrappedProcess implements WrappedProcess,
+ 			_controller.processStarted();
+ 			_totalRestartCount++;
+ 			postStart();
+-			getWrapperLogger().info(
++			/*
++                        * bkowal
++                        * Suppress extraneous output unless debug is enabled.
++                        */
++                        if (_debug > 0) {
++			      getWrapperLogger().info(
+ 					"started process with pid " + _osProcess.getPid());
++			}
+ 			if (pipeStreams())
+ 			{
+ 
+@@ -1649,7 +1655,13 @@ public abstract class AbstractWrappedProcess implements WrappedProcess,
+ 			boolean desc = _config.getBoolean("wrapper.logfile.desc", false);
+ 			int umask = Utils.parseOctal(_config.getString(
+ 					"wrapper.logfile.umask", null));
++			/*
++			 * Suppress extraneous output unless debugging is enabled. 
++			 * lsingh
++			 */
++			if (_debug > 0) {
+ 			System.out.println("wrapper.logfile.umask "+umask);
++			}
+ 			String encoding = _config.getString("wrapper.log.encoding");
+ 			boolean compress = _config.getBoolean("wrapper.logfile.compress", false);
+ 			int maxDays = _config.getInt("wrapper.logfile.maxdays", -1);
+@@ -2357,9 +2369,15 @@ public abstract class AbstractWrappedProcess implements WrappedProcess,
+ 				Constants.DEFAULT_JVM_EXIT_TIMEOUT) * 1000;
+ 		if (shutdownWaitTime > Integer.MAX_VALUE)
+ 			shutdownWaitTime = Integer.MAX_VALUE;
+-		getWrapperLogger().info(
++		/*
++                 * bkowal
++                 * Suppress extraneous output unless debug is enabled.
++                 */
++                if (_debug > 0) {
++                      getWrapperLogger().info(
+ 				"stopping process with pid/timeout " + _osProcess.getPid()
+ 						+ " " + shutdownWaitTime);
++		}
+ 
+ 		stopController((int) shutdownWaitTime, _stopReason);
+ 		stopOsProcess((int) shutdownWaitTime);
+@@ -2458,9 +2476,14 @@ public abstract class AbstractWrappedProcess implements WrappedProcess,
+ 		}
+ 		_osProcess.destroy();
+ 
+-		// if (_debug > 0)
+-		getWrapperLogger().info(
++		/*
++                * bkowal
++                * Suppress extraneous output unless debug is enabled.
++                */
++		if (_debug > 0) {
++		   getWrapperLogger().info(
+ 				"process exit code: " + _osProcess.getExitCode());
++		}
+ 	}
+ 
+ 	private long getRemainStopWaitTime()
+@@ -3269,13 +3292,12 @@ public abstract class AbstractWrappedProcess implements WrappedProcess,
+ 						// System.out.println("drainBuffer.write "+line);
+ 						_drainBuffer.write(line);
+ 					}
+-					if (k > _minAppLogLines)
+-						_goblerLog.finest(line);
+-					else
+-					{
+-						_goblerLog.info(line);
+-						k++;
+-					}
++					/*
++                                        * bkowal
++                                        * Allow all lines to be logged by the wrapper.
++                                        */
++					_goblerLog.info(line);
++					k++;
+ 
+ 					if (_actionTriggers != null)
+ 						for (int i = 0; i < _actionTriggers.length; i++)

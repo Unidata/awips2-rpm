@@ -10,7 +10,7 @@ Summary: AWIPS II Java Distribution
 # Version must always be an integer equal to the Java major version. This is
 # used by the RPM build to locate the correct version of Java in
 # /etc/alternatives.
-Version: 11
+Version: 17
 
 # Epoch was incremented to to reset the versioning scheme after we switched
 # from packaging our own Java to depending on the system Java package.
@@ -32,8 +32,8 @@ Vendor: ${_build_vendor}
 Packager: %{_build_site}
 
 AutoReq: no
-BuildRequires: java-11-openjdk-devel
-Requires: java-11-openjdk-devel
+BuildRequires: java-17-openjdk-devel
+Requires: java-17-openjdk-devel
 Requires: tzdata-java
 Provides: awips2-java = %{version}
 
@@ -77,6 +77,8 @@ rm -rf ${RPM_BUILD_ROOT}
 /awips2/java
 
 %changelog
+* Thu Apr 04 2025 Tom Gurney <thomas.gurney@rtx.com>
+- Upgrade to Java 17
 * Mon Aug 28 2023 David Gillingham <david.gillingham@rtx.com>
 - Add tzdata-java to dependency list to resolve central registry qpid install issues.
 * Thu May 05 2022 Tom Gurney <tom.gurney@raytheon.com>

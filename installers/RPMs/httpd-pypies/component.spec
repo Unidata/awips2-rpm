@@ -1,24 +1,11 @@
 %define contentdir /var/www
-%define suexec_caller apache
-%define mmn 20120211
-
-%define FOSS_DIR "%{_baseline_workspace}/foss"
-%define HTTP_FOSS_DIR "%{_baseline_workspace}/foss/httpd/packaged/"
-%define HTTP_PACKAGE_NAME "httpd-%{version}"
-%define HTTP_SOURCE_TAR "%{HTTP_PACKAGE_NAME}.tar.gz"
-%define RPMBUILD_PYPIES_DIR "%{_baseline_workspace}/rpmbuild/BUILD/httpd-pypies"
-%define RPMBUILD_HTTP_DIR %RPMBUILD_PYPIES_DIR/%HTTP_PACKAGE_NAME
-%define DISTCACHE distcache-1.4.5
-%define MOD_WSGI_VERSION 4.9.4
-%define APR_VERSION 1.7.5
-%define APR_UTIL_VERSION 1.6.0
 
 %define _installed_python_short %(if [ -f /awips2/python/bin/python ]; then /awips2/python/bin/python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))'; else echo 0; fi)
 
 Summary: Apache HTTP Server Configured for PyPIES
 Name: awips2-httpd-pypies
 Version: 2.4.58
-Release: 4%{?dist}
+Release: 7%{?dist}
 URL: http://httpd.apache.org/
 License: Apache License, Version 2.0
 Group: AWIPSII
@@ -28,8 +15,8 @@ Obsoletes: awips2-httpd-pypies-suexec
 Requires(pre): /usr/sbin/useradd
 Requires(post): chkconfig
 Requires: awips2-pypies
-Requires: awips2-hdf5, awips2-python, awips2-python-awips, awips2-python-h5py
-Requires: awips2-python-werkzeug
+Requires: awips2-hdf5, awips2-python, awips2-python-dynamicserialize, awips2-python-h5py
+Requires: awips2-python-thrift, awips2-python-ufpy, awips2-python-werkzeug
 Requires: awips2-python-numpy
 Requires: httpd, httpd-tools, mod_ldap, mod_proxy_html, mod_ssl, python%{_installed_python_short}-mod_wsgi
 Requires: awips2-watchdog

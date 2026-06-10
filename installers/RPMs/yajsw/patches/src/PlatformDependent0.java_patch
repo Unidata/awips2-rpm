@@ -1,0 +1,168 @@
+17a18
+> import io.netty.util.concurrent.FastThreadLocalThread;
+33d33
+< 
+48d47
+<     private static final Throwable EXPLICIT_NO_UNSAFE_CAUSE = explicitNoUnsafeCause0();
+52a52
+>     private static final Throwable EXPLICIT_NO_UNSAFE_CAUSE = explicitNoUnsafeCause0();
+64a65,69
+>     // Package-private for testing.
+>     static final Method IS_VIRTUAL_THREAD_METHOD = getIsVirtualThreadMethod();
+>     // Package-private for testing.
+>     static final Class<?> BASE_VIRTUAL_THREAD_CLASS = getBaseVirtualThreadClass();
+> 
+143c148,149
+<             // ensure the unsafe supports all necessary methods to work around the mistake in the latest OpenJDK
+---
+>             // ensure the unsafe supports all necessary methods to work around the mistake in the latest OpenJDK,
+>             // or that they haven't been removed by JEP 471.
+145a152
+>             // https://openjdk.org/jeps/471
+152c159,161
+<                             finalUnsafe.getClass().getDeclaredMethod(
+---
+>                             // Other methods like storeFence() and invokeCleaner() are tested for elsewhere.
+>                             Class<? extends Unsafe> cls = finalUnsafe.getClass();
+>                             cls.getDeclaredMethod(
+153a163,195
+>                             if (javaVersion() > 23) {
+>                                 cls.getDeclaredMethod("objectFieldOffset", Field.class);
+>                                 cls.getDeclaredMethod("staticFieldOffset", Field.class);
+>                                 cls.getDeclaredMethod("staticFieldBase", Field.class);
+>                                 cls.getDeclaredMethod("arrayBaseOffset", Class.class);
+>                                 cls.getDeclaredMethod("arrayIndexScale", Class.class);
+>                                 cls.getDeclaredMethod("allocateMemory", long.class);
+>                                 cls.getDeclaredMethod("reallocateMemory", long.class, long.class);
+>                                 cls.getDeclaredMethod("freeMemory", long.class);
+>                                 cls.getDeclaredMethod("setMemory", long.class, long.class, byte.class);
+>                                 cls.getDeclaredMethod("setMemory", Object.class, long.class, long.class, byte.class);
+>                                 cls.getDeclaredMethod("getBoolean", Object.class, long.class);
+>                                 cls.getDeclaredMethod("getByte", long.class);
+>                                 cls.getDeclaredMethod("getByte", Object.class, long.class);
+>                                 cls.getDeclaredMethod("getInt", long.class);
+>                                 cls.getDeclaredMethod("getInt", Object.class, long.class);
+>                                 cls.getDeclaredMethod("getLong", long.class);
+>                                 cls.getDeclaredMethod("getLong", Object.class, long.class);
+>                                 cls.getDeclaredMethod("putByte", long.class, byte.class);
+>                                 cls.getDeclaredMethod("putByte", Object.class, long.class, byte.class);
+>                                 cls.getDeclaredMethod("putInt", long.class, int.class);
+>                                 cls.getDeclaredMethod("putInt", Object.class, long.class, int.class);
+>                                 cls.getDeclaredMethod("putLong", long.class, long.class);
+>                                 cls.getDeclaredMethod("putLong", Object.class, long.class, long.class);
+>                                 cls.getDeclaredMethod("addressSize");
+>                             }
+>                             if (javaVersion() >= 23) {
+>                                 // The following tests the methods are usable.
+>                                 // Will throw UnsupportedOperationException if unsafe memory access is denied:
+>                                 long address = finalUnsafe.allocateMemory(8);
+>                                 finalUnsafe.putLong(address, 42);
+>                                 finalUnsafe.freeMemory(address);
+>                             }
+154a197,198
+>                         } catch (UnsupportedOperationException e) {
+>                             return e;
+164c208
+<                     logger.debug("sun.misc.Unsafe.copyMemory: available");
+---
+>                     logger.debug("sun.misc.Unsafe base methods: all available");
+170c214
+<                         logger.debug("sun.misc.Unsafe.copyMemory: unavailable", (Throwable) maybeException);
+---
+>                         logger.debug("sun.misc.Unsafe method unavailable:", unsafeUnavailabilityCause);
+172c216
+<                         logger.debug("sun.misc.Unsafe.copyMemory: unavailable: {}",
+---
+>                         logger.debug("sun.misc.Unsafe method unavailable: {}",
+504a549,613
+>     private static Method getIsVirtualThreadMethod() {
+>         try {
+>             Method isVirtualMethod = Thread.class.getMethod("isVirtual");
+>             // Call once to make sure the invocation works.
+>             boolean isVirtual = (Boolean) isVirtualMethod.invoke(Thread.currentThread());
+>             return isVirtualMethod;
+>         } catch (Throwable e) {
+>             if (logger.isTraceEnabled()) {
+> 		// njensen - changing to not log stacktrace
+>                 // logger.debug("Thread.isVirtual() is not available: ", e);
+> 		logger.debug("Thread.isVirtual() is not available: ", e.getMessage());
+>             } else {
+>                 logger.debug("Thread.isVirtual() is not available: ", e.getMessage());
+>             }
+>             return null;
+>         }
+>     }
+> 
+>     private static Class<?> getBaseVirtualThreadClass() {
+>         try {
+>             return Class.forName("java.lang.BaseVirtualThread", false, getSystemClassLoader());
+>         } catch (Throwable e) {
+>             if (logger.isTraceEnabled()) {
+> 		// njensen - changing to not log stacktrace
+>                 // logger.debug("java.lang.BaseVirtualThread is not available: ", e);
+> 		logger.debug("java.lang.BaseVirtualThread is not available: ", e.getMessage());
+>             } else {
+>                 logger.debug("java.lang.BaseVirtualThread is not available: ", e.getMessage());
+>             }
+>             return null;
+>         }
+>     }
+> 
+>     /**
+>      * @param thread The thread to be checked.
+>      * @return {@code true} if this {@link Thread} is a virtual thread, {@code false} otherwise.
+>      */
+>     static boolean isVirtualThread(Thread thread) {
+>         // Quick exclusion:
+>         if (thread == null || IS_VIRTUAL_THREAD_METHOD == null) {
+>             return false;
+>         }
+>         // Try fast check:
+>         if (BASE_VIRTUAL_THREAD_CLASS != null) {
+>             return BASE_VIRTUAL_THREAD_CLASS.isInstance(thread);
+>         }
+>         if (thread instanceof FastThreadLocalThread) {
+>             return false;
+>         }
+>         Class<?> clazz = thread.getClass();
+>         // Common cases:
+>         if (clazz == Thread.class || clazz.getSuperclass() == Thread.class) {
+>             return false;
+>         }
+>         try {
+>             return (Boolean) IS_VIRTUAL_THREAD_METHOD.invoke(thread);
+>         } catch (Throwable t) {
+>             // Should not happen.
+>             if (t instanceof Error) {
+>                 throw (Error) t;
+>             }
+>             throw new Error(t);
+>         }
+>     }
+> 
+516c625
+<         final boolean noUnsafe = SystemPropertyUtil.getBoolean("io.netty.noUnsafe", false);
+---
+>         boolean noUnsafe = SystemPropertyUtil.getBoolean("io.netty.noUnsafe", false);
+518a628,637
+>         // See JDK 23 JEP 471 https://openjdk.org/jeps/471 and sun.misc.Unsafe.beforeMemoryAccess() on JDK 23+.
+>         // And JDK 24 JEP 498 https://openjdk.org/jeps/498, that enable warnings by default.
+>         String reason = "io.netty.noUnsafe";
+>         String unspecified = "<unspecified>";
+>         String unsafeMemoryAccess = SystemPropertyUtil.get("sun.misc.unsafe.memory.access", unspecified);
+>         if (!("allow".equals(unsafeMemoryAccess) || unspecified.equals(unsafeMemoryAccess))) {
+>             reason = "--sun-misc-unsafe-memory-access=" + unsafeMemoryAccess;
+>             noUnsafe = true;
+>         }
+> 
+520,521c639,641
+<             logger.debug("sun.misc.Unsafe: unavailable (io.netty.noUnsafe)");
+<             return new UnsupportedOperationException("sun.misc.Unsafe: unavailable (io.netty.noUnsafe)");
+---
+>             String msg = "sun.misc.Unsafe: unavailable (" + reason + ')';
+>             logger.debug(msg);
+>             return new UnsupportedOperationException(msg);
+533c653
+<             String msg = "sun.misc.Unsafe: unavailable (" + unsafePropName + ")";
+---
+>             String msg = "sun.misc.Unsafe: unavailable (" + unsafePropName + ')';

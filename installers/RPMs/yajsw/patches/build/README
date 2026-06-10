@@ -1,0 +1,13 @@
+To update MANIFEST.MF_patch for newer versions of dependencies, do the following:
+
+1. unzip yajsw-stable-13.11.zip
+2. cd yajsw-stable-13.11/build
+3. cp MANIFEST.MF MANIFEST.MF.updated
+4. patch MANIFEST.MF.updated < AWIPS2_build/installers/RPMs/yajsw/patches/build/MANIFEST.MF_patch
+4. Update the version numbers in MANIFEST.MF.updated for the new FOSS version.
+5. diff MANIFEST.MF MANIFEST.MF.updated > MANIFEST.MF_patch
+6. cp MANIFEST.MF_patch to AWIPS2_build/installers/RPMs/yajsw/patches/build/
+
+That theoretically should be it. A similar approach can be done for
+build.gradle_patch if component.spec is updated with how it runs the patch
+command.

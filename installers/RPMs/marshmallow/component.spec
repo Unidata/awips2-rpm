@@ -11,7 +11,7 @@
 Name: awips2-python-marshmallow
 Summary: AWIPS II Python marshmallow module
 Epoch: 1
-Version: 3.19.0
+Version: 3.26.2
 Release: %{_installed_python_short}.1%{?dist}
 Group: AWIPSII
 BuildRoot: %{_build_root}
@@ -24,7 +24,7 @@ Packager: %{_build_site}
 
 AutoReq: no
 Requires: awips2-python >= %{_installed_python_short}
-Requires: python%{_installed_python_short}-packaging >= 17.0
+Requires: awips2-python-packaging
 
 BuildRequires: awips2-python
 BuildRequires: awips2-python-setuptools
@@ -51,7 +51,7 @@ mkdir --parents %{_build_root}
 %install
 pushd . > /dev/null
 SRC_DIR="%{_baseline_workspace}/foss/marshmallow-%{version}/packaged"
-PACKAGE_FILE="marshmallow-%{version}-py2.py3-none-any.whl"
+PACKAGE_FILE="marshmallow-%{version}-py3-none-any.whl"
 /awips2/python/bin/pip3 install \
    --disable-pip-version-check --verbose --no-deps --ignore-installed --no-index \
    --root %{_build_root} --prefix /awips2/python \
@@ -81,6 +81,10 @@ rm --recursive --force %{_build_root}
 
 
 %changelog
+* Thu Jan 29 2026 Freddy Camacho <freddy.camacho@noaa.gov>
+- Update to 3.26.2
+* Wed Dec 17 2025 Tim Jensen <timothy.jensen@rtx.com>
+- Change to use AWIPS packaged version of python-packaging
 * Mon Mar 20 2023 Tom Gurney <thomas.gurney@rtx.com>
 - Update to 3.19.0
 * Fri Jul 16 2021 Lisa Singh <lisa.e.singh@raytheon.com> 
