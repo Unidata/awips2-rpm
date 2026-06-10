@@ -66,7 +66,7 @@ mkdir --parents %{_build_root}
 %install
 pushd . > /dev/null
 #src_dir="%{_baseline_workspace}/foss/pyside6-%{version}/packaged"
-src_dir="/awips2/repo/awips2-static/foss/pyside6-%{version}/packaged"
+src_dir="/awips2/repo/awips2-static/awips2-rpm/foss/pyside6-%{version}/packaged"
 # The package is split into three wheels.
 # The main PySide6 wheel depends on the other two.
 for name in PySide6 PySide6_Essentials PySide6_Addons; do
