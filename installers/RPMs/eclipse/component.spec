@@ -80,7 +80,7 @@ fi
 mkdir --parents ${TMP_BUILD_DIR}/awips2/eclipse
 
 # Extract Eclipse
-tar --warning=no-unknown-keyword --extract --file=${ECLIPSE_STATIC_DIR}/${ECLIPSE_TAR_FILE} \
+tar --warning=no-unknown-keyword --no-same-owner --extract --file=${ECLIPSE_STATIC_DIR}/${ECLIPSE_TAR_FILE} \
    --directory=${TMP_BUILD_DIR}/awips2
 
 # Extract the Eclipse Delta Pack

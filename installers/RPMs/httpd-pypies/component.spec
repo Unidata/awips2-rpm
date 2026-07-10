@@ -15,8 +15,8 @@ Obsoletes: awips2-httpd-pypies-suexec
 Requires(pre): /usr/sbin/useradd
 Requires(post): chkconfig
 Requires: awips2-pypies
-Requires: awips2-hdf5, awips2-python, awips2-python-dynamicserialize, awips2-python-h5py
-Requires: awips2-python-thrift, awips2-python-ufpy, awips2-python-werkzeug
+Requires: awips2-hdf5, awips2-python, awips2-python-awips awips2-python-h5py
+Requires: awips2-python-werkzeug
 Requires: awips2-python-numpy
 Requires: httpd, httpd-tools, mod_ldap, mod_proxy_html, mod_ssl, python%{_installed_python_short}-mod_wsgi
 Requires: awips2-watchdog
