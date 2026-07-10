@@ -60,6 +60,7 @@ cd %{_python_build_loc}
 tar -xf "${proj_src}.tar.gz" || exit 1
 cd "${proj_src}"
 
+
 SQLITE3_CFLAGS="-I/awips2/python/include" \
 SQLITE3_LIBS="-L/awips2/python/lib -lsqlite3" \
 LDFLAGS='-Wl,-rpath,/awips2/python/lib' \

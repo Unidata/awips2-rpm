@@ -62,6 +62,8 @@ tar --extract --gzip --file ${PKG_FILE}
 cd Pgtcl-%{version}
 
 autoconf
+CPPFLAGS="-I/awips2/python/include" \
+CFLAGS="-I/awips2/python/include" \
 ./configure --prefix="%{_build_root}/awips2/pgtcl" --exec-prefix="%{_build_root}/awips2/pgtcl"
 RC=$?
 if [ ${RC} -ne 0 ]; then
